@@ -8,7 +8,29 @@
 		<title>TopoExplorer</title>
 	</head>
 	<body>
-		<div id="viewDiv" style="float: left"></div>
+		<div id="sideBar" style="float: left">
+			<div id="header">
+				<div class="heading">HISTORICAL TOPO MAP EXPLORER</div>
+				<div style="border-left: 1px solid white"></div>
+				<div class="heading">
+					<div style="float: left; width: 50%">USGS LOGO</div>
+					<div style="float: left; width: 50%">
+						<!-- TODO: can we use the esri logo?  Is there a marketing issue if we do? -->
+						ESRI LOGO
+					</div>
+				</div>
+			</div>
+			<div id="filtersAndScale" style="display: flex">
+				<div style="width: 50%">
+					<div>YEARS</div>
+				</div>
+				<div style="width: 50%">
+					<div>SCALE</div>
+				</div>
+			</div>
+			<div id="mapsList"></div>
+		</div>
+		<div id="viewDiv"></div>
 		<script src="https://unpkg.com/axios@1.0.0/dist/axios.min.js"></script>
 		<script type="text/javascript" src="https://js.arcgis.com/4.24/"></script>
 		<script type="module" src="js/main.js"></script>
