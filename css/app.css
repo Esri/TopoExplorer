@@ -18,4 +18,29 @@ main {
 
 #viewDiv{
   width: 100%;
+  float: left
+}
+
+#sideBar {
+  position: relative;
+  min-width: 420px;
+  background-color: #E7EBEE;
+  overflow-y: scroll;
+}
+
+#header{
+  display: flex; 
+  padding: 10px;
+  height:60px;
+  background-color: #ABB4C2;
+}
+
+.heading{
+  width: 50%;
+  font-size: 16px;
+  padding: 0 10px;
+}
+
+#filtersAndScale{
+  height:60px;
 }
