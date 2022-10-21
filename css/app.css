@@ -16,6 +16,24 @@ main {
   overflow: hidden;
 }
 
+button {
+  display: flex;
+  width: 100%;
+  margin: 0 auto;
+  background: none;
+  border: none;
+  color: #637287;
+  text-decoration: none;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: background 250ms ease-in-out, 
+              transform 150ms ease;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+
 #viewDiv{
   width: 100%;
   float: right
@@ -50,13 +68,15 @@ main {
 
 #sideBar {
   position: relative;
+  max-height: 100%;
   min-width: 400px;
+  padding: 0 15px;
   background-color: #E7EBEE;
-  overflow-y: scroll;
 }
 
 #header{
   display: flex; 
+  margin: auto -15px;
   padding: 10px;
   height:60px;
   background-color: #ABB4C2;
@@ -70,11 +90,30 @@ main {
 }
 
 #filtersAndScale{
-  height:30px;
+  height:40px;
+}
+
+.filter{
+  font-weight: 700;
+}
+
+.filterAndSortBtn{
+  border-radius: 12px;
+  background: #f1f4f5;
+  box-shadow: inset 6px 6px 6px #eaeef1, -2px -2px 3px #f9fbfb,
+    3px 3px 4px #d8e0e7;
+}
+
+#mapsList{
+  height: 100%;
+  overflow-y: auto;
+  margin: 0px -15px 0 -10px;
+  padding: 10px 0 0 0;
 }
 
 #mapsListUxText{
-  padding: 50% 33%; text-align: center
+  padding: 50% 33%; 
+  text-align: center
 }
 
 #map-list-slots{

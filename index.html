@@ -36,9 +36,40 @@
 					</div>
 				</div>
 			</div>
-			<div id="filtersAndScale" style="display: flex"></div>
+			<div id="filtersAndScale" style="display: flex">
+				<div class="filter" style="width: 45%; margin: auto">
+					<div style="display: flex; margin: auto">
+						<button>
+							<div class="filterAndSortBtn" style="padding: 3px">YEARS:</div>
+							<div style="width: 100%; text-align: center; align-self: center">
+								YEAR-YEAR
+							</div>
+						</button>
+					</div>
+				</div>
+				<div class="filter" style="width: 45%; margin: auto">
+					<div style="display: flex; margin: auto">
+						<button>
+							<div class="filterAndSortBtn" style="padding: 3px">SCALES:</div>
+							<div style="width: 100%; text-align: center; align-self: center">
+								1:24k - 1:250k
+							</div>
+						</button>
+					</div>
+				</div>
+				<div style="width: 10%; margin: auto">
+					<div>
+						<calcite-icon
+							class="filterAndSortBtn"
+							icon="sort-ascending-arrow"
+							scale="m"
+							style="width: 35px; padding: 1px"
+						></calcite-icon>
+					</div>
+				</div>
+			</div>
 			<div id="mapsList">
-				<div id="mapsListUxText" style="padding: 50% 33%; text-align: center">
+				<div id="mapsListUxText">
 					<em>Zoom in to find historical topo maps...</em>
 				</div>
 			</div>
