@@ -8,7 +8,7 @@ html,
 body,
 main {
   display: flex;
-  font-family: Avenir Next;
+  font-family: 'Roboto Condensed', sans-serif;
   color: #637287;
   font-size: 0.9375rem;
   height: 100%;
@@ -18,12 +18,39 @@ main {
 
 #viewDiv{
   width: 100%;
-  float: left
+  float: right
+}
+
+
+#viewDiv .esri-ui-top-right{
+  flex-flow: row;
+}
+
+#viewDiv .esri-zoom{
+  flex-flow: row;
+  background-color: transparent;
+}
+
+#viewDiv .esri-zoom .esri-widget--button:first-child{
+  border-radius: 20% 0 0 20%;
+}
+
+#viewDiv .esri-zoom .esri-widget--button:last-child{
+  border-top: none;
+  border-radius: 0 20% 20% 0;
+}
+
+#viewDiv .esri-ui-corner .esri-component {
+  box-shadow: none;
+}
+
+#viewDiv .esri-search{
+  margin-right: 25px;
 }
 
 #sideBar {
   position: relative;
-  min-width: 420px;
+  min-width: 400px;
   background-color: #E7EBEE;
   overflow-y: scroll;
 }
@@ -33,6 +60,7 @@ main {
   padding: 10px;
   height:60px;
   background-color: #ABB4C2;
+  color: #ffffff;
 }
 
 .heading{
@@ -42,5 +70,37 @@ main {
 }
 
 #filtersAndScale{
-  height:60px;
+  height:30px;
+}
+
+#mapsListUxText{
+  padding: 50% 33%; text-align: center
+}
+
+#map-list-slots{
+height: 80px;
+width: 360px;
+margin: auto;
+}
+
+#map-list-item {
+display: flex;
+justify-content: space-between;
+width: 360px;
+margin: 5px 0 5px 0;
+padding: 5px 10px 5px 10px;
+border-radius: 12px;
+background: #F1F4F5;
+box-shadow:
+inset 6px 6px 6px #EAEEF1,
+-6px -6px 8px #F9FBFB,
+6px 6px 8px #D8E0E7;
+}
+
+.mapSlotHeader{
+  font-weight: 700;
+}
+
+#map-list-item-title{
+margin: auto 0
 }

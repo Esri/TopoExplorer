@@ -4,6 +4,22 @@
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<style>
+			@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+		</style>
+		<link
+			rel="stylesheet"
+			href="https://js.arcgis.com/4.24/esri/themes/light/main.css"
+		/>
+		<script
+			type="module"
+			src="https://js.arcgis.com/calcite-components/1.0.0-beta.95/calcite.esm.js"
+		></script>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="https://js.arcgis.com/calcite-components/1.0.0-beta.95/calcite.css"
+		/>
 		<link rel="stylesheet" type="text/css" href="css/app.css" />
 		<title>TopoExplorer</title>
 	</head>
@@ -20,15 +36,12 @@
 					</div>
 				</div>
 			</div>
-			<div id="filtersAndScale" style="display: flex">
-				<div style="width: 50%">
-					<div>YEARS</div>
-				</div>
-				<div style="width: 50%">
-					<div>SCALE</div>
+			<div id="filtersAndScale" style="display: flex"></div>
+			<div id="mapsList">
+				<div id="mapsListUxText" style="padding: 50% 33%; text-align: center">
+					<em>Zoom in to find historical topo maps...</em>
 				</div>
 			</div>
-			<div id="mapsList"></div>
 		</div>
 		<div id="viewDiv"></div>
 		<script src="https://unpkg.com/axios@1.0.0/dist/axios.min.js"></script>

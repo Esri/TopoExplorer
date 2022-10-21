@@ -10,12 +10,25 @@ const initView = async () => {
 			reject('problem intializing map', error);
 		}
 		//creating the view object and incorporating map.
-		require(['esri/views/MapView'], (MapView) => {
+		require(['esri/views/MapView', 'esri/widgets/Search'], (
+			MapView,
+			Search
+		) => {
 			const view = new MapView({
 				container: 'viewDiv',
 				map: map,
 				zoom: 4,
 				center: [-100, 36],
+			});
+
+			const searchWidget = new Search({
+				view: view,
+			});
+
+			view.ui.move('zoom', 'top-right');
+			view.ui.add(searchWidget, {
+				position: 'top-right',
+				index: 0,
 			});
 
 			resolve(view);
