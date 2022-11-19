@@ -21,6 +21,7 @@
 			href="https://js.arcgis.com/calcite-components/1.0.0-beta.95/calcite.css"
 		/>
 		<link rel="stylesheet" type="text/css" href="css/app.css" />
+		<link rel="stylesheet" type="text/css" href="js/UI/Slider/slider.css" />
 		<title>TopoExplorer</title>
 	</head>
 	<body>
@@ -36,27 +37,36 @@
 					</div>
 				</div>
 			</div>
-			<div id="filtersAndScale" style="display: flex">
-				<div class="filter" style="width: 45%; margin: auto">
-					<div style="display: flex; margin: auto">
-						<button>
+			<div id="filtersAndSorting" style="display: flex">
+				<div id="yearsFilter" class="filter" style="width: 45%; margin: auto">
+					<div class="sliderHeader" style="display: flex; margin: auto">
+						<button id="yearSliderBtn" class="sliderBtn">
 							<div class="filterAndSortBtn" style="padding: 3px">YEARS:</div>
 							<div style="width: 100%; text-align: center; align-self: center">
-								YEAR-YEAR
+								<span id="selectedYears">
+									<span id="fromSelectedYear"></span>
+									- <span id="toSelectedYear"></span>
+								</span>
 							</div>
 						</button>
+						<div id="yearSlider" class="sliderElement invisible"></div>
 					</div>
 				</div>
-				<div class="filter" style="width: 45%; margin: auto">
-					<div style="display: flex; margin: auto">
-						<button>
+				<div id="scalesFilter" class="filter" style="width: 45%; margin: auto">
+					<div class="sliderHeader" style="display: flex; margin: auto">
+						<button id="scaleSliderBtn">
 							<div class="filterAndSortBtn" style="padding: 3px">SCALES:</div>
 							<div style="width: 100%; text-align: center; align-self: center">
-								1:24k - 1:250k
+								<span id="selectedScales">
+									<span id="fromSelectedScale"></span> -
+									<span id="toSelectedScale"></span>
+								</span>
 							</div>
 						</button>
+						<div id="scaleSlider" class="sliderElement invisible"></div>
 					</div>
 				</div>
+				<!-- <div class="sliderElement invisible"></div> -->
 				<div style="width: 10%; margin: auto">
 					<div>
 						<calcite-icon

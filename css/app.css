@@ -33,6 +33,9 @@ button {
   -moz-appearance: none;
 }
 
+.invisible{
+  display: none;
+}
 
 #viewDiv{
   width: 100%;
@@ -89,7 +92,7 @@ button {
   padding: 0 10px;
 }
 
-#filtersAndScale{
+#filtersAndSorting{
   height:40px;
 }
 
@@ -104,8 +107,9 @@ button {
     3px 3px 4px #d8e0e7;
 }
 
+
 #mapsList{
-  height: 100%;
+  height: calc(100vh - 99px);
   overflow-y: auto;
   margin: 0px -15px 0 -10px;
   padding: 10px 0 0 0;
