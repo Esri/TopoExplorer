@@ -6,6 +6,7 @@ const orderMapsByDate = async (result) => {
 		});
 
 		resolve(mapsByDate);
+		createMapSlotItems(mapsByDate);
 	});
 };
 
@@ -31,7 +32,7 @@ const createMapSlotItems = (list) => {
 };
 
 const renderMapSlotsToSideBar = (mapSlot) => {
-	console.log(mapSlot);
+	// console.log(mapSlot);
 	const sideBarMaps = `<div> ${mapSlot.join(' ')} </div>`;
 
 	document.querySelector('#mapsList').innerHTML = sideBarMaps;
