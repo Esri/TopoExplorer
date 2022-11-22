@@ -50,9 +50,11 @@ const scaleSliderUI = (sliderFeatures) => {
        <input class="minSlider" type="range" value="0" min="0" max="${
 					sliderFeatures.range.length - 1
 				}" list='steplist' onchange="" />
+        <output class="tooltip"></output>
        <input class="maxSlider" type="range" value="${
 					sliderFeatures.range.length - 1
 				}" min="0" max="${sliderFeatures.range.length - 1}" list='steplist'/>
+        <output class="tooltip"></output>
     </div>
     <div class='minRangeNumber'></div>
     <div class='maxRangeNumber'></div>
@@ -229,26 +231,56 @@ const createSlider = (arrayOfData) => {
 	(fromSlider[fromSlider.length - 1].oninput = () => {
 		controlFromSlider(
 			fromSlider[fromSlider.length - 1],
-			toSlider[toSlider.length - 1],
-			console.log('fromSlider click')
-		);
+			toSlider[toSlider.length - 1]
+		),
+			console.log('fromSlider click');
 	}),
-		(fromSlider[0].oninput = () =>
-			controlFromSlider(
-				fromSlider[0],
-				toSlider[0],
-				console.log('fromSlider click')
-			)),
-		(toSlider[fromSlider.length - 1].oninput = () =>
+		(fromSlider[0].oninput = () => {
+			controlFromSlider(fromSlider[0], toSlider[0]),
+				console.log('fromSlider click'),
+				sliderHandleTooltip(fromSlider[0]);
+		}),
+		(toSlider[fromSlider.length - 1].oninput = () => {
 			controlToSlider(
 				fromSlider[fromSlider.length - 1],
 				toSlider[toSlider.length - 1]
-			)),
-		(toSlider[0].oninput = () => controlToSlider(fromSlider[0], toSlider[0]));
+			);
+		}),
+		(toSlider[0].oninput = () => {
+			controlToSlider(fromSlider[0], toSlider[0]),
+				sliderHandleTooltip(toSlider[0]);
+		});
 }; //END INTERNAL SLIDER LOGICS
 
+const sliderHandleTooltip = (sliderHandler) => {
+	console.log('tooltip called');
+	console.log(sliderHandler.value);
+
+	const selectedStep =
+		sliderHandler.parentElement.nextElementSibling.nextElementSibling
+			.nextElementSibling;
+
+	const newVal = Number(
+		((sliderHandler.value - sliderHandler.min) * 100) /
+			(sliderHandler.max - sliderHandler.min)
+	);
+	console.log(newVal);
+	sliderHandler.nextElementSibling.style.left = `calc(${newVal}% + (${
+		8 - newVal * 0.15
+	}px))`;
+
+	sliderHandler.nextElementSibling.style.display = 'initial';
+	sliderHandler.onmouseup = () => {
+		sliderHandler.nextElementSibling.style.display = 'none';
+	};
+
+	const sliderTooltipValue = selectedStep.children[sliderHandler.value].value;
+	sliderHandler.nextElementSibling.innerHTML = sliderTooltipValue;
+	console.log(sliderTooltipValue);
+};
 //Adds a click event to the Scale header element that toggles its slider element
 //CAN I RUN A LOOP OVER THESE?
+
 yearSliderBtn.addEventListener('click', (event) => {
 	console.log('years click');
 
