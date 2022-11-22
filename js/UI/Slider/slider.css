@@ -36,7 +36,7 @@ datalist {
   padding: 8px 0px;
   margin: 0px auto;
   position: relative;
-  top: -17px;
+  top: 2px;
 }
 
 .option {
@@ -50,6 +50,18 @@ datalist {
   min-height: 10px;
   line-height: 40px;
   margin-bottom: 20px;
+}
+
+.tooltip {
+  display: none;
+  background: lightgrey;
+  color: black;
+  padding: 4px 12px;
+  position: absolute;
+  border-radius: 4px;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 #yearsFilter option{
@@ -85,7 +97,7 @@ datalist {
 
 .sliders_control {
   position: relative;
-  margin: 5px 0 20px 0;
+  margin: 25px 0 20px 0;
 }
 
 .form_control {
