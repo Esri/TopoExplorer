@@ -100,8 +100,8 @@ const initalQueryforUI = () => {
 				params,
 			})
 			.then((response) => {
-				//NOTE: checking the years of the returned maps
-				console.log(response);
+				//NOTE: checking the years and scales of all the returned maps
+				// console.log(response);
 				const allMaps = response.data.features;
 
 				let mapYears = allMaps.map((maps) => maps.attributes.Date_On_Map);
@@ -113,14 +113,15 @@ const initalQueryforUI = () => {
 				const mapScales = allMaps.map((maps) => maps.attributes.Map_Scale);
 
 				const allScales = [...new Set(mapScales.sort((a, b) => a - b))];
-				console.log(allScales.length);
-				console.log(Math.round((allScales.length - 2) / 2));
-				console.log(allScales);
+
 				const scaleArrayIndexes = [
 					0,
-					2,
+					Math.round(allScales.length / 2 / 2),
 					Math.round(allScales.length / 2) + 1,
-					allScales.length - 3,
+					Math.round(
+						Math.round(allScales.length / 2) +
+							Math.round(allScales.length / 2) / 2
+					),
 					allScales.length - 1,
 				];
 				const availableScales = scaleArrayIndexes.map((scalePosition) => {
@@ -128,13 +129,6 @@ const initalQueryforUI = () => {
 				});
 				console.log(availableScales);
 				console.log(allScales);
-
-				yearsAndScales.minYear = availableYears[0].toString();
-				yearsAndScales.maxYear =
-					availableYears[availableYears.length - 1].toString();
-				yearsAndScales.minScale = availableScales[0].toString();
-				yearsAndScales.maxScale =
-					availableScales[availableScales.length - 1].toString();
 
 				resolve({ availableYears, availableScales });
 			});

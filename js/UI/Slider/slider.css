@@ -1,4 +1,8 @@
 
+.invisible{
+  display: none;
+}
+
 .slideContainer{
   z-index: 0;
   width: 93%;
@@ -53,27 +57,28 @@ datalist {
 }
 
 .tooltip {
-  display: none;
+  z-index: 1;
+  /* display: none; */
   background: lightgrey;
   color: black;
   padding: 4px 12px;
   position: absolute;
   border-radius: 4px;
-  top: -30px;
+  top: -35px;
   left: 50%;
   transform: translateX(-50%);
 }
 
-#yearsFilter option{
+#filterYears option{
   font-size: 0px;
 }
 
-#yearsFilter option:nth-of-type(1) {
+#filterYears option:nth-of-type(1) {
  font-size: 0.9375rem;
  font-weight: bold;
 }
 
-#yearsFilter option:nth-last-of-type(1) {
+#filterYears option:nth-last-of-type(1) {
  font-size: 0.9375rem;
  font-weight: bold;
 }
@@ -97,7 +102,7 @@ datalist {
 
 .sliders_control {
   position: relative;
-  margin: 25px 0 20px 0;
+  margin: 30px 0 0px 0;
 }
 
 .form_control {
@@ -162,23 +167,39 @@ input[type="range"] {
   border-radius: 3px;
   width: 100%;
   position: absolute;
-  background-color: #C6C6C6;
+  /* background-color: #C6C6C6; */
   pointer-events: none;
+}
+
+.slider-track {
+  height: 5px;
+  position: relative;
+  background-color: #e1e9f6;
+  border-radius: 2px;
+}
+.slider-selection {
+  height: 100%;
+  left: 0%;
+  right: 0%;
+  position: absolute;
+  border-radius: 5px;
+  background-color: #1b53c0;
 }
 
 .sliders_control .minSlider {
   height: 0;
-  background-color: #C6C6C6;
+  /* background-color: #C6C6C6; */
   z-index: 1;
   position:absolute;
   top:3px
 }
 
 .sliders_control .maxSlider {
-  
+  background: none;
   position:absolute;
-  top:0px
-  
+  top:0px;
+  width:100%;
+  /* z-index: 2; */
 }
 
 datalist .allOptions option {

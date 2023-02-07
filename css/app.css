@@ -33,6 +33,10 @@ button {
   -moz-appearance: none;
 }
 
+/* button:hover {
+  background-color: #58677a
+} */
+
 .invisible{
   display: none;
 }
@@ -105,6 +109,12 @@ button {
   background: #f1f4f5;
   box-shadow: inset 6px 6px 6px #eaeef1, -2px -2px 3px #f9fbfb,
     3px 3px 4px #d8e0e7;
+}
+
+button .filterAndSortBtn:active {
+  /* background-color: #505d6e; */
+  transform: translateY(1px);
+  transition: transform 150ms ease;
 }
 
 
