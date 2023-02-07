@@ -38,43 +38,29 @@
 				</div>
 			</div>
 			<div id="filtersAndSorting" style="display: flex">
-				<div id="yearsFilter" class="filter" style="width: 45%; margin: auto">
-					<div class="sliderHeader" style="display: flex; margin: auto">
-						<button id="yearSliderBtn" class="sliderBtn">
-							<div class="filterAndSortBtn" style="padding: 3px">YEARS:</div>
-							<div style="width: 100%; text-align: center; align-self: center">
-								<span id="selectedYears">
-									<span id="fromSelectedYear"></span>
-									- <span id="toSelectedYear"></span>
-								</span>
-							</div>
-						</button>
-						<div id="yearSlider" class="sliderElement invisible"></div>
-					</div>
-				</div>
-				<div id="scalesFilter" class="filter" style="width: 45%; margin: auto">
-					<div class="sliderHeader" style="display: flex; margin: auto">
-						<button id="scaleSliderBtn">
-							<div class="filterAndSortBtn" style="padding: 3px">SCALES:</div>
-							<div style="width: 100%; text-align: center; align-self: center">
-								<span id="selectedScales">
-									<span id="fromSelectedScale"></span> -
-									<span id="toSelectedScale"></span>
-								</span>
-							</div>
-						</button>
-						<div id="scaleSlider" class="sliderElement invisible"></div>
-					</div>
-				</div>
-				<!-- <div class="sliderElement invisible"></div> -->
+				<div
+					id="filterYears"
+					class="filter"
+					style="width: 45%; margin: auto"
+				></div>
+				<div
+					id="filterScales"
+					class="filter"
+					style="width: 45%; margin: auto"
+				></div>
+
 				<div style="width: 10%; margin: auto">
-					<div>
-						<calcite-icon
-							class="filterAndSortBtn"
-							icon="sort-ascending-arrow"
-							scale="m"
-							style="width: 35px; padding: 1px"
-						></calcite-icon>
+					<div class="filter">
+						<button>
+							<div>
+								<calcite-icon
+									class="filterAndSortBtn filter"
+									icon="sort-ascending-arrow"
+									scale="m"
+									style="width: 35px; padding: 1px"
+								></calcite-icon>
+							</div>
+						</button>
 					</div>
 				</div>
 			</div>
@@ -87,6 +73,6 @@
 		<div id="viewDiv"></div>
 		<script src="https://unpkg.com/axios@1.0.0/dist/axios.min.js"></script>
 		<script type="text/javascript" src="https://js.arcgis.com/4.24/"></script>
-		<script type="module" src="js/main.js"></script>
+		<script type="module" src="js/main.js?v=0.01"></script>
 	</body>
 </html>

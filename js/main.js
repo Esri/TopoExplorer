@@ -2,7 +2,7 @@ import { initView } from './map/View.js?v=0.01';
 import { extentQuery, initalQueryforUI } from './support/Query.js?v=0.01';
 // import { orderMapsByDate, createMapSlotItems } from './UI/ListOfMaps.js?v=0.01';
 // import { filterExistingMaps } from './support/FilterMaps.js?v=0.01';
-import { initSlider, createSlider } from './UI/Slider/Slider.js?v=0.01';
+import { initSliderDemo } from './UI/Slider/Slider.js?v=0.01';
 
 const initApp = async () => {
 	try {
@@ -19,15 +19,7 @@ const initApp = async () => {
 					mapFeatures.availableScales,
 				];
 
-				createSlider({
-					sliderValues: years,
-					onchange: () => {},
-				});
-				createSlider({
-					sliderValues: scales,
-					onchange: () => {},
-				});
-
+				//NOTE: this object keeps track of the current state of the years/scales selections in the app
 				const scalesAndYears = {
 					minYear: years[0].toString(),
 					maxYear: years[years.length - 1].toString(),
@@ -35,60 +27,46 @@ const initApp = async () => {
 					maxScale: scales[scales.length - 1].toString(),
 				};
 
-				return scalesAndYears;
-			})
-			.then((scalesAndYears) => {
 				const adjustedQuery = () => {
 					view.zoom > 11 ? extentQuery(view.extent, scalesAndYears) : null;
 				};
 
-				for (
-					let i = 0;
-					i < document.querySelectorAll('.minSlider').length;
-					i++
-				) {
-					//NOTE: This is not a great way to add event listeners to the sliders.
-					//This is temporary while I refeactor the accompanying slider.js.
-					// Then I'll rework this section too.
+				//TODO: Come up with a more accurate function name
+				const getTheYear = (index, value) => {
+					console.log(index);
+					console.log(value);
+					index === 0
+						? (scalesAndYears.minYear = years[value])
+						: (scalesAndYears.maxYear = years[value]);
+					console.log(scalesAndYears);
+					adjustedQuery();
+				};
 
-					//Adding eventlisteners to the minSlider handles on all sliders
-					(document.querySelectorAll('.minSlider')[i].onchange = async () => {
-						console.log(
-							await initSlider(document.querySelectorAll('.minSlider')[i])
-						);
-						console.log(document.querySelectorAll('.minSlider')[i]);
+				const getTheScale = (index, value) => {
+					console.log(value);
+					index === 0
+						? (scalesAndYears.minScale = scales[value])
+						: (scalesAndYears.maxScale = scales[value]);
 
-						if (i === 0) {
-							scalesAndYears.minYear = await initSlider(
-								document.querySelectorAll('.minSlider')[i]
-							);
-							adjustedQuery();
-						} else {
-							scalesAndYears.minScale = await initSlider(
-								document.querySelectorAll('.minSlider')[i]
-							);
-							adjustedQuery();
-						}
-					})(
-						//Adding eventlisteners to the maxSlider handles on all sliders
-						(document.querySelectorAll('.maxSlider')[i].onchange = async () => {
-							console.log(
-								await initSlider(document.querySelectorAll('.maxSlider')[i])
-							);
-							if (i === 0) {
-								scalesAndYears.maxYear = await initSlider(
-									document.querySelectorAll('.maxSlider')[i]
-								);
-								adjustedQuery();
-							} else {
-								scalesAndYears.maxScale = await initSlider(
-									document.querySelectorAll('.maxSlider')[i]
-								);
-								adjustedQuery();
-							}
-						})
-					);
-				}
+					console.log(scalesAndYears);
+					adjustedQuery();
+				};
+
+				initSliderDemo(
+					'Years',
+					getTheYear,
+					years,
+					years[0],
+					years[years.length - 1]
+				);
+				initSliderDemo(
+					'Scales',
+					getTheScale,
+					scales,
+					scales[0],
+					scales[scales.length - 1]
+				);
+
 				return scalesAndYears;
 			})
 			.then((scalesAndYears) => {
@@ -100,10 +78,11 @@ const initApp = async () => {
 								await extentQuery(view.extent, scalesAndYears).then(
 									(result) => {
 										console.log(result);
-										// const returnedList = orderMapsByDate(result);
-										// return returnedList;
 									}
 								);
+								//NOTE: originally we were calling the function to create the map-list-items from here...
+								//I've moved it so the query, calls that function after it recieves the map-response from the map-collection
+
 								// .then((returnedList) => {
 								// 	console.log(returnedList);
 								// 	//QUESTION: Can we make a function in the 'FilterMaps' file that will store the organized list as global variable? Is that viable?
