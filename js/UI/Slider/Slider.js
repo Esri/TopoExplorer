@@ -1,76 +1,110 @@
-//NOTE: THIS (BELOW) IS WHAT WE'RE AIMING FOR.
-// This should be your pattern for module development.
-// Your module don't need to know anything outside of themselves other than the information passed directly to them.
-// for example: it would only need the id of the
-//in this example we're creating all the needed HTML W I T H I N a function from the module.
-//this means we can apply the EVENTS directly to the elements...remember youre react components
-//AND
+const formatSliderNumbers = (numbers) => {
+	return numbers.toString().length > 4
+		? numbers.toString().slice(0, -3) + 'k'
+		: numbers.toString();
+};
 
-const initSliderDemo = (containerId, onChangeHandler, values, min, max) => {
-	const container = document.getElementById(`filter${containerId}`);
+const formatNumbersForSliderHeader = (numbers) => {
+	return numbers.toString().length > 4
+		? '1:' + numbers.toString().slice(0, -3) + 'k'
+		: numbers.toString();
+};
 
-	let valA = min || values[0];
-	let valB = max || values[values.length - 1];
-
-	const formatSliderHeader = (numbers) => {
-		return numbers.toString().length > 4
-			? '1:' + numbers.toString().slice(0, -3) + 'k'
-			: numbers;
-	};
+const initSliderDemo = (
+	containerId,
+	title,
+	onChangeHandler,
+	values,
+	min,
+	max
+) => {
+	const container = document.getElementById(`${containerId}`);
 
 	container.innerHTML = `
-    <div class="sliderHeader" style="display: flex; margin: auto">
+    <div class="sliderHeader">
       <button class="sliderBtn">
-        <div class="filterAndSortBtn" style="padding: 3px">${containerId.toUpperCase()}:</div>
-        <div style="width: 100%; text-align: center; align-self: center">  
+        <div class="filterAndSortBtn">${title}:</div>
+        <div class="headers">  
         <p>
-            <span class="headerSpan">${formatSliderHeader(min)}</span> 
-            - <span class="headerSpan">${formatSliderHeader(max)}</span>
+            <span class="headerSpan">
+              ${formatNumbersForSliderHeader(min)}
+						</span> 
+            - <span class="headerSpan">${formatNumbersForSliderHeader(
+							max
+						)}</span>
           </p>
         </div>
       </button>
       <div class="sliderElement invisible">
         <div class="slideContainer">
-          <div class="sliders_control">
-            <div class="slider-track">
-              <span class="slider-selection"></span>  
+          <div class="slider-group">
+            <div class="slider-tracks">
+              <div class="slider-foreground">
+              </div>
+              <div class = "slider-handles">
+                <div class="input-track">
+                  <input id="min" class="minSlider" type="range" list="" value="0" min="0" max="${
+										values.length - 1
+									}">
+                  </input>
+                  <input class="maxSlider" type="range" value="${
+										values.length - 1
+									}" min="0" max="${values.length - 1}"/>
+                </div>
+                <div class="slider-background"></div>
+              </div>
             </div>
-            <input class="minSlider" type="range" value="0" min="0" max="${
-							values.length - 1
-						}"/>
-              <output class="tooltip invisible"></output>
-            <input class="maxSlider" type="range" value="${
-							values.length - 1
-						}" min="0" max="${values.length - 1}"/>
-            <output class="tooltip invisible"></output>
+            <datalist class='tickmarks-container'>
+            </datalist>
+            <div class="sliderNumbers">
+              <span class="minSliderValue">${formatSliderNumbers(min)}</span>
+              <span class="maxSliderValue">${formatSliderNumbers(max)}</span>
+            </div>
           </div>
-       <datalist class='allOptions'></datalist>
-      </div>
+       </div>
     </div>
   </div>
 `;
 
-	const sliderHandle = container.querySelectorAll('input');
+	const sliderHandles = container.querySelectorAll('input');
 
-	//Formating the slider array values to be displayed in the slider container
-	const sliderOptions = values.map((sliderSteps) => {
-		return `<option class="option" value='${sliderSteps}'><div class='sliderNumbers'>${
-			containerId === 'Scales'
-				? sliderSteps.toString().slice(0, -3) + 'k'
-				: sliderSteps
-		}</div></option>`;
-	});
-	//setting slider options
-	container.querySelector('.allOptions').innerHTML = [...sliderOptions].join(
-		''
-	);
+	//creating the slider sections on the track. Highlighting the change of slection whn the handles move
+	const sliderBar = values
+		.map((sections) => {
+			return `
+	    <div  class="slider-area slider-color" value="${sections}">
+        
+	    </div>`;
+		})
+		.join('');
 
-	const udpdateScaleHeaderValue = (child, value) => {
+	container.querySelector('.slider-foreground').innerHTML = sliderBar;
+
+	//creating ticks for slider
+	const sliderOptionsHTMLStr = values
+		.map((sliderSteps) => {
+			return `
+      <div class="tick" value='${sliderSteps}'>
+      <output class="tooltip invisible">${formatSliderNumbers(
+				sliderSteps
+			)}</output>
+			</div>
+      `;
+		})
+		.join('');
+
+	container.querySelector('.tickmarks-container').innerHTML =
+		sliderOptionsHTMLStr;
+
+	const udpdateSliderHeading = (child, value) => {
 		container.querySelectorAll(`.sliderBtn span`)[child].innerHTML =
-			formatSliderHeader(values[value]);
+			formatNumbersForSliderHeader(values[value]);
 	};
 
-	const setSliderTooltipVisibility = (index) => {
+	const addSliderTooltipVisibility = (index) => {
+		container.querySelectorAll('.tooltip').forEach((tooltip) => {
+			tooltip.classList.add('invisible');
+		});
 		container.querySelectorAll('.tooltip')[index].classList.remove('invisible');
 	};
 
@@ -78,36 +112,16 @@ const initSliderDemo = (containerId, onChangeHandler, values, min, max) => {
 		container.querySelectorAll('.tooltip')[index].classList.add('invisible');
 	};
 
-	const setSliderTooltipText = (index, value) => {
-		container.querySelectorAll('output')[index].innerHTML = formatSliderHeader(
-			values[value]
-		);
-	};
-
-	//TODO: Is there another way to find the 3% value without hard coding it?
-	//or a SIMPLIER way to calculate this position? The answer is yes...I just need to think about it differently
-	const setSliderTooltipPosition = (index, value) => {
-		const getSliderContainerWidthPercentage =
-			(container.querySelector('.slideContainer').offsetWidth /
-				document.querySelector('#sideBar').offsetWidth) *
-			100;
-
-		const getSliderContainerPadding = parseInt(
-			getComputedStyle(
-				container.querySelector('.slideContainer')
-			).paddingLeft.slice(0, 2)
-		);
-
-		const sliderTrackStart = Math.round(
-			(getSliderContainerPadding /
-				container.querySelector('.slideContainer').offsetWidth) *
-				100
-		);
-
-		container.querySelectorAll('.tooltip')[index].style.left =
-			(value / sliderHandle[index].max) * getSliderContainerWidthPercentage +
-			sliderTrackStart +
-			'%';
+	const adjustSliderTrackSelection = () => {
+		container.querySelectorAll('.slider-area').forEach((section, index) => {
+			if (index < sliderHandles[0].value || index >= sliderHandles[1].value) {
+				section.classList.add('slider-transparent');
+				section.classList.remove('slider-color');
+			} else {
+				section.classList.remove('slider-transparent');
+				section.classList.add('slider-color');
+			}
+		});
 	};
 
 	//Debounce
@@ -131,67 +145,51 @@ const initSliderDemo = (containerId, onChangeHandler, values, min, max) => {
 
 	//ADDING EVENT LISTENERS
 	//updating the color of the selected range AND controling the interaction between the min & max slider handles
-	sliderHandle.forEach((input) => {
-		const activeSliderRange = container.querySelector('.slider-selection');
-
+	sliderHandles.forEach((input) => {
 		input.addEventListener('input', (e) => {
-			let minRange = parseInt(sliderHandle[0].value);
-			let maxRange = parseInt(sliderHandle[1].value);
+			console.log(e);
+			let minRange = parseInt(sliderHandles[0].value);
+			let maxRange = parseInt(sliderHandles[1].value);
 
+			//controling the limits of slider handels. Making sure they don't overlap over each other.
 			if (minRange >= maxRange) {
 				if (e.target.className === 'minSlider') {
-					sliderHandle[0].value = maxRange - 1;
-					setSliderTooltipText(0, maxRange - 1);
+					sliderHandles[0].value = maxRange - 1;
 				} else {
-					sliderHandle[1].value = minRange + 1;
-					setSliderTooltipText(1, minRange + 1);
+					sliderHandles[1].value = minRange + 1;
 				}
 			} else {
-				//NOTE: should I make these setting their own functions?
-				activeSliderRange.style.left =
-					(minRange / sliderHandle[0].max) * 100 + '%';
-				activeSliderRange.style.right =
-					100 - (maxRange / sliderHandle[1].max) * 100 + '%';
+				//NOTE: needs a better name
+				adjustSliderTrackSelection(e.target, e.target.valueAsNumber);
 			}
 		});
 
 		input.addEventListener('input', (e) => {
-			e.target.className === 'minSlider'
-				? (setSliderTooltipText(0, e.target.value),
-				  setSliderTooltipVisibility(0),
-				  setSliderTooltipPosition(0, e.target.value))
-				: (setSliderTooltipText(1, e.target.value),
-				  setSliderTooltipVisibility(1),
-				  setSliderTooltipPosition(1, e.target.value));
+			addSliderTooltipVisibility(e.target.value);
 		});
 
 		input.addEventListener('mouseup', (e) => {
-			e.target.className === 'minSlider'
-				? removeSliderToolTipVisibility(0)
-				: removeSliderToolTipVisibility(1);
+			removeSliderToolTipVisibility(e.target.value);
 		});
 	});
 
 	//Listener that will updating the slider's header and the values
-	//NOTE: I'm hard-coding the index value on these event-listeners.
-	//this is probably because I'm using 'querySelector' on the container, and not 'querySelectorAll' on the document
 	//Is this a good method?
 	container.querySelector('.minSlider').addEventListener('change', (evt) => {
-		valA = evt.target.value;
+		let minVal = evt.target.value;
 
-		debounceInput(0, valA);
-		udpdateScaleHeaderValue(0, valA);
+		debounceInput(0, minVal);
+		udpdateSliderHeading(0, minVal);
 	});
 
 	container.querySelector('.maxSlider').addEventListener('change', (evt) => {
-		valB = evt.target.value;
+		let maxVal = evt.target.value;
 
-		debounceInput(1, valB);
-		udpdateScaleHeaderValue(1, valB);
+		debounceInput(1, maxVal);
+		udpdateSliderHeading(1, maxVal);
 	});
 
 	//Listener to toggle the slider container visibility
-	//NOTE: this can be refactored...right?
 	container.querySelector(`button`).addEventListener('click', () => {
 		container.querySelector(`.sliderElement`).classList.contains('invisible')
 			? (document
@@ -207,21 +205,17 @@ const initSliderDemo = (containerId, onChangeHandler, values, min, max) => {
 					});
 	});
 
-	window.onclick = (e) => {
-		e.target.className !== 'slideContainer' &&
-		e.target.className !== 'allOptions' &&
-		e.target.className !== 'filterAndSortBtn' &&
-		e.target.className !== 'headerSpan' &&
-		e.target.localName !== 'input'
-			? document
-					.querySelectorAll(`.sliderElement`)
-					.forEach((slideContainer) => {
-						!slideContainer.classList.contains('invisible')
-							? slideContainer.classList.add('invisible')
-							: null;
-					})
-			: null;
-	};
+	window.addEventListener('click', (e) => {
+		if (e.target.closest('.filter')) {
+			null;
+		} else if (!e.target.closest('.sliderElement')) {
+			document.querySelectorAll(`.sliderElement`).forEach((slideContainer) => {
+				!slideContainer.classList.contains('invisible')
+					? slideContainer.classList.add('invisible')
+					: null;
+			});
+		}
+	});
 };
 
 export { initSliderDemo };
