@@ -2,14 +2,13 @@ import { orderMapsByDate } from '../UI/ListOfMaps.js?v=0.01';
 
 //TODO: Figure out the earlest year for the US topo maps.
 //NOTE: earlyMaps is unix timestamp that dates back to Dec 31, 1878. Prior to the first US topo maps.
-const minYear = -2871734822;
 const queryOutfields = '*';
-const yearsAndScales = {
-	minYear: '',
-	maxYear: '',
-	minScale: '',
-	maxScale: '',
-};
+// const yearsAndScales = {
+// 	minYear: '',
+// 	maxYear: '',
+// 	minScale: '',
+// 	maxScale: '',
+// };
 //outfields that might be used for the application
 // [
 // 	'Map_Name',
@@ -28,8 +27,6 @@ const extentQuery = async (viewExtent, scalesAndYears) => {
 	scalesAndYears ? console.log(scalesAndYears) : null;
 
 	return new Promise((resolve, reject) => {
-		const maxYear = new Date();
-
 		const url =
 			'https://utility.arcgis.com/usrsvcs/servers/06ee78ba612c446f940d68e22a6b091b/rest/services/USGS_Historical_Topographic_Maps/ImageServer/query';
 
@@ -78,12 +75,10 @@ const extentQuery = async (viewExtent, scalesAndYears) => {
 const initalQueryforUI = () => {
 	console.log('initQuery');
 
-	const url =
-		'https://utility.arcgis.com/usrsvcs/servers/06ee78ba612c446f940d68e22a6b091b/rest/services/USGS_Historical_Topographic_Maps/ImageServer/query';
+	// const url =
+	// 	'https://utility.arcgis.com/usrsvcs/servers/06ee78ba612c446f940d68e22a6b091b/rest/services/USGS_Historical_Topographic_Maps/ImageServer/query';
 
 	return new Promise((resolve, reject) => {
-		const today = new Date();
-
 		const url =
 			'https://utility.arcgis.com/usrsvcs/servers/06ee78ba612c446f940d68e22a6b091b/rest/services/USGS_Historical_Topographic_Maps/ImageServer/query';
 
@@ -127,12 +122,10 @@ const initalQueryforUI = () => {
 				const availableScales = scaleArrayIndexes.map((scalePosition) => {
 					return allScales[scalePosition];
 				});
-				console.log(availableScales);
-				console.log(allScales);
 
 				resolve({ availableYears, availableScales });
 			});
 	});
 };
-
+//NOTE: do I need to export both?
 export { extentQuery, initalQueryforUI };

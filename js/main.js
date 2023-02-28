@@ -1,4 +1,5 @@
 import { initView } from './map/View.js?v=0.01';
+//NOTE: you are importing two elements from this module. Is that necessary?
 import { extentQuery, initalQueryforUI } from './support/Query.js?v=0.01';
 // import { orderMapsByDate, createMapSlotItems } from './UI/ListOfMaps.js?v=0.01';
 // import { filterExistingMaps } from './support/FilterMaps.js?v=0.01';
@@ -33,8 +34,6 @@ const initApp = async () => {
 
 				//TODO: Come up with a more accurate function name
 				const getTheYear = (index, value) => {
-					console.log(index);
-					console.log(value);
 					index === 0
 						? (scalesAndYears.minYear = years[value])
 						: (scalesAndYears.maxYear = years[value]);
@@ -53,14 +52,16 @@ const initApp = async () => {
 				};
 
 				initSliderDemo(
-					'Years',
+					'years',
+					'YEARS',
 					getTheYear,
 					years,
 					years[0],
 					years[years.length - 1]
 				);
 				initSliderDemo(
-					'Scales',
+					'scales',
+					'SCALES',
 					getTheScale,
 					scales,
 					scales[0],
