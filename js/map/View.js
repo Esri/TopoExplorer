@@ -23,6 +23,8 @@ const initView = async () => {
 
 			const searchWidget = new Search({
 				view: view,
+				resultGraphicEnabled: false,
+				popupEnabled: false,
 			});
 
 			view.ui.move('zoom', 'top-right');
