@@ -58,21 +58,35 @@ button {
 
 #viewDiv .esri-zoom .esri-widget--button:first-child{
   background: #F1F4F5;
-  border-radius: 20% 0 0 20%;
+  border-radius: 12px 0 0 12px;
 }
 
 #viewDiv .esri-zoom .esri-widget--button:last-child{
   background: #F1F4F5;
   border-top: none;
-  border-radius: 0 20% 20% 0;
+  border-radius: 0 12px 12px 0;
 }
 
 #viewDiv .esri-ui-corner .esri-component {
   box-shadow: none;
+  background-color: transparent;
+  border-radius: 12px 0 0 12px;
+
 }
 
 #viewDiv .esri-search{
   margin-right: 25px;
+}
+
+#viewDiv .esri-search__container .esri-search__input, .esri-search__container .esri-widget--button:last-child {
+  background-color: #F1F4F5;
+  border-radius: 12px 0 0 12px;
+}
+
+.esri-search__container .esri-search__input, .esri-search__container .esri-widget--button{
+  background-color: #F1F4F5;
+  border-radius:  0 12px 12px 0;
+  border-left: 0;
 }
 
 #sideBar {
@@ -94,8 +108,13 @@ button {
 
 .heading{
   width: 50%;
-  font-size: 16px;
+  font-size: 20px;
+  line-height: 1;
   padding: 0 10px;
+}
+
+.heading .letter-spacing {
+  letter-spacing: 2px;
 }
 
 #filtersAndSorting{
