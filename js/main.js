@@ -1,9 +1,8 @@
 import { initView } from './map/View.js?v=0.01';
 //NOTE: you are importing two elements from this module. Is that necessary?
 import { extentQuery, initalQueryforUI } from './support/Query.js?v=0.01';
-// import { orderMapsByDate, createMapSlotItems } from './UI/ListOfMaps.js?v=0.01';
-// import { filterExistingMaps } from './support/FilterMaps.js?v=0.01';
 import { initSliderDemo } from './UI/Slider/Slider.js?v=0.01';
+import { renderSidebarUXText } from './support/uxText.js?=v0.01';
 
 const initApp = async () => {
 	try {
@@ -90,12 +89,10 @@ const initApp = async () => {
 								// 	createMapSlotItems(returnedList);
 								// });
 							} else if (view.zoom <= 11) {
-								const sidebarHelpPrompt = `<div id="mapsListUxText">
-                  <em>Zoom in to find historical topo maps...</em>
-                </div>`;
+								//NOTE: This isn't an ideal solution. I do (roughly) the same thing at the end of 'ListOfMaps.js'. I think I'll need to make a new .js that holds the functions that do these steps.
+								const findMapsUXText = `<em>Zoom in to find <br/> historical topo maps...</em>`;
 
-								document.querySelector('#mapsList').innerHTML =
-									sidebarHelpPrompt;
+								renderSidebarUXText(findMapsUXText);
 							}
 						}
 					);
