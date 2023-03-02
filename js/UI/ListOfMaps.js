@@ -1,12 +1,19 @@
-const orderMapsByDate = async (result) => {
-	return new Promise((resolve, reject) => {
-		const mapsByDate = result.sort((a, b) => {
-			let mapOrder = a.date - b.date;
-			return mapOrder;
-		});
+import { renderSidebarUXText } from '../support/uxText.js?=v0.01';
 
-		resolve(mapsByDate);
-		createMapSlotItems(mapsByDate);
+const formatQueryReturn = async (result) => {
+	return new Promise((resolve, reject) => {
+		if (result.length === 0) {
+			const noMapsUXText = `<em> no maps found</em>`;
+			renderSidebarUXText(noMapsUXText);
+		} else {
+			const mapsByDate = result.sort((a, b) => {
+				let mapOrder = a.date - b.date;
+				return mapOrder;
+			});
+
+			resolve(mapsByDate);
+			createMapSlotItems(mapsByDate);
+		}
 	});
 };
 
@@ -28,14 +35,18 @@ const createMapSlotItems = (list) => {
 		return mapSlotItem;
 	});
 
-	return renderMapSlotsToSideBar(mapSlot);
+	return MapSlotsContainerHTML(mapSlot);
 };
 
-const renderMapSlotsToSideBar = (mapSlot) => {
-	// console.log(mapSlot);
+const MapSlotsContainerHTML = (mapSlot) => {
 	const sideBarMaps = `<div> ${mapSlot.join(' ')} </div>`;
 
-	document.querySelector('#mapsList').innerHTML = sideBarMaps;
+	renderResultsToSideBar(sideBarMaps);
 };
 
-export { orderMapsByDate, createMapSlotItems };
+const renderResultsToSideBar = (results) => {
+	document.querySelector('#mapsListUxText').classList.add('invisible');
+	document.querySelector('#mapsList').innerHTML = results;
+};
+
+export { formatQueryReturn, createMapSlotItems };

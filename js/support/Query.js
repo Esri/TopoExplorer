@@ -1,4 +1,4 @@
-import { orderMapsByDate } from '../UI/ListOfMaps.js?v=0.01';
+import { formatQueryReturn } from '../UI/ListOfMaps.js?v=0.01';
 
 //TODO: Figure out the earlest year for the US topo maps.
 //NOTE: earlyMaps is unix timestamp that dates back to Dec 31, 1878. Prior to the first US topo maps.
@@ -46,7 +46,8 @@ const extentQuery = async (viewExtent, scalesAndYears) => {
 				params,
 			})
 			.then((response) => {
-				// console.log(response)
+				console.log(response);
+
 				const topoMapsInExtent = response.data.features;
 				// console.log(topoMapsInExtent);
 
@@ -63,8 +64,8 @@ const extentQuery = async (viewExtent, scalesAndYears) => {
 					downloadLink: topo.attributes.DownloadG,
 				}));
 
-				orderMapsByDate(mapsList);
-				resolve(mapsList);
+				formatQueryReturn(mapsList);
+				// resolve(mapsList);
 			})
 			.catch((error) => {
 				reject(error);

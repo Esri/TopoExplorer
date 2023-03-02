@@ -155,7 +155,10 @@ button .filterAndSortBtn:active {
 }
 
 #mapsListUxText{
-  padding: 50% 33%; 
+  /* position: absolute;
+  top: 0; */
+  margin: 50% 32%;
+  padding: 50% 0; 
   text-align: center
 }
 
