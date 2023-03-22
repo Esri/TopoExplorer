@@ -1,0 +1,58 @@
+
+.map-list-slots{
+  /* height: 80px; */
+  width: 360px;
+  margin: auto;
+  }
+  
+  .map-list-item {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  width: 360px;
+  margin: 1.2rem 0 1.2rem 0;
+  padding: 5px 10px 5px 10px;
+  border-radius: 12px;
+  background: #F1F4F5;
+  box-shadow:
+  inset 6px 6px 6px #EAEEF1,
+  -6px -6px 8px #F9FBFB,
+  6px 6px 8px #D8E0E7;
+  }
+  
+  .mapSlotHeader{
+    font-weight: 700;
+  }
+  
+  .map-list-item-title{
+  margin: auto 0
+  }
+
+.action-area{
+  /* display: flex & display none conflict with each other. */
+  display: flex;
+  width: 100%;
+  background-color: #EAEEF1;
+  box-shadow: 
+    inset -6px -6px 6px #FFFFFF,
+    inset 6px 6px 8px #B8C2D3;
+  border-radius: 6px;
+}
+
+.action-container {
+width: 100%;
+}
+
+.action-area .icon {
+  height: 40px;
+  width: 40px;
+  margin: 0.5rem;
+  border-radius: 4px;
+  background: #F1F4F5;
+  box-shadow:
+  4px 4px 6px #B8C2D3;
+}
+
+.mapCard-slider {
+  margin: auto;
+}
