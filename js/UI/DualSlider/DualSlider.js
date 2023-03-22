@@ -10,7 +10,7 @@ const formatNumbersForSliderHeader = (numbers) => {
 		: numbers.toString();
 };
 
-const initSliderDemo = (
+const initDualSlider = (
 	containerId,
 	title,
 	onChangeHandler,
@@ -36,7 +36,7 @@ const initSliderDemo = (
         </div>
       </button>
       <div class="sliderElement invisible">
-        <div class="slideContainer">
+        <div class="dualSliderContainer">
           <div class="slider-group">
             <div class="slider-tracks">
               <div class="slider-foreground">
@@ -218,4 +218,4 @@ const initSliderDemo = (
 	});
 };
 
-export { initSliderDemo };
+export { initDualSlider };

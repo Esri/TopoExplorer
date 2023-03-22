@@ -7,13 +7,19 @@
 html,
 body,
 main {
-  display: flex;
+  
   font-family: 'Roboto Condensed', sans-serif;
   color: #637287;
   font-size: 0.9375rem;
   height: 100%;
   width: 100%;
   overflow: hidden;
+}
+
+main {
+  display: flex;
+  height: 100%;
+  width: 100%;
 }
 
 button {
@@ -146,14 +152,6 @@ button .filterAndSortBtn:active {
   transition: transform 150ms ease;
 }
 
-
-#mapsList{
-  height: calc(100vh - 99px);
-  overflow-y: auto;
-  margin: 0px -15px 0 -10px;
-  padding: 10px 0 0 0;
-}
-
 #mapsListUxText{
   /* position: absolute;
   top: 0; */
@@ -162,13 +160,21 @@ button .filterAndSortBtn:active {
   text-align: center
 }
 
-#map-list-slots{
+#mapsList{
+  height: calc(100vh - 99px);
+  overflow-y: auto;
+  margin: 0px -15px 0 -10px;
+  padding: 10px 0 0 0;
+}
+
+/* 
+.map-list-slots{
 height: 80px;
 width: 360px;
 margin: auto;
 }
 
-#map-list-item {
+.map-list-item {
 display: flex;
 justify-content: space-between;
 width: 360px;
@@ -186,6 +192,6 @@ inset 6px 6px 6px #EAEEF1,
   font-weight: 700;
 }
 
-#map-list-item-title{
+.map-list-item-title{
 margin: auto 0
-}
+} */

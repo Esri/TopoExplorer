@@ -21,57 +21,60 @@
 			href="https://js.arcgis.com/calcite-components/1.0.0-beta.95/calcite.css"
 		/>
 		<link rel="stylesheet" type="text/css" href="css/app.css" />
-		<link rel="stylesheet" type="text/css" href="js/UI/Slider/slider.css" />
+		<link rel="stylesheet" type="text/css" href="js/UI/DualSlider/slider.css" />
+		<link rel="stylesheet" type="text/css" href="js/UI/MapCards/MapCards.css" />
 		<title>TopoExplorer</title>
 	</head>
 	<body>
-		<div id="sideBar" style="float: left">
-			<div id="header">
-				<div class="heading">
-					HISTORICAL TOPO
-					<br />
-					<span class="letter-spacing">MAP EXPLORER</span>
-				</div>
-				<div style="border-left: 1px solid white"></div>
-				<div class="heading">
-					<div class="letter-spacing" style="float: left; width: 50%">
-						USGS LOGO
+		<main>
+			<div id="sideBar">
+				<div id="header">
+					<div class="heading">
+						HISTORICAL TOPO
+						<br />
+						<span class="letter-spacing">MAP EXPLORER</span>
 					</div>
-					<div class="letter-spacing" style="float: left; width: 50%">
-						<!-- TODO: can we use the esri logo?  Is there a marketing issue if we do? -->
-						ESRI LOGO
+					<div style="border-left: 1px solid white"></div>
+					<div class="heading">
+						<div class="letter-spacing" style="float: left; width: 50%">
+							USGS LOGO
+						</div>
+						<div class="letter-spacing" style="float: left; width: 50%">
+							<!-- TODO: can we use the esri logo?  Is there a marketing issue if we do? -->
+							ESRI LOGO
+						</div>
 					</div>
 				</div>
-			</div>
-			<div id="filtersAndSorting" style="display: flex">
-				<div id="years" class="filter"></div>
-				<div id="scales" class="filter"></div>
+				<div id="filtersAndSorting" style="display: flex">
+					<div id="years" class="filter"></div>
+					<div id="scales" class="filter"></div>
 
-				<div class="sortOrder">
-					<div>
-						<button>
-							<div>
-								<calcite-icon
-									class="filterAndSortBtn filter"
-									icon="sort-ascending-arrow"
-									scale="m"
-									style="width: 35px; padding: 1px"
-								></calcite-icon>
-							</div>
-						</button>
+					<div class="sortOrder">
+						<div>
+							<button>
+								<div>
+									<calcite-icon
+										class="filterAndSortBtn filter"
+										icon="sort-ascending-arrow"
+										scale="m"
+										style="width: 35px; padding: 1px"
+									></calcite-icon>
+								</div>
+							</button>
+						</div>
 					</div>
 				</div>
+				<div id="mapsListUxText">
+					<em
+						>Zoom in to find <br />
+						historical topo maps...</em
+					>
+				</div>
+				<div id="mapsList"></div>
 			</div>
-			<div id="mapsListUxText">
-				<em
-					>Zoom in to find <br />
-					historical topo maps...</em
-				>
-			</div>
-			<div id="mapsList"></div>
-		</div>
-		<div id="viewDiv"></div>
-		<script src="https://unpkg.com/axios@1.0.0/dist/axios.min.js"></script>
+			<div id="viewDiv"></div>
+		</main>
+		<script src="./Libraries/axios1.13.min.js"></script>
 		<script type="text/javascript" src="https://js.arcgis.com/4.24/"></script>
 		<script type="module" src="js/main.js?v=0.01"></script>
 	</body>

@@ -1,24 +1,33 @@
 import { initView } from './map/View.js?v=0.01';
 //NOTE: you are importing two elements from this module. Is that necessary?
-import { extentQuery, initalQueryforUI } from './support/Query.js?v=0.01';
-import { initSliderDemo } from './UI/Slider/Slider.js?v=0.01';
+import {
+	checkIfQuerying,
+	numberOfMapsinView,
+	// initalQueryforUI,
+} from './support/Query.js?v=0.01';
+import { getAllMapsScalesAndYears } from './support/GetAllMapScalesAndYears.js?v0.01';
+import { initDualSlider } from './UI/DualSlider/DualSlider.js?v=0.01';
 import { renderSidebarUXText } from './support/uxText.js?=v0.01';
 
 const initApp = async () => {
 	try {
 		//Initializing 'mapView', which contains 'map'.
 		const view = await initView();
+		console.log(view);
+		console.log(view.center);
 
-		//recognizing when the view has been successfully initialized.
-		view.when().then(console.log('webmap initialized'));
+		view.when(numberOfMapsinView(view.center));
 
-		await initalQueryforUI()
+		//what follows is a lot of logic and math. You shouldn't want any logic going on here.
+
+		await getAllMapsScalesAndYears()
 			.then((mapFeatures) => {
 				const [years, scales] = [
 					mapFeatures.availableYears,
 					mapFeatures.availableScales,
 				];
 
+				//NOTE: pretty sure this could be done elsewhere. It's great that it's working. Now it needs somewhere
 				//NOTE: this object keeps track of the current state of the years/scales selections in the app
 				const scalesAndYears = {
 					minYear: years[0].toString(),
@@ -27,10 +36,14 @@ const initApp = async () => {
 					maxScale: scales[scales.length - 1].toString(),
 				};
 
+				//NOTE: I could do a call like this anywhere.
+				// numberOfMapsinView(view.extent, scalesAndYears);
+				//NOTE: This also doesn't need to be here
 				const adjustedQuery = () => {
-					view.zoom > 11 ? extentQuery(view.extent, scalesAndYears) : null;
+					checkIfQuerying(view.extent, scalesAndYears);
 				};
 
+				//It really seems like I could move these functions somewhere else. They really clutter the function. There is nothing here (in the doc) that's keeping them here.
 				//TODO: Come up with a more accurate function name
 				const getTheYear = (index, value) => {
 					index === 0
@@ -39,7 +52,7 @@ const initApp = async () => {
 					console.log(scalesAndYears);
 					adjustedQuery();
 				};
-
+				//TODO: Come up with a more accurate function name here too
 				const getTheScale = (index, value) => {
 					console.log(value);
 					index === 0
@@ -50,7 +63,7 @@ const initApp = async () => {
 					adjustedQuery();
 				};
 
-				initSliderDemo(
+				initDualSlider(
 					'years',
 					'YEARS',
 					getTheYear,
@@ -58,7 +71,7 @@ const initApp = async () => {
 					years[0],
 					years[years.length - 1]
 				);
-				initSliderDemo(
+				initDualSlider(
 					'scales',
 					'SCALES',
 					getTheScale,
@@ -70,30 +83,20 @@ const initApp = async () => {
 				return scalesAndYears;
 			})
 			.then((scalesAndYears) => {
+				//NOTE: I don't think I want the following code in this module. It's carrying too many concerns, right? It's doing too much at once. I think I need to simplified this some more.
 				require(['esri/core/reactiveUtils'], (reactiveUtils) => {
 					reactiveUtils.when(
 						() => view?.stationary,
 						async () => {
-							if (view.stationary && view.zoom > 11) {
-								await extentQuery(view.extent, scalesAndYears).then(
-									(result) => {
-										console.log(result);
-									}
-								);
-								//NOTE: originally we were calling the function to create the map-list-items from here...
-								//I've moved it so the query, calls that function after it recieves the map-response from the map-collection
+							await checkIfQuerying(view.extent, scalesAndYears);
+							//NOTE: originally we were calling the function to create the map-list-items from here...
+							//I've moved it so the query, calls that function after it recieves the map-response from the map-collection
 
-								// .then((returnedList) => {
-								// 	console.log(returnedList);
-								// 	//QUESTION: Can we make a function in the 'FilterMaps' file that will store the organized list as global variable? Is that viable?
-								// 	createMapSlotItems(returnedList);
-								// });
-							} else if (view.zoom <= 11) {
-								//NOTE: This isn't an ideal solution. I do (roughly) the same thing at the end of 'ListOfMaps.js'. I think I'll need to make a new .js that holds the functions that do these steps.
-								const findMapsUXText = `<em>Zoom in to find <br/> historical topo maps...</em>`;
-
-								renderSidebarUXText(findMapsUXText);
-							}
+							// .then((returnedList) => {
+							// 	console.log(returnedList);
+							// 	//QUESTION: Can we make a function in the 'FilterMaps' file that will store the organized list as global variable? Is that viable?
+							// 	createMapSlotItems(returnedList);
+							// });
 						}
 					);
 				});
