@@ -13,15 +13,34 @@ const initView = async () => {
 		//creating the view object and incorporating map.
 		require([
 			'esri/views/MapView',
+			'esri/geometry/Extent',
+			'esri/geometry/SpatialReference',
 			'esri/widgets/Search',
 			'esri/core/reactiveUtils',
-		], (MapView, Search, reactiveUtils) => {
+		], (MapView, Extent, SpatialReference, Search, reactiveUtils) => {
+			const extentOption = [
+				{
+					xmax: -11279319.669861136,
+					xmin: -12168435.182874074,
+					ymax: 5151824.119027775,
+					ymin: 4459610.3908774,
+					spatialReference: new SpatialReference({ wkid: 3857 }),
+				},
+				{
+					xmax: -8930653.05237454,
+					xmin: -9819768.565387478,
+					ymax: 4445023.887643386,
+					ymin: 3752810.1594930105,
+					spatialReference: new SpatialReference({ wkid: 3857 }),
+				},
+			];
+
+			const random = () => Math.floor(Math.random() * extentOption.length);
+
 			const view = new MapView({
 				container: 'viewDiv',
 				map: map,
-				zoom: 4,
-				center: [-100, 36],
-				// extent:
+				extent: new Extent(extentOption[random()]),
 			});
 
 			const searchWidget = new Search({
@@ -35,25 +54,6 @@ const initView = async () => {
 				position: 'top-right',
 				index: 0,
 			});
-
-			// reactiveUtils.when(
-			// 	() => view?.stationary,
-			// 	async () => {
-			// 		console.log('view listing query...');
-			// 		await extentQueryCall(view.extent, scalesAndYears, 12);
-			// 	}
-			// );
-
-			// const extent = new Extent({
-			// 	xmax: -8896318.876043104,
-			// 	xmin: -13367579.282611609,
-			// 	ymax: 6753944.231884648,
-			// 	ymin: 1847298.5122038936,
-			// 	spatialReference: {
-			// 		wkid: 102100,
-			// 	},
-			// });
-			// view.extent = extent;
 
 			return resolve(view);
 		});
