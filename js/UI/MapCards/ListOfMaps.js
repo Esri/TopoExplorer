@@ -1,20 +1,8 @@
-import { renderSidebarUXText } from '../../support/uxText.js?=v0.01';
-import { initSingleSlider } from '../SingleSlider/SingleSlider.js?=v0.01';
+const mapsList = document.querySelector('#mapsList');
 
-//NOTE These functions should be seperated into different files, probably. the 'formatQueryReturn' is business logics-oriented and the 'createMapSlotItems' is UI-oriented
-// const formatQueryReturn = (result) => {
-// 	if (result.length === 0) {
-// 		const noMapsUXText = `<em> no maps found</em>`;
-// 		renderSidebarUXText(noMapsUXText);
-// 	} else {
-// 		const mapsByDate = result.sort((a, b) => {
-// 			let mapOrder = a.date - b.date;
-// 			return mapOrder;
-// 		});
-
-// 		createMapSlotItems(mapsByDate);
-// 	}
-// };
+const clearMapsList = () => {
+	mapsList.innerHTML = '';
+};
 
 const createMapSlotItems = (list) => {
 	//NOTE: Come back to this later BUT...I don't think that invisible container on the flex is working as intended. It's a good idea though. Look at it again.
@@ -43,8 +31,6 @@ const createMapSlotItems = (list) => {
             </div>
           </div>
         </div>`;
-
-			// return mapSlotItem;
 		})
 		.join(' ');
 
@@ -59,7 +45,8 @@ const MapSlotsContainerHTML = (mapSlot) => {
 
 const renderResultsToSideBar = (results) => {
 	document.querySelector('#mapsListUxText').classList.add('invisible');
-	document.querySelector('#mapsList').innerHTML = results;
+	// mapsList.append(results);
+	mapsList.innerHTML = mapsList.innerHTML + results;
 };
 
-export { createMapSlotItems };
+export { clearMapsList, createMapSlotItems };

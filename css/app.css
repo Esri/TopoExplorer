@@ -47,6 +47,10 @@ button {
   display: none;
 }
 
+.hidden {
+  visibility: hidden;
+}
+
 #viewDiv{
   width: 100%;
   float: right
@@ -101,6 +105,49 @@ button {
   min-width: 400px;
   padding: 0 15px;
   background-color: #E7EBEE;
+}
+
+.mapsFooter {
+  height: 40px;
+  background: #E7EBEE;
+}
+
+.mapsFooter .footer-shadow {
+  height: 8px;
+}
+
+.mapsFooter .effect-one {
+  background: linear-gradient(0deg, rgba(231,235,238,1) 0%, rgba(184,194,211,1) 100%);
+}
+
+.mapsFooter .effect-two {
+  background: linear-gradient(90deg, rgba(231,235,238,1) 0%, rgba(231,235,238,0) 50%, rgba(231,235,238,1) 100%);
+}
+
+.mapsFooter .map-count-container {
+  display: flex;
+  align-items:center;
+}
+
+@keyframes spinner {
+  to {transform: rotate(360deg);}
+}
+
+.mapsFooter .queryIndicator {
+  margin: 0 0.25rem;
+  animation: spinner 1s linear infinite;
+}
+.mapsFooter .total-maps{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.mapsFooter .map-count-container .mapCount {
+  width: 2.5rem;
+  text-align: center;
 }
 
 #header{
@@ -161,7 +208,7 @@ button .filterAndSortBtn:active {
 }
 
 #mapsList{
-  height: calc(100vh - 99px);
+  height: calc(100vh - 140px);
   overflow-y: auto;
   margin: 0px -15px 0 -10px;
   padding: 10px 0 0 0;

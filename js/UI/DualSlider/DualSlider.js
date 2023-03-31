@@ -152,6 +152,7 @@ const initDualSlider = (
 			let maxRange = parseInt(sliderHandles[1].value);
 
 			//controling the limits of slider handels. Making sure they don't overlap over each other.
+			//TODO: I want them to overlap now. how do I do that AND make sure you can access the previously used slider??
 			if (minRange >= maxRange) {
 				if (e.target.className === 'minSlider') {
 					sliderHandles[0].value = maxRange - 1;

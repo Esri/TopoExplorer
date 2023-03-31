@@ -27,50 +27,67 @@
 	</head>
 	<body>
 		<main>
-			<div id="sideBar">
-				<div id="header">
-					<div class="heading">
-						HISTORICAL TOPO
-						<br />
-						<span class="letter-spacing">MAP EXPLORER</span>
-					</div>
-					<div style="border-left: 1px solid white"></div>
-					<div class="heading">
-						<div class="letter-spacing" style="float: left; width: 50%">
-							USGS LOGO
+			<div>
+				<div id="sideBar">
+					<div id="header">
+						<div class="heading">
+							HISTORICAL TOPO
+							<br />
+							<span class="letter-spacing">MAP EXPLORER</span>
 						</div>
-						<div class="letter-spacing" style="float: left; width: 50%">
-							<!-- TODO: can we use the esri logo?  Is there a marketing issue if we do? -->
-							ESRI LOGO
+						<div style="border-left: 1px solid white"></div>
+						<div class="heading">
+							<div class="letter-spacing" style="float: left; width: 50%">
+								USGS LOGO
+							</div>
+							<div class="letter-spacing" style="float: left; width: 50%">
+								<!-- TODO: can we use the esri logo?  Is there a marketing issue if we do? -->
+								ESRI LOGO
+							</div>
 						</div>
 					</div>
-				</div>
-				<div id="filtersAndSorting" style="display: flex">
-					<div id="years" class="filter"></div>
-					<div id="scales" class="filter"></div>
+					<div id="filtersAndSorting" style="display: flex">
+						<div id="years" class="filter"></div>
+						<div id="scales" class="filter"></div>
 
-					<div class="sortOrder">
-						<div>
-							<button>
-								<div>
-									<calcite-icon
-										class="filterAndSortBtn filter"
-										icon="sort-ascending-arrow"
-										scale="m"
-										style="width: 35px; padding: 1px"
-									></calcite-icon>
-								</div>
-							</button>
+						<div class="sortOrder">
+							<div>
+								<button>
+									<div>
+										<calcite-icon
+											class="filterAndSortBtn filter"
+											icon="sort-ascending-arrow"
+											scale="m"
+											style="width: 35px; padding: 1px"
+										></calcite-icon>
+									</div>
+								</button>
+							</div>
+						</div>
+					</div>
+					<div id="mapsListUxText">
+						<em
+							>Zoom in to find <br />
+							historical topo maps...</em
+						>
+					</div>
+					<div id="mapsList"></div>
+				</div>
+				<div class="mapsFooter">
+					<div class="footer-shadow effect-one"></div>
+					<div class="footer-shadow effect-two"></div>
+					<div class="total-maps">
+						<div class="map-count-container">
+							<calcite-icon
+								class="queryIndicator"
+								icon="spinner"
+								scale="s"
+							></calcite-icon>
+							<span class="mapCount"> </span>
+							<span> Topo Maps </span>
 						</div>
 					</div>
 				</div>
-				<div id="mapsListUxText">
-					<em
-						>Zoom in to find <br />
-						historical topo maps...</em
-					>
-				</div>
-				<div id="mapsList"></div>
 			</div>
 			<div id="viewDiv"></div>
 		</main>
