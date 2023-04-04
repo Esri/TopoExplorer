@@ -18,7 +18,7 @@ let whereStatement = 'year >= 1878';
 const objectId = 'ObjectID';
 const mapName = 'Map_Name';
 const mapState = 'State';
-const mapYear = 'DateCurrent';
+const mapYear = 'Imprint_Year';
 const mapScale = 'Map_Scale';
 const mapCenterX = 'CenterX';
 const mapCenterY = 'CenterY';
@@ -26,16 +26,12 @@ const mapDownloadLink = 'DownloadG';
 
 //NOTE: I think I can move this OBJ into a different module...remember this when building out the sort Module.
 const sortOptions = {
-	oldestYearThenAzThenSmallestScale:
-		'DateCurrent ASC, Map_Name ASC, Map_Scale ASC',
-	newestYearThenAzThenSmallestScale:
-		'DateCurrent DESC, Map_Name ASC, Map_Scale ASC',
-	largestScaleYearThenAzThenOldest:
-		'Map_Scale ASC, Map_Name ASC, DateCurrent ASC,',
-	smallestScaleYearThenAzThenNewest:
-		'Map_Scale ASC, Map_Name ASC, DateCurrent DESC',
-	azOldestYearSmallestScale: 'Map_Name ASC, DateCurrent ASC, Map_Scale ASC',
-	zaOldestYearSmallestScale: 'Map_Name DESC, DateCurrent ASC, Map_Scale ASC',
+	oldestYearThenAzThenSmallestScale: `${mapYear} ASC, Map_Name ASC, Map_Scale ASC`,
+	newestYearThenAzThenSmallestScale: `${mapYear} DESC, Map_Name ASC, Map_Scale ASC`,
+	largestScaleYearThenAzThenOldest: `Map_Scale ASC, Map_Name ASC, ${mapYear} ASC,`,
+	smallestScaleYearThenAzThenNewest: `Map_Scale ASC, Map_Name ASC, ${mapYear} DESC`,
+	azOldestYearSmallestScale: `Map_Name ASC, ${mapYear} ASC, Map_Scale ASC`,
+	zaOldestYearSmallestScale: `Map_Name DESC, ${mapYear} ASC, Map_Scale ASC`,
 };
 //NOTE: this could be moved to a different module.
 const yearsAndMapScales = {
@@ -166,9 +162,9 @@ const queryConfig = {
 			hideMapCount(),
 			numberOfMapsinView(this.url, this.totalMapsInExtentParams())
 				.then((response) => {
-					console.log(response);
+					// console.log(response);
 					this.totalMaps = response.data.objectIds.length;
-					console.log(this.totalMaps);
+					// console.log(this.totalMaps);
 				})
 				.then(() => {
 					updateMapcount(this.totalMaps);
@@ -197,22 +193,23 @@ const queryConfig = {
 			this.queryMapData();
 		}
 
-		console.log('checking resultOffset', this.resultOffset);
-		console.log(
-			'checking resultRecords to be returned',
-			this.resultRecordCount
-		);
+		// console.log('checking resultOffset', this.resultOffset);
+		// console.log(
+		// 	'checking resultRecords to be returned',
+		// 	this.resultRecordCount
+		// );
 	},
 	topoMapsInExtent: [],
 	processMapData: function () {
+		console.log;
 		return this.topoMapsInExtent.map((topo) => ({
 			topo,
 			OBJECTID: topo.attributes.OBJECTID,
-			date: topo.attributes.DateCurrent,
+			date: `${topo.attributes.Imprint_Year}`,
 			mapName: topo.attributes.Map_Name,
 			mapScale: `1:${topo.attributes.Map_Scale}`,
 			location: `${topo.attributes.Map_Name}, ${topo.attributes.State}`,
-			thumbnail: `${url}/${topo.attributes.OBJECTID}/info/thumbnail`,
+			thumbnail: `${url}/${topo.attributes.OBJECTID}/info/thumbnail?height=60`,
 			mapCenterGeographyX: topo.attributes.CenterX,
 			mapCenterGeographyY: topo.attributes.CenterY,
 			downloadLink: topo.attributes.DownloadG,

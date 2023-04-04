@@ -4,6 +4,7 @@ import {
 	queryConfig,
 	yearsAndMapScales,
 } from './support/QueryConfig.js?v=0.01';
+// import { yearsAndMapScales } from './support/SelectedYearsAndMapScales.js?v0.01';
 import { getAllMapsScalesAndYears } from './support/GetAllMapScalesAndYears.js?v0.01';
 import { initDualSlider } from './UI/DualSlider/DualSlider.js?v=0.01';
 import { isScrollAtPageEnd } from './support/eventListeners/ScrollListener.js?v=0.01';
@@ -15,7 +16,7 @@ const initApp = async () => {
 
 		view.when(
 			// queryConfig.setGeometry(view.extent),
-			console.log(queryConfig.geometry),
+			// console.log(queryConfig.geometry),
 			require(['esri/core/reactiveUtils'], (reactiveUtils) => {
 				reactiveUtils.when(
 					() => view?.stationary,
@@ -27,14 +28,6 @@ const initApp = async () => {
 				);
 			})
 		);
-
-		const isReadyForMoreMaps = (value) =>
-			value
-				? (console.log('calling query'),
-				  queryConfig.checkAvailableNumberOfMaps())
-				: (console.log('doing nothing'), null);
-
-		isScrollAtPageEnd(isReadyForMoreMaps);
 
 		//what follows is a lot of logic and math. You shouldn't want any logic going on here.
 
@@ -70,7 +63,7 @@ const initApp = async () => {
 						? yearsAndMapScales.updateMinScale(value)
 						: yearsAndMapScales.updateMaxScale(value);
 
-					console.log(yearsAndMapScales);
+					// console.log(yearsAndMapScales);
 					adjustedQuery();
 				};
 
@@ -91,6 +84,13 @@ const initApp = async () => {
 					scales[scales.length - 1]
 				);
 
+				const isReadyForMoreMaps = (value) => {
+					value
+						? (console.log('calling query'),
+						  queryConfig.checkAvailableNumberOfMaps())
+						: (console.log('doing nothing'), null);
+				};
+				isScrollAtPageEnd(isReadyForMoreMaps);
 				// return scalesAndYears;
 			})
 			.then((scalesAndYears) => {

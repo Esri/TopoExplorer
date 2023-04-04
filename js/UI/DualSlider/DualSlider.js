@@ -19,7 +19,7 @@ const initDualSlider = (
 	max
 ) => {
 	const container = document.getElementById(`${containerId}`);
-
+	//NOTE: I'm using an 'ondragstart' attribute to stop any drag events on that element. I'm using it to try and solve a bug. if this DOES work, I should implement this attribute more responsibly.
 	container.innerHTML = `
     <div class="sliderHeader">
       <button class="sliderBtn">
@@ -37,11 +37,12 @@ const initDualSlider = (
       </button>
       <div class="sliderElement invisible">
         <div class="dualSliderContainer">
-          <div class="slider-group">
-            <div class="slider-tracks">
-              <div class="slider-foreground">
+          <div class="slider-group" ondragstart="return false;">
+            <div class="slider-tracks inputs">
+            <div class="clickable-track inputs"></div>
+            <div class="slider-foreground inputs">
               </div>
-              <div class = "slider-handles">
+              <div class="slider-handles">
                 <div class="input-track">
                   <input id="min" class="minSlider" type="range" list="" value="0" min="0" max="${
 										values.length - 1
@@ -66,7 +67,9 @@ const initDualSlider = (
   </div>
 `;
 
-	const sliderHandles = container.querySelectorAll('input');
+	const sliderComponents = container.querySelector('.inputs');
+
+	console.log(sliderComponents);
 
 	//creating the slider sections on the track. Highlighting the change of slection whn the handles move
 	const sliderBar = values
@@ -78,16 +81,27 @@ const initDualSlider = (
 		})
 		.join('');
 
+	const testBar = values
+		.map((sections, index) => {
+			return `
+	    <div  class="clickable" value="${index}">
+        
+	    </div>`;
+		})
+		.join('');
+
 	container.querySelector('.slider-foreground').innerHTML = sliderBar;
+	container.querySelector('.clickable-track').innerHTML = testBar;
 
 	//creating ticks for slider
 	const sliderOptionsHTMLStr = values
 		.map((sliderSteps) => {
 			return `
       <div class="tick" value='${sliderSteps}'>
-      <output class="tooltip invisible">${formatSliderNumbers(
-				sliderSteps
-			)}</output>
+        <output class="tooltip invisible">${formatSliderNumbers(
+					sliderSteps
+				)}</output>
+
 			</div>
       `;
 		})
@@ -108,13 +122,18 @@ const initDualSlider = (
 		container.querySelectorAll('.tooltip')[index].classList.remove('invisible');
 	};
 
-	const removeSliderToolTipVisibility = (index) => {
-		container.querySelectorAll('.tooltip')[index].classList.add('invisible');
+	const removeSliderToolTipVisibility = () => {
+		container.querySelectorAll('.tooltip').forEach((tooltip) => {
+			console.log(tooltip);
+			if (!tooltip.classList.contains('invisible')) {
+				tooltip.classList.add('invisible');
+			}
+		});
 	};
 
 	const adjustSliderTrackSelection = () => {
 		container.querySelectorAll('.slider-area').forEach((section, index) => {
-			if (index < sliderHandles[0].value || index >= sliderHandles[1].value) {
+			if (index < minRangeHandle.value || index >= maxRangeHandle.value) {
 				section.classList.add('slider-transparent');
 				section.classList.remove('slider-color');
 			} else {
@@ -144,34 +163,149 @@ const initDualSlider = (
 	);
 
 	//ADDING EVENT LISTENERS
-	//updating the color of the selected range AND controling the interaction between the min & max slider handles
-	sliderHandles.forEach((input) => {
+	const minRangeHandle = sliderComponents.querySelector('.minSlider');
+	const maxRangeHandle = sliderComponents.querySelector('.maxSlider');
+	let isSelecting = false;
+
+	window.addEventListener('mouseup', () => {
+		if (isSelecting) {
+			isSelecting = false;
+			removeSliderToolTipVisibility();
+		}
+	});
+
+	sliderComponents.querySelectorAll('input').forEach((input) => {
+		//updating the color of the selected range AND controling the interaction between the min & max slider handles
 		input.addEventListener('input', (e) => {
 			console.log(e);
-			let minRange = parseInt(sliderHandles[0].value);
-			let maxRange = parseInt(sliderHandles[1].value);
+			// console.log(input.querySelector('.minSlider'));
+			let minRange = parseInt(minRangeHandle.value);
+			console.log(minRange);
+			let maxRange = parseInt(maxRangeHandle.value);
 
 			//controling the limits of slider handels. Making sure they don't overlap over each other.
 			//TODO: I want them to overlap now. how do I do that AND make sure you can access the previously used slider??
 			if (minRange >= maxRange) {
 				if (e.target.className === 'minSlider') {
-					sliderHandles[0].value = maxRange - 1;
+					minRangeHandle.value = maxRange;
 				} else {
-					sliderHandles[1].value = minRange + 1;
+					maxRangeHandle.value = minRange;
 				}
-			} else {
-				//NOTE: needs a better name
-				adjustSliderTrackSelection(e.target, e.target.valueAsNumber);
 			}
+			// else {
+			//NOTE: needs a better name
+			adjustSliderTrackSelection(e.target, e.target.valueAsNumber);
+			// }
 		});
 
 		input.addEventListener('input', (e) => {
+			// console.log(e);
 			addSliderTooltipVisibility(e.target.value);
 		});
 
 		input.addEventListener('mouseup', (e) => {
-			removeSliderToolTipVisibility(e.target.value);
+			console.log(e);
+			removeSliderToolTipVisibility();
 		});
+
+		// input.addEventListener('mousedown', (e) => {
+		// 	console.log('click', e);
+		// 	console.log(e.target.attributes.value.nodeType);
+		// 	minRangeHandle.value = e.target.attributes.value.value;
+		// });
+	});
+
+	sliderComponents.querySelectorAll('.clickable').forEach((area) => {
+		area.addEventListener('click', (e) => {
+			let currentSelection = e.target.attributes.value.value;
+
+			let minHandleDiffernce = Math.abs(
+				currentSelection - minRangeHandle.value
+			);
+			let maxHandleDiffernce = Math.abs(
+				currentSelection - maxRangeHandle.value
+			);
+			console.log(minHandleDiffernce);
+			console.log(maxHandleDiffernce);
+			if (minHandleDiffernce <= maxHandleDiffernce) {
+				minRangeHandle.value = currentSelection;
+				adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
+			} else {
+				maxRangeHandle.value = currentSelection;
+				adjustSliderTrackSelection(maxRangeHandle, maxRangeHandle.value);
+			}
+		});
+
+		// area.addEventListener('mousedown', (e) => {
+		// isSelecting = true;
+		// console.log(parseInt(e.target.attributes.value.value));
+
+		// let downSelection = parseInt(e.target.attributes.value.value);
+
+		// let minHandleDiffernce = Math.abs(downSelection - minRangeHandle.value);
+		// let maxHandleDiffernce = Math.abs(downSelection - maxRangeHandle.value);
+
+		// if (minHandleDiffernce <= maxHandleDiffernce) {
+		// 	minRangeHandle.value = downSelection;
+		// 	adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
+		// } else {
+		// 	maxRangeHandle.value = downSelection;
+		// 	adjustSliderTrackSelection(maxRangeHandle, maxRangeHandle.value);
+		// }
+		// });
+
+		// area.addEventListener('mouseenter', (e) => {
+		// 	if (isSelecting) {
+		// 		console.log(
+		// 			'the current value',
+		// 			parseInt(e.target.attributes.value.value)
+		// 		);
+
+		// 		let moveSelection = parseInt(e.target.attributes.value.value);
+
+		// 		let minHandleDiffernce = Math.abs(moveSelection - minRangeHandle.value);
+		// 		let maxHandleDiffernce = Math.abs(moveSelection - maxRangeHandle.value);
+
+		// 		if (minHandleDiffernce < maxHandleDiffernce) {
+		// 			// minRangeHandle.value = moveSelection;
+		// 			if (moveSelection > maxRangeHandle.value) {
+		// 				minRangeHandle.value = maxRangeHandle.value;
+		// 				addSliderTooltipVisibility(minRangeHandle.value);
+		// 				adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
+		// 			} else {
+		// 				minRangeHandle.value = moveSelection;
+		// 				addSliderTooltipVisibility(minRangeHandle.value);
+		// 				adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
+		// 			}
+		// 			adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
+		// 		} else if (minHandleDiffernce === maxHandleDiffernce) {
+		// 		} else {
+		// 			if (moveSelection < minRangeHandle.value) {
+		// 				maxRangeHandle.value = minRangeHandle.value;
+		// 				addSliderTooltipVisibility(maxRangeHandle.value);
+		// 				adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
+		// 			} else {
+		// 				maxRangeHandle.value = moveSelection;
+		// 				// adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
+		// 			}
+		// 			maxRangeHandle.value = moveSelection;
+		// 			addSliderTooltipVisibility(maxRangeHandle.value);
+		// 			adjustSliderTrackSelection(maxRangeHandle, maxRangeHandle.value);
+		// 		}
+
+		// 		// console.log('the current max', maxRangeHandle.value);
+		// 		// minRangeHandle.value = parseInt(e.target.attributes.value.value);
+
+		// 		// if (moveSelection > maxRangeHandle.value) {
+		// 		// 	minRangeHandle.value = maxRangeHandle.value - 1;
+		// 		// } else {
+		// 		// 	minRangeHandle.value = moveSelection;
+		// 		// }
+
+		// 		adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
+		// 		// addSliderTooltipVisibility(minRangeHandle.value);
+		// 	}
+		// });
 	});
 
 	//Listener that will updating the slider's header and the values
