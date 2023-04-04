@@ -134,7 +134,7 @@ button {
 }
 
 .mapsFooter .queryIndicator {
-  margin: 0 0.25rem;
+  /* margin: 0 0.25rem; */
   animation: spinner 1s linear infinite;
 }
 .mapsFooter .total-maps{
@@ -146,8 +146,9 @@ button {
 }
 
 .mapsFooter .map-count-container .mapCount {
-  width: 2.5rem;
+  
   text-align: center;
+  margin: 0 10px;
 }
 
 #header{
