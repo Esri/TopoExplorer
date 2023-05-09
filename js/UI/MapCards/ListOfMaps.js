@@ -72,9 +72,11 @@ const createMapSlotItems = (list, view, url) => {
                 </p>
                 <p> ${topoMap.mapScale} | ${topoMap.location} </p>
               </div>
-              <div>
+              <div class="img-cover">
+                <div class="frame"></div>
                 <img src=${topoMap.thumbnail}>
-              </div>
+                </div>
+              
             </div>
             
             <div class='action-container ${
