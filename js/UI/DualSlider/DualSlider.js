@@ -44,7 +44,7 @@ const initDualSlider = (
               </div>
               <div class="slider-handles">
                 <div class="input-track">
-                  <input id="min" class="minSlider" type="range" list="" value="0" min="0" max="${
+                  <input class="minSlider" type="range" list="" value="0" min="0" max="${
 										values.length - 1
 									}">
                   </input>
@@ -230,9 +230,13 @@ const initDualSlider = (
 			if (minHandleDiffernce <= maxHandleDiffernce) {
 				minRangeHandle.value = currentSelection;
 				adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
+				debounceInput(0, minRangeHandle.value);
+				udpdateSliderHeading(0, minRangeHandle.value);
 			} else {
 				maxRangeHandle.value = currentSelection;
 				adjustSliderTrackSelection(maxRangeHandle, maxRangeHandle.value);
+				debounceInput(1, maxRangeHandle.value);
+				udpdateSliderHeading(1, maxRangeHandle.value);
 			}
 		});
 

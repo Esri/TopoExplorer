@@ -47,6 +47,10 @@ button {
   display: none;
 }
 
+.flex {
+  display: flex;
+}
+
 .hidden {
   visibility: hidden;
 }
@@ -64,6 +68,7 @@ button {
   flex-flow: row;
   background: #F1F4F5;
   background-color: transparent;
+  box-shadow: 4px 4px 6px #111111;
 }
 
 #viewDiv .esri-zoom .esri-widget--button:first-child{
@@ -80,8 +85,8 @@ button {
 #viewDiv .esri-ui-corner .esri-component {
   box-shadow: none;
   background-color: transparent;
-  border-radius: 12px 0 0 12px;
-
+  border-radius: 12px 12px 12px 12px;
+  box-shadow: 4px 4px 6px #111111;
 }
 
 #viewDiv .esri-search{
@@ -99,10 +104,14 @@ button {
   border-left: 0;
 }
 
+#viewDiv div .esri-search__input-container .esri-search__clear-button {
+border-radius: 0;
+}
+
 #sideBar {
   position: relative;
   max-height: 100%;
-  min-width: 400px;
+  width: 400px;
   padding: 0 15px;
   background-color: #E7EBEE;
 }
@@ -171,13 +180,27 @@ button {
   letter-spacing: 2px;
 }
 
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  width: 50%;
+  padding: 0 0.5rem;
+}
+
+.invert {
+  filter: invert(1);
+}
+
 #filtersAndSorting{
   height:40px;
 }
 
 .filter{
   font-weight: 700;
-  width: 45%;
+  width: 47%;
   margin: auto -15px auto 5px;
 }
 
@@ -205,14 +228,16 @@ button .filterAndSortBtn:active {
   top: 0; */
   margin: 50% 32%;
   padding: 50% 0; 
-  text-align: center
+  text-align: center;
+  display: none;
 }
 
 #mapsList{
   height: calc(100vh - 140px);
   overflow-y: auto;
+  overflow-x: hidden;
   margin: 0px -15px 0 -10px;
-  padding: 10px 0 0 0;
+  padding: 0 0.65rem ;
 }
 
 /* 

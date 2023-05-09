@@ -9,16 +9,16 @@
 		</style>
 		<link
 			rel="stylesheet"
-			href="https://js.arcgis.com/4.24/esri/themes/light/main.css"
+			href="https://js.arcgis.com/4.25/esri/themes/light/main.css"
 		/>
 		<script
 			type="module"
-			src="https://js.arcgis.com/calcite-components/1.0.0-beta.95/calcite.esm.js"
+			src="https://js.arcgis.com/calcite-components/1.2.0/calcite.esm.js"
 		></script>
 		<link
 			rel="stylesheet"
 			type="text/css"
-			href="https://js.arcgis.com/calcite-components/1.0.0-beta.95/calcite.css"
+			href="https://js.arcgis.com/calcite-components/1.2.0/calcite.css"
 		/>
 		<link rel="stylesheet" type="text/css" href="css/app.css" />
 		<link rel="stylesheet" type="text/css" href="js/UI/DualSlider/slider.css" />
@@ -36,14 +36,19 @@
 							<span class="letter-spacing">MAP EXPLORER</span>
 						</div>
 						<div style="border-left: 1px solid white"></div>
-						<div class="heading">
-							<div class="letter-spacing" style="float: left; width: 50%">
-								USGS LOGO
-							</div>
-							<div class="letter-spacing" style="float: left; width: 50%">
-								<!-- TODO: can we use the esri logo?  Is there a marketing issue if we do? -->
-								ESRI LOGO
-							</div>
+						<div class="heading logo-container">
+							<img
+								src="https://www.usgs.gov/themes/custom/usgs_tantalum/usgs_logo.png"
+								alt="United States Geological Survey Logo"
+								class="logo"
+							/>
+
+							<!-- TODO: can we use the esri logo?  Is there a marketing issue if we do? -->
+							<img
+								src="https://upload.wikimedia.org/wikipedia/en/6/6e/Esri_logo.svg"
+								alt="esri Logo"
+								class="logo invert"
+							/>
 						</div>
 					</div>
 					<div id="filtersAndSorting" style="display: flex">
@@ -65,12 +70,7 @@
 							</div>
 						</div>
 					</div>
-					<div id="mapsListUxText">
-						<em
-							>Zoom in to find <br />
-							historical topo maps...</em
-						>
-					</div>
+					<div id="mapsListUxText"></div>
 					<div id="mapsList"></div>
 				</div>
 				<div class="mapsFooter">

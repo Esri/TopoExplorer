@@ -1,4 +1,11 @@
+import {
+	findMinYear,
+	findMaxYear,
+	findMinScale,
+	findMaxScale,
+} from './GetAllMapScalesAndYears.js?v=0.01';
 import { numberOfMapsinView, extentQuery } from './Query.js?v=0.01';
+import { getTopoMap, addTopoMap } from './ImageExportQuery.js?v=0.01';
 import {
 	hideMapCount,
 	updateMapcount,
@@ -9,6 +16,7 @@ import {
 	clearMapsList,
 	createMapSlotItems,
 } from '../UI/MapCards/ListOfMaps.js?v=0.01';
+// import { addTopoMap } from './ImageExportQuery';
 // import { checkIfQuerying } from './Query.js?v=0.01';
 
 const url =
@@ -24,14 +32,33 @@ const mapCenterX = 'CenterX';
 const mapCenterY = 'CenterY';
 const mapDownloadLink = 'DownloadG';
 
+//This isn't exactly pretty, but it's a first step in moving this information
+const getMinYear = findMinYear(`${url}/query`);
+const getMaxYear = findMaxYear(`${url}/query`);
+const getMinScale = findMinScale(`${url}/query`);
+const getMaxScale = findMaxScale(`${url}/query`);
+
+const renderTopoMap = (view, oid, mapGeometry) => {
+	getTopoMap(url, view, oid, mapGeometry).then((topoMapImage) => {
+		addTopoMap(view, topoMapImage);
+	});
+};
+
+const removeTopoMap = (view, oid) => {
+	console.log('said to remove');
+
+	removeTopoMapFromLayer(view, oid);
+};
+
 //NOTE: I think I can move this OBJ into a different module...remember this when building out the sort Module.
 const sortOptions = {
-	oldestYearThenAzThenSmallestScale: `${mapYear} ASC, Map_Name ASC, Map_Scale ASC`,
-	newestYearThenAzThenSmallestScale: `${mapYear} DESC, Map_Name ASC, Map_Scale ASC`,
-	largestScaleYearThenAzThenOldest: `Map_Scale ASC, Map_Name ASC, ${mapYear} ASC,`,
-	smallestScaleYearThenAzThenNewest: `Map_Scale ASC, Map_Name ASC, ${mapYear} DESC`,
-	azOldestYearSmallestScale: `Map_Name ASC, ${mapYear} ASC, Map_Scale ASC`,
-	zaOldestYearSmallestScale: `Map_Name DESC, ${mapYear} ASC, Map_Scale ASC`,
+	onlyYear: `${mapYear} ASC`,
+	oldestYearThenAzThenSmallestScale: `${mapYear} ASC, ${mapName} ASC, ${mapScale} ASC`,
+	newestYearThenAzThenSmallestScale: `${mapYear} DESC, ${mapName} ASC, ${mapScale} ASC`,
+	largestScaleYearThenAzThenOldest: `${mapScale} ASC, ${mapName} ASC, ${mapYear} ASC,`,
+	smallestScaleYearThenAzThenNewest: `${mapScale} ASC, ${mapName} ASC, ${mapYear} DESC`,
+	azOldestYearSmallestScale: `${mapName} ASC, ${mapYear} ASC, ${mapScale} ASC`,
+	zaOldestYearSmallestScale: `${mapName} DESC, ${mapYear} ASC, ${mapScale} ASC`,
 };
 //NOTE: this could be moved to a different module.
 const yearsAndMapScales = {
@@ -86,8 +113,10 @@ const updateWhereStatement = () => {
 
 const queryConfig = {
 	url: `${url}/query`,
+	mapView: '',
 	where: whereStatement,
 	geometry: '',
+	spatialRelation: 'esriSpatialRelIntersects',
 	queryOutfields: [
 		objectId,
 		mapName,
@@ -106,9 +135,8 @@ const queryConfig = {
 			where: this.where,
 			geometry: this.geometry,
 			geometryType: 'esriGeometryEnvelope',
-			spatialRel: 'esriSpatialRelIntersects',
-			returnExtentOnly: true,
-			returnIdsOnly: true,
+			spatialRel: this.spatialRelation,
+			returnCountOnly: true,
 			f: 'json',
 		};
 	},
@@ -117,14 +145,14 @@ const queryConfig = {
 			where: this.where,
 			geometry: this.geometry,
 			geometryType: 'esriGeometryEnvelope',
-			spatialRel: 'esriSpatialRelIntersects',
-			returnGeometry: false,
-			returnQueryGeometry: true,
+			spatialRel: this.spatialRelation,
+			returnGeometry: true,
+			// returnQueryGeometry: true,
 			outFields: this.queryOutfields,
-			returnDistinctValues: true,
 			resultOffset: this.resultOffset,
 			resultRecordCount: this.resultRecordCount,
-			orderByFields: sortOptions.oldestYearThenAzThenSmallestScale,
+			// NOTE: for the time-being we will not be using 'orderByFields'. This is to see how including 'OrderBy' can effect query-time.
+			orderByFields: sortOptions.onlyYear,
 			f: 'json',
 		};
 	},
@@ -138,11 +166,12 @@ const queryConfig = {
 				return this.processMapData(listOfTopos);
 			})
 			.then((mapsList) => {
-				createMapSlotItems(mapsList);
+				createMapSlotItems(mapsList, this.mapView, url);
 				hideSpinnerIcon();
 			})
 			.then(() => {
 				this.resultOffset = this.resultOffset + this.resultRecordCount;
+				console.log(this.resultOffset);
 				// if (this.resultRecordCount !== 25) {
 				// this.resultOffset = this.resultRecordCount;
 				// this.resultOffset = this.resultOffset + this.resultRecordCount;
@@ -162,8 +191,8 @@ const queryConfig = {
 			hideMapCount(),
 			numberOfMapsinView(this.url, this.totalMapsInExtentParams())
 				.then((response) => {
-					// console.log(response);
-					this.totalMaps = response.data.objectIds.length;
+					console.log(response);
+					this.totalMaps = response.data.count;
 					// console.log(this.totalMaps);
 				})
 				.then(() => {
@@ -174,11 +203,14 @@ const queryConfig = {
 				});
 	},
 	checkAvailableNumberOfMaps: function () {
-		// if (this.resultOffset === 0) {
-		// 	this.resultOffset = this.resultRecordCount;
-		// }
+		if (this.resultOffset === 0) {
+			this.resultOffset = this.resultRecordCount;
+		}
 
-		if (this.resultOffset === this.totalMaps) {
+		if (
+			this.resultOffset === this.totalMaps ||
+			this.resultOffset > this.totalMaps
+		) {
 			console.log('no query should be running');
 			return;
 		} else if (this.resultOffset + this.resultRecordCount >= this.totalMaps) {
@@ -205,14 +237,15 @@ const queryConfig = {
 		return this.topoMapsInExtent.map((topo) => ({
 			topo,
 			OBJECTID: topo.attributes.OBJECTID,
-			date: `${topo.attributes.Imprint_Year}`,
+			date: topo.attributes[mapYear],
 			mapName: topo.attributes.Map_Name,
 			mapScale: `1:${topo.attributes.Map_Scale}`,
 			location: `${topo.attributes.Map_Name}, ${topo.attributes.State}`,
-			thumbnail: `${url}/${topo.attributes.OBJECTID}/info/thumbnail?height=60`,
+			thumbnail: `${url}/${topo.attributes.OBJECTID}/info/thumbnail`,
 			mapCenterGeographyX: topo.attributes.CenterX,
 			mapCenterGeographyY: topo.attributes.CenterY,
 			downloadLink: topo.attributes.DownloadG,
+			mapBoundry: topo.geometry,
 		}));
 	},
 	setGeometry: function (locationData) {
@@ -238,16 +271,13 @@ const extentQueryCall = debounce((url, totalMapsInExtentParams) => {
 	queryConfig.getNewMaps(url, totalMapsInExtentParams), 1000;
 });
 
-// document.querySelector('#mapsList').addEventListener('scroll', (event) => {
-// 	// extentQueryCall(queryConfig);
-// 	if (
-// 		Math.abs(
-// 			document.querySelector('#mapsList').scrollHeight -
-// 				document.querySelector('#mapsList').clientHeight -
-// 				document.querySelector('#mapsList').scrollTop
-// 		) < 1
-// 	) {
-// 	}
-// });
-
-export { queryConfig, yearsAndMapScales };
+export {
+	queryConfig,
+	yearsAndMapScales,
+	getMinYear,
+	getMaxYear,
+	getMinScale,
+	getMaxScale,
+	renderTopoMap,
+	removeTopoMap,
+};

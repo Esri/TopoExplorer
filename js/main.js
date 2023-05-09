@@ -3,70 +3,55 @@ import { initView } from './map/View.js?v=0.01';
 import {
 	queryConfig,
 	yearsAndMapScales,
+	getMinYear,
+	getMaxYear,
+	getMinScale,
+	getMaxScale,
 } from './support/QueryConfig.js?v=0.01';
-// import { yearsAndMapScales } from './support/SelectedYearsAndMapScales.js?v0.01';
-import { getAllMapsScalesAndYears } from './support/GetAllMapScalesAndYears.js?v0.01';
+// import { getAllMapsScalesAndYears } from './support/GetAllMapScalesAndYears.js?=v0.01';
 import { initDualSlider } from './UI/DualSlider/DualSlider.js?v=0.01';
 import { isScrollAtPageEnd } from './support/eventListeners/ScrollListener.js?v=0.01';
+import // mapItemHover,
+// mouseLeavesMapItem,
+// mapItemClick,
+'./UI/MapCards/ListOfMaps.js?v=0.01';
+import { getTopoMap } from './support/ImageExportQuery.js?v=0.01';
+import {
+	allYearChoices,
+	allScaleChoices,
+} from './support/YearsAndScalesProcessing.js?v=0.01';
 
 const initApp = async () => {
 	try {
 		//Initializing 'mapView', which contains 'map'.
-		const view = await initView();
+		const getMinMaxyears = Promise.all([getMinYear, getMaxYear]);
+		const getMinMaxScales = Promise.all([getMinScale, getMaxScale]);
 
-		view.when(
-			// queryConfig.setGeometry(view.extent),
-			// console.log(queryConfig.geometry),
-			require(['esri/core/reactiveUtils'], (reactiveUtils) => {
-				reactiveUtils.when(
-					() => view?.stationary,
-					async () => {
-						// console.log(view);
-						await queryConfig.setGeometry(view.extent);
-						queryConfig.extentQueryCall();
-					}
-				);
-			})
-		);
+		const minMaxYears = getMinMaxyears;
+		const minMaxScales = getMinMaxScales;
 
-		//what follows is a lot of logic and math. You shouldn't want any logic going on here.
+		const getTheYear = (index, value) => {
+			// console.log(yearsAndMapScales);
+			index === 0
+				? yearsAndMapScales.updateMinYear(value)
+				: yearsAndMapScales.updateMaxYear(value);
+			// console.log(scalesAndYears);
+			queryConfig.extentQueryCall();
+		};
 
-		await getAllMapsScalesAndYears()
-			.then((mapFeatures) => {
-				const [years, scales] = [
-					mapFeatures.availableYears,
-					mapFeatures.availableScales,
-				];
+		const getTheScale = (index, value) => {
+			// console.log(value);
+			index === 0
+				? yearsAndMapScales.updateMinScale(value)
+				: yearsAndMapScales.updateMaxScale(value);
 
+			// console.log(yearsAndMapScales);
+			queryConfig.extentQueryCall();
+		};
+
+		minMaxYears.then((minMaxYears) => {
+			allYearChoices(minMaxYears).then((years) => {
 				yearsAndMapScales.setMinMaxYears(years);
-				yearsAndMapScales.setMinMaxMapScales(scales);
-
-				const adjustedQuery = () => {
-					queryConfig.extentQueryCall();
-				};
-
-				//It really seems like I could move these functions somewhere else. They really clutter the function. There is nothing here (in the doc) that's keeping them here.
-				//TODO: Refactor this section. I don't think I need all these actions here, and what needs to be here could be better organized.
-				//TODO: Come up with a more accurate function name
-				const getTheYear = (index, value) => {
-					console.log(yearsAndMapScales);
-					index === 0
-						? yearsAndMapScales.updateMinYear(value)
-						: yearsAndMapScales.updateMaxYear(value);
-					// console.log(scalesAndYears);
-					adjustedQuery();
-				};
-				//TODO: Come up with a more accurate function name here too
-				const getTheScale = (index, value) => {
-					console.log(value);
-					index === 0
-						? yearsAndMapScales.updateMinScale(value)
-						: yearsAndMapScales.updateMaxScale(value);
-
-					// console.log(yearsAndMapScales);
-					adjustedQuery();
-				};
-
 				initDualSlider(
 					'years',
 					'YEARS',
@@ -75,6 +60,12 @@ const initApp = async () => {
 					years[0],
 					years[years.length - 1]
 				);
+			});
+		});
+
+		minMaxScales.then((minMaxScales) => {
+			allScaleChoices(minMaxScales).then((scales) => {
+				yearsAndMapScales.setMinMaxMapScales(scales);
 				initDualSlider(
 					'scales',
 					'SCALES',
@@ -83,32 +74,86 @@ const initApp = async () => {
 					scales[0],
 					scales[scales.length - 1]
 				);
-
-				const isReadyForMoreMaps = (value) => {
-					value
-						? (console.log('calling query'),
-						  queryConfig.checkAvailableNumberOfMaps())
-						: (console.log('doing nothing'), null);
-				};
-				isScrollAtPageEnd(isReadyForMoreMaps);
-				// return scalesAndYears;
-			})
-			.then((scalesAndYears) => {
-				//TODO: You HAVE to more these functions out of here. They should not be synchronusly tied to the initSlider()
-				// require(['esri/core/reactiveUtils'], (reactiveUtils) => {
-				// 	reactiveUtils.when(
-				// 		() => view?.stationary,
-				// 		async () => {
-				// 			// console.log(view);
-				// 			await queryConfig.setGeometry(view.extent);
-				// 			queryConfig.extentQueryCall();
-				// 		}
-				// 	);
-				// });
-				// const test = (value) =>
-				// 	value ? queryConfig.checkAvailableNumberOfMaps() : null;
-				// isScrollAtPageEnd(test);
 			});
+		});
+
+		const view = await initView();
+
+		view.when(
+			// NOTE: compafe view.center before and during event. if they are the same end/cancel the
+			require(['esri/core/reactiveUtils'], (reactiveUtils) => {
+				let prevCenter = view.center;
+				reactiveUtils.watch(
+					() => view?.center,
+					async () => {
+						if (prevCenter) {
+							if (prevCenter.x === view.center.x) {
+								console.log(prevCenter, view.center, 'extent not changed');
+								return;
+							}
+						}
+						console.log('extent moved >>> ', view?.center.toJSON());
+						// console.log('previous extent >>> ', prevCenter);
+						console.log('previous extent >>> ', prevCenter);
+						queryConfig.setGeometry(view.extent);
+						queryConfig.mapView = view;
+						queryConfig.extentQueryCall();
+						prevCenter = view?.center;
+					}
+				);
+			})
+		);
+
+		console.log('heres the view', view);
+
+		// const mapFootprintLayer = view.map.layers.find((layer) => {
+		// 	layer.title === 'mapFootprint';
+
+		// 	return layer;
+		// });
+
+		let footprintTest;
+
+		// const addMapFootprint = (mapOutline) => {
+		// 	mapFootprintLayer.graphics.push(mapOutline);
+		// };
+
+		// const mapPerimeter = (map) => {
+		// 	console.log(map);
+		// 	footprintTest = map;
+		// 	addMapFootprint(map);
+		// 	console.log(footprintTest);
+		// };
+		// const removeMapFootprint = () => {
+		// console.log(mapFootprintLayer.graphics);
+		//NOTE: I don't like that I'm using removeAll() here. There has to be a better way to remove the graphic.youwont
+		// mapFootprintLayer.graphics.removeAll();
+		// };
+		// mapItemHover(addMapFootprint);
+		// mapItemHover(mapPerimeter);
+		// mouseLeavesMapItem(removeMapFootprint);
+
+		const imageQuery = (oid, mapGeometry) => {
+			renderTopoMap(view, oid, mapGeometry);
+		};
+
+		//NOTE This 'remove' func is likely going to move. Probably to the imageExport file
+		// const removeTopo = (oid, mapGeometry) => {
+		// 	removeTopoMap(view, oid, mapGeometry);
+		// };
+
+		const zoomToTopo = (lat, long) => {
+			view.goTo({
+				center: [long, lat],
+			});
+		};
+
+		// mapItemClick(imageQuery, removeTopo, zoomToTopo);
+
+		const isReadyForMoreMaps = (value) =>
+			value ? queryConfig.checkAvailableNumberOfMaps() : null;
+
+		isScrollAtPageEnd(isReadyForMoreMaps);
 	} catch (error) {
 		//error handeling for any intialization issues
 		console.error('problem initalizing app', error);

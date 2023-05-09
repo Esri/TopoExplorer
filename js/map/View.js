@@ -1,23 +1,56 @@
-import { initMap } from './Map.js?v=0.01';
-// import { extentQueryCall } from '../support/query.js?v=0.01';
-
-//initializes the webmap that will be the basemap
-const map = await initMap();
+// import { mapFootprint } from '../UI/MapAndFootprint/MapFootprint';
 
 const initView = async () => {
 	return new Promise((resolve, reject) => {
-		//any issues with the map, and the promise will reject
-		if (!map) {
-			reject('problem intializing map', error);
-		}
 		//creating the view object and incorporating map.
 		require([
+			'esri/WebMap',
 			'esri/views/MapView',
+			'esri/layers/GraphicsLayer',
+			'esri/layers/ImageryLayer',
 			'esri/geometry/Extent',
 			'esri/geometry/SpatialReference',
 			'esri/widgets/Search',
 			'esri/core/reactiveUtils',
-		], (MapView, Extent, SpatialReference, Search, reactiveUtils) => {
+		], (
+			WebMap,
+			MapView,
+			GraphicsLayer,
+			ImageryLayer,
+			Extent,
+			SpatialReference,
+			Search,
+			reactiveUtils
+		) => {
+			const footprintLayer = new GraphicsLayer({
+				id: 'mapFootprint',
+				title: 'mapFootprint',
+				graphics: [],
+				effect: 'drop-shadow(0px, 0px, 16px, black) contrast(2)',
+				blendMode: 'overlay',
+				spatialReference: new SpatialReference({ wkid: 3857 }),
+			});
+
+			const topoMapLayer = new ImageryLayer({
+				id: 'topoMaps',
+				title: 'topoMaps',
+				// fields: [],
+				blendMode: 'normal',
+			});
+
+			// const topoMapLayer = new ImageryLayer({
+			// 	id: 'topoMap',
+			// 	title: 'topoMap',
+			// 	url: '',
+			// });
+
+			const map = new WebMap({
+				portalItem: {
+					id: '2e8a3ccdfd6d42a995b79812b3b0ebc6',
+				},
+				layers: [footprintLayer],
+			});
+
 			const extentOption = [
 				{
 					xmax: -11279319.669861136,
@@ -40,6 +73,7 @@ const initView = async () => {
 			const view = new MapView({
 				container: 'viewDiv',
 				map: map,
+				layerView: [],
 				extent: new Extent(extentOption[random()]),
 			});
 
@@ -47,6 +81,8 @@ const initView = async () => {
 				view: view,
 				resultGraphicEnabled: false,
 				popupEnabled: false,
+				includeDefaultSources: true,
+				countryCode: 'US',
 			});
 
 			view.ui.move('zoom', 'top-right');
