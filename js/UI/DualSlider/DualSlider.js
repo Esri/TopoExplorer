@@ -328,7 +328,7 @@ const initDualSlider = (
 		udpdateSliderHeading(1, maxVal);
 	});
 
-	//Listener to toggle the slider container visibility
+	//Listener to toggle the slider container and sort choice container visibility
 	container.querySelector(`button`).addEventListener('click', () => {
 		container.querySelector(`.sliderElement`).classList.contains('invisible')
 			? (document
@@ -342,6 +342,14 @@ const initDualSlider = (
 					.forEach((slideContainer) => {
 						slideContainer.classList.add('invisible');
 					});
+
+		!container.parentElement
+			.querySelector('.sortOptions')
+			.classList.contains('invisible')
+			? container.parentElement
+					.querySelector('.sortOptions')
+					.classList.add('invisible')
+			: null;
 	});
 
 	window.addEventListener('click', (e) => {

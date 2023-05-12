@@ -20,6 +20,7 @@ import {
 	allYearChoices,
 	allScaleChoices,
 } from './support/YearsAndScalesProcessing.js?v=0.01';
+import { sortChoice } from './UI/Sort/Sort.js?v=0.01';
 
 const initApp = async () => {
 	try {
@@ -76,6 +77,14 @@ const initApp = async () => {
 				);
 			});
 		});
+
+		const setSortOptions = (choiceValue) => {
+			console.log('check the query Config', queryConfig);
+			queryConfig.setSortChoice(choiceValue);
+			queryConfig.extentQueryCall();
+		};
+
+		sortChoice(setSortOptions);
 
 		const view = await initView();
 
