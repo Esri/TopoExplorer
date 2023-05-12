@@ -7,7 +7,7 @@ const mapFootprint = (geometry) => {
 			Graphic
 		) {
 			const mapOutline = JSON.parse(geometry);
-			console.log(mapOutline);
+			// console.log(mapOutline);
 			// // console.log(geometry.rings);
 			// console.log(JSON.parse(geometry));
 			// console.log(mapOutline.rings);

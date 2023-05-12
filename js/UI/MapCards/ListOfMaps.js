@@ -112,9 +112,13 @@ const createMapSlotItems = (list, view, url) => {
                 <div class='icon save'>
                   <svg class="save" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2 2h11v1H3v18h18V11h1v11H2zm20 6V2h-6v1h4.3l-8.41 8.403.707.707L21 3.714V8z"/><path fill="none" d="M0 0h24v24H0z"/></svg>
                 </div>
-                <div class='icon download'>
+                <a class='icon download' href="${
+									topoMap.downloadLink
+								}" download="${topoMap.location}, ${topoMap.date}, ${
+				topoMap.mapScale
+			}">
                   <svg class="download" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 3v12.294l2.647-2.647.707.707-3.853 3.854-3.854-3.854.707-.707L12 15.292V3zM6 21h13v-1H6z"/><path fill="none" d="M0 0h24v24H0z"/></svg>
-                </div>
+                </a>
                 
                 
                 <div class='mapCard-slider'>
@@ -235,6 +239,11 @@ const createMapSlotItems = (list, view, url) => {
 	// 	view.map.remove(specificTopo);
 	// };
 
+	const updatePinnedNumberHeader = () => {
+		// console.log('updating number');
+		document.querySelector('.pinCount').innerHTML = pinnedCardsArray.length;
+	};
+
 	const isCurrentMapPinned = () =>
 		pinnedCardsArray.find((pinnedMap, index) => {
 			console.log(pinnedMap, currentMapCard);
@@ -273,6 +282,7 @@ const createMapSlotItems = (list, view, url) => {
 		// });
 		// pinnedCardsArray.push(currentMapCard);
 		console.log(pinnedCardsArray);
+		updatePinnedNumberHeader();
 	};
 
 	const zoomToTopo = (lat, long) => {
@@ -310,7 +320,9 @@ const createMapSlotItems = (list, view, url) => {
 				const mapBoundry = JSON.stringify(cardInfo.mapBoundry);
 				mapFootprint(mapBoundry).then((topoOutline) => {
 					mapGeometry = topoOutline;
+					// console.log('the topoOutline', topoOutline);
 					mapFootprintLayer.graphics.add(topoOutline);
+					// console.log('the view', view);
 				});
 			});
 		});

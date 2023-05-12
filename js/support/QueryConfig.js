@@ -51,14 +51,15 @@ const removeTopoMap = (view, oid) => {
 };
 
 //NOTE: I think I can move this OBJ into a different module...remember this when building out the sort Module.
+//Can definitely be moved to a different module. Just like the year & scale
 const sortOptions = {
 	onlyYear: `${mapYear} ASC`,
-	oldestYearThenAzThenSmallestScale: `${mapYear} ASC, ${mapName} ASC, ${mapScale} ASC`,
-	newestYearThenAzThenSmallestScale: `${mapYear} DESC, ${mapName} ASC, ${mapScale} ASC`,
-	largestScaleYearThenAzThenOldest: `${mapScale} ASC, ${mapName} ASC, ${mapYear} ASC,`,
-	smallestScaleYearThenAzThenNewest: `${mapScale} ASC, ${mapName} ASC, ${mapYear} DESC`,
-	azOldestYearSmallestScale: `${mapName} ASC, ${mapYear} ASC, ${mapScale} ASC`,
-	zaOldestYearSmallestScale: `${mapName} DESC, ${mapYear} ASC, ${mapScale} ASC`,
+	oldestToNewest: `${mapYear} ASC, ${mapName} ASC, ${mapScale} ASC`,
+	newestToOldest: `${mapYear} DESC, ${mapName} ASC, ${mapScale} ASC`,
+	largeScaleToSmallScale: `${mapScale} DESC, ${mapName} ASC, ${mapYear} ASC`,
+	smallScaleToLargeScale: `${mapScale} ASC, ${mapName} ASC, ${mapYear} ASC`,
+	AZ: `${mapName} ASC, ${mapYear} ASC, ${mapScale} ASC`,
+	ZA: `${mapName} DESC, ${mapYear} ASC, ${mapScale} ASC`,
 };
 //NOTE: this could be moved to a different module.
 const yearsAndMapScales = {
@@ -127,6 +128,7 @@ const queryConfig = {
 		mapCenterY,
 		mapDownloadLink,
 	].join(','),
+	sortChoice: sortOptions.onlyYear,
 	resultOffset: 0,
 	resultRecordCount: 25,
 	totalMaps: 0,
@@ -152,7 +154,7 @@ const queryConfig = {
 			resultOffset: this.resultOffset,
 			resultRecordCount: this.resultRecordCount,
 			// NOTE: for the time-being we will not be using 'orderByFields'. This is to see how including 'OrderBy' can effect query-time.
-			orderByFields: sortOptions.onlyYear,
+			orderByFields: this.sortChoice,
 			f: 'json',
 		};
 	},
@@ -251,6 +253,10 @@ const queryConfig = {
 	setGeometry: function (locationData) {
 		console.log(locationData);
 		return (queryConfig.geometry = JSON.stringify(locationData));
+	},
+	setSortChoice: function (choiceValue) {
+		console.log('this is the choice for sorting', this.sortChoice);
+		return (this.sortChoice = sortOptions[choiceValue]);
 	},
 	extentQueryCall: function () {
 		extentQueryCall(this.url, this.totalMapsInExtentParams());
