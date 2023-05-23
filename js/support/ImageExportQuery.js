@@ -128,7 +128,7 @@ const getTopoMap = (oid, url) => {
 				// },
 				// format: 'jpgpng',
 				mosaicRule: {
-					mosaicMethod: 'center',
+					mosaicMethod: 'LockRaster',
 					where: `OBJECTID = ${oid}`,
 				},
 				// blendMode: 'normal',

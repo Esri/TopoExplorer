@@ -97,7 +97,7 @@ const initApp = async () => {
 					async () => {
 						if (prevCenter) {
 							if (prevCenter.x === view.center.x) {
-								console.log(prevCenter, view.center, 'extent not changed');
+								// console.log(prevCenter, view.center, 'extent not changed');
 								return;
 							}
 						}

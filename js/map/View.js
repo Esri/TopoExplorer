@@ -26,17 +26,26 @@ const initView = async () => {
 				id: 'mapFootprint',
 				title: 'mapFootprint',
 				graphics: [],
-				effect: 'drop-shadow(0px, 0px, 16px, black) contrast(2)',
-				blendMode: 'overlay',
+				effect: 'drop-shadow(0px, 0px, 8px, black) contrast(2)',
+				blendMode: 'hard-light',
 				spatialReference: new SpatialReference({ wkid: 3857 }),
 			});
 
-			const topoMapLayer = new ImageryLayer({
-				id: 'topoMaps',
-				title: 'topoMaps',
-				// fields: [],
-				blendMode: 'normal',
+			const haloLayer = new GraphicsLayer({
+				id: 'halo',
+				title: 'halo',
+				graphics: [],
+				effect: 'drop-shadow(0px, 0px, 8px, black) contrast(2)',
+				blendMode: 'hard-light',
+				spatialReference: new SpatialReference({ wkid: 3857 }),
 			});
+
+			// const topoMapLayer = new ImageryLayer({
+			// 	id: 'topoMaps',
+			// 	title: 'topoMaps',
+			// 	// fields: [],
+			// 	blendMode: 'normal',
+			// });
 
 			// const topoMapLayer = new ImageryLayer({
 			// 	id: 'topoMap',
@@ -48,7 +57,7 @@ const initView = async () => {
 				portalItem: {
 					id: '2e8a3ccdfd6d42a995b79812b3b0ebc6',
 				},
-				layers: [footprintLayer],
+				layers: [footprintLayer, haloLayer],
 			});
 
 			const extentOption = [
