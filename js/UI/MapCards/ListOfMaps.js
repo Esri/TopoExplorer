@@ -14,17 +14,28 @@ const mapListDetails = [];
 
 const pinnedCardsArray = [];
 
+let topoOnMapPlaceholder;
+
 const createMapSlotItems = (list, view, url) => {
-	const toposOnMapArray = [];
+	console.log(topoOnMapPlaceholder);
+	//NOTE: I don't like that the mapFootPrint and HaloGraphic layers
 	const mapFootprintLayer = view.map.layers.find((layer) => {
-		layer.title === 'mapFootprint';
-
-		return layer;
+		if (layer.title === 'mapFootprint') {
+			return layer;
+		}
 	});
 
-	view.map.layers.forEach((layer) => {
-		toposOnMapArray.push(parseInt(layer.id));
+	const mapHaloGraphicLayer = view.map.layers.find((layer) => {
+		if (layer.title === 'halo') {
+			return layer;
+		}
 	});
+
+	// view.map.layers.forEach((layer) => {
+	// 	console.log('map layers before', toposOnMapArray);
+	// 	toposOnMapArray.push(parseInt(layer.id));
+	// 	console.log('map layers after', toposOnMapArray);
+	// });
 
 	const addTopoToMap = (target, url) => {
 		getTopoMap(target, url).then((topoImageLayer) => {
@@ -47,17 +58,24 @@ const createMapSlotItems = (list, view, url) => {
 	};
 
 	const removeTopoFromMap = (oid) => {
-		findTopoLayer(oid).then((specificTopo) => {
-			view.map.remove(specificTopo);
-		});
+		findTopoLayer(oid)
+			.then((specificTopo) => {
+				view.map.remove(specificTopo);
+				// mapHaloGraphicLayer.graphics.remove(specificTopo);
+			})
+			.then(() => {
+				removeHalo(oid);
+			});
 	};
 
 	const mapSlot = list
 		.map((topoMap) => {
+			//NOTE: since this function is now using the 'pinnedCardArray' it can be moved outside of this function.
+			//which is what I want. Make it global
 			const isMapPinned = (map) => {
 				// console.log('chekcing for existing pin', map.OBJECTID);
 				// console.log(topoMap.OBJECTID);
-				return map.OBJECTID === topoMap.OBJECTID;
+				return map === topoMap.OBJECTID;
 			};
 
 			mapListDetails.push(topoMap);
@@ -65,7 +83,16 @@ const createMapSlotItems = (list, view, url) => {
 			//NOTE: I'm calling the same function for the same purpose (but a different class result) twice. There has to be a better way than what I have.
 			return ` 
           <div class ='map-list-item' oid='${topoMap.OBJECTID}'>
-
+            <div>
+              <div class="animate-checkbox invisible">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="1 0 20 20" height="16" width="16">
+                  <path d="M5.5 12L2 8.689l.637-.636L5.5 10.727l8.022-7.87.637.637z"></path>
+                </svg>
+              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 21"> 
+                
+              </svg>
+            </div>
             <div class="title-and-thumbnail">
               <div class ='map-list-item-title'>
                 <p class="mapSlotHeader"> ${topoMap.date} | ${topoMap.mapName}
@@ -80,7 +107,8 @@ const createMapSlotItems = (list, view, url) => {
             </div>
             
             <div class='action-container ${
-							toposOnMapArray.indexOf(topoMap.OBJECTID) !== -1
+							topoMap.OBJECTID == topoOnMapPlaceholder ||
+							pinnedCardsArray.findIndex(isMapPinned) !== -1
 								? 'flex'
 								: 'invisible'
 						}'>
@@ -158,7 +186,7 @@ const createMapSlotItems = (list, view, url) => {
 		return new Promise((resolve, reject) => {
 			mapListDetails.find((cardData) => {
 				if (cardData.OBJECTID == mapItem.attributes.oid.value) {
-					console.log(cardData);
+					// console.log(cardData);
 					currentMapCard = cardData;
 					resolve(cardData);
 				}
@@ -239,32 +267,80 @@ const createMapSlotItems = (list, view, url) => {
 	// 	view.map.remove(specificTopo);
 	// };
 
+	const setPlaceholder = (oid) => {
+		if (pinnedCardsArray.indexOf(topoOnMapPlaceholder) === -1) {
+			console.log('the most current map id is not pinned');
+			removeTopoFromMap(topoOnMapPlaceholder);
+		}
+		topoOnMapPlaceholder = parseInt(oid);
+		console.log(oid);
+	};
 	const updatePinnedNumberHeader = () => {
 		// console.log('updating number');
 		document.querySelector('.pinCount').innerHTML = pinnedCardsArray.length;
 	};
 
-	const isCurrentMapPinned = () =>
-		pinnedCardsArray.find((pinnedMap, index) => {
-			console.log(pinnedMap, currentMapCard);
-			if (pinnedMap.OBJECTID === currentMapCard.OBJECTID) {
-				console.log(pinnedMap, currentMapCard.OBJECTID);
-				return pinnedCardsArray.splice(index, 1);
-			}
-			return false;
-		});
+	let indexOfPinnedMap;
+	const addToPinnedArray = (oid) => {
+		pinnedCardsArray.push(oid);
+		updatePinnedNumberHeader();
+	};
 
-	const mapPinningAction = (pinIcon, pinCheckmarkIcon) => {
+	const removePinnedTopo = (index) => {
+		pinnedCardsArray.splice(index, 1);
+		updatePinnedNumberHeader();
+	};
+
+	const isCurrentMapPinned = (oid, callback) => {
+		console.log(oid);
+
+		const searchPinnedArray = pinnedCardsArray.indexOf(oid);
+		// console.log(searchPinnedArray);
+		if (searchPinnedArray === -1) {
+			callback(oid);
+			return;
+		} else {
+			removePinnedTopo(pinnedCardsArray.indexOf(oid));
+			callback(oid);
+		}
+
+		// pinnedCardsArray.find((pinnedMap, index) => {
+		// 	// console.log(pinnedMap);
+		// 	if (pinnedMap == oid) {
+		// 		console.log(pinnedMap, oid, index);
+		// 		indexOfPinnedMap = index;
+		// 		removePinnedTopo(index);
+		// 		return true;
+		// 	}
+		// 	console.log('this map has not been pinned');
+		// 	indexOfPinnedMap = -1;
+		// 	addToPinnedArray(oid);
+		// 	return false;
+		// });
+	};
+	const mapPinningAction = (pinIcon, pinCheckmarkIcon, targetOID) => {
 		console.log('pinning is', currentMapCard);
 
 		console.log(pinnedCardsArray);
 
-		pinIcon.classList.toggle('pinned'),
-			pinCheckmarkIcon.classList.toggle('hidden');
+		pinIcon.classList.toggle('pinned');
+		pinCheckmarkIcon.classList.toggle('hidden');
 
-		if (!isCurrentMapPinned()) {
-			pinnedCardsArray.push(currentMapCard);
+		if (pinIcon.classList.contains('pinned')) {
+			isCurrentMapPinned(currentMapCard.OBJECTID, addToPinnedArray);
+		} else {
+			isCurrentMapPinned(currentMapCard.OBJECTID, removeTopoFromMap);
+			closeMapCard(pinIcon);
 		}
+
+		// if (indexOfPinnedMap === -1) {
+		// 	console.log(test);
+		// 	pinnedCardsArray.push(currentMapCard);
+		// } else {
+		// 	console.log(test);
+		// 	console.log('this worked, I guess', indexOfPinnedMap);
+		// 	pinnedCardsArray.splice(indexOfPinnedMap, 1);
+		// }
 		// if (isCurrentMapPinned()) {
 		// 	console.log('is pinned', index);
 		// } else {
@@ -282,7 +358,7 @@ const createMapSlotItems = (list, view, url) => {
 		// });
 		// pinnedCardsArray.push(currentMapCard);
 		console.log(pinnedCardsArray);
-		updatePinnedNumberHeader();
+		// updatePinnedNumberHeader();
 	};
 
 	const zoomToTopo = (lat, long) => {
@@ -304,24 +380,62 @@ const createMapSlotItems = (list, view, url) => {
 					return;
 				} else {
 					removeTopoFromMap(mapCard.attributes.oid.value);
+					// removeHalo(mapCard.attributes.oid.value);
 					closeMapCard(mapCard);
 				}
 			}
 		});
 	};
 
+	const addHalo = (mapItem) =>
+		mapCardData(mapItem).then((cardInfo) => {
+			// currentMapCard = JSON.stringify(cardInfo);
+			mapFootprint(JSON.stringify(cardInfo)).then((topoOutline) => {
+				// mapGeometry = topoOutline;
+				// console.log(mapFootprintLayer);
+				console.log('the Halo', topoOutline);
+				mapHaloGraphicLayer.graphics.add(topoOutline);
+				console.log('the view', view);
+			});
+		});
+
+	const findHaloGraphic = (oid) => {
+		console.log(mapHaloGraphicLayer);
+		const haloGraphicsList = mapHaloGraphicLayer.graphics.items;
+		return new Promise((resolve, reject) => {
+			haloGraphicsList.find((mapHaloGraphic) => {
+				console.log(mapHaloGraphic);
+				console.log("here's the oid", oid);
+				if (mapHaloGraphic.attributes.id == oid) {
+					resolve(mapHaloGraphic);
+				}
+			});
+		});
+	};
+
+	const removeHalo = (oid) => {
+		console.log('was this called?');
+		findHaloGraphic(oid).then((specificHalo) => {
+			console.log('the specific halo', specificHalo);
+			mapHaloGraphicLayer.graphics.remove(specificHalo);
+			console.log(mapHaloGraphicLayer);
+		});
+	};
+
 	//Event Listeners for the mapCards
 	mapListItems.forEach((mapCard) => {
+		let footprintOutline;
+
 		mapCard.addEventListener('mouseenter', (event) => {
 			let mapItem = event.target;
 
 			mapCardData(mapItem).then((cardInfo) => {
-				currentMapCard = cardInfo;
-				const mapBoundry = JSON.stringify(cardInfo.mapBoundry);
-				mapFootprint(mapBoundry).then((topoOutline) => {
+				// currentMapCard = JSON.stringify(cardInfo);
+				mapFootprint(JSON.stringify(cardInfo)).then((topoOutline) => {
 					mapGeometry = topoOutline;
-					// console.log('the topoOutline', topoOutline);
-					mapFootprintLayer.graphics.add(topoOutline);
+					// console.log(mapFootprintLayer);
+					console.log('the topoOutline', topoOutline);
+					mapFootprintLayer.graphics.add(mapGeometry);
 					// console.log('the view', view);
 				});
 			});
@@ -329,7 +443,8 @@ const createMapSlotItems = (list, view, url) => {
 
 		mapCard.addEventListener('mouseleave', (event) => {
 			// console.log('leaving');
-			mapFootprintLayer.graphics.removeAll();
+			mapFootprintLayer.graphics.remove(mapGeometry);
+			// mapFootprintLayer.graphics.removeAll();
 		});
 
 		mapCard.addEventListener('click', (event) => {
@@ -344,8 +459,11 @@ const createMapSlotItems = (list, view, url) => {
 
 			if (!isMapCardOpen(target)) {
 				addTopoToMap(targetTopLevel.attributes.oid.value, url);
+				addHalo(targetTopLevel);
+				setPlaceholder(targetTopLevel.attributes.oid.value);
 			} else {
 				removeTopoFromMap(targetTopLevel.attributes.oid.value);
+				// removeHalo(targetTopLevel.attributes.oid.value);
 			}
 		});
 
@@ -358,10 +476,13 @@ const createMapSlotItems = (list, view, url) => {
 		pinBtn.addEventListener('click', (event) => {
 			event.stopPropagation();
 			//NOTE: this is a bad variable name...the function name isn't much better
+			console.log(event.target.closest('.map-list-item'));
+			const targetTopLevel = event.target.closest('.map-list-item');
+			const targetOID = targetTopLevel.attributes.oid.value;
 			const pinIcon = pinBtn.querySelector('.unpinned');
 			const pinCheckmarkIcon = pinBtn.querySelector('.checkmarkBackground');
 			console.log(pinCheckmarkIcon);
-			mapPinningAction(pinIcon, pinCheckmarkIcon);
+			mapPinningAction(pinIcon, pinCheckmarkIcon, targetOID);
 		});
 	});
 

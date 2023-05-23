@@ -22,6 +22,16 @@
   6px 6px 8px #D8E0E7;
   }
 
+.map-list-item .animate-checkbox {
+  width: 12px;
+  height: 12px;
+  background: #EAEEF1;
+  box-shadow: 
+  inset -6px -6px 6px #FFFFFF,
+  inset 6px 6px 8px #B8C2D3;
+border-radius: 2px;
+}
+
 .map-list-item:hover {
   cursor: pointer;
   border-radius: 12px;
@@ -53,6 +63,7 @@
   .img-cover{
     position: relative;
   }
+
   .map-list-item .frame {
     position: absolute;
     border: solid 3px #F1F4F5;
@@ -67,6 +78,7 @@
 
   .mapSlotHeader{
     font-weight: 700;
+    font-size: 18px;
   }
   
   .map-list-item-title{

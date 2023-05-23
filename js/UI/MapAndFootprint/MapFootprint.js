@@ -1,4 +1,4 @@
-const mapFootprintOutline = 1;
+const mapFootprintOutline = 2;
 
 const mapFootprint = (geometry) => {
 	return new Promise((resolve, reject) => {
@@ -6,7 +6,11 @@ const mapFootprint = (geometry) => {
 			GraphicsLayer,
 			Graphic
 		) {
-			const mapOutline = JSON.parse(geometry);
+			// console.log(geometry);
+			// console.log(JSON.parse(geometry));
+			const mapObj = JSON.parse(geometry);
+			// console.log(mapObj.mapBoundry);
+			const mapOutline = mapObj.mapBoundry;
 			// console.log(mapOutline);
 			// // console.log(geometry.rings);
 			// console.log(JSON.parse(geometry));
@@ -32,6 +36,9 @@ const mapFootprint = (geometry) => {
 			const mapFootprintGraphic = new Graphic({
 				geometry: footprintPolygon,
 				symbol: footprintFill,
+				attributes: {
+					id: mapObj.OBJECTID,
+				},
 			});
 
 			// const mapFootprintLayer = new GraphicsLayer({

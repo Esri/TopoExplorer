@@ -241,7 +241,7 @@ const queryConfig = {
 			OBJECTID: topo.attributes.OBJECTID,
 			date: topo.attributes[mapYear],
 			mapName: topo.attributes.Map_Name,
-			mapScale: `1:${topo.attributes.Map_Scale}`,
+			mapScale: `1:${topo.attributes.Map_Scale.toLocaleString()}`,
 			location: `${topo.attributes.Map_Name}, ${topo.attributes.State}`,
 			thumbnail: `${url}/${topo.attributes.OBJECTID}/info/thumbnail`,
 			mapCenterGeographyX: topo.attributes.CenterX,
