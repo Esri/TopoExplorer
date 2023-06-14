@@ -25,6 +25,7 @@ main {
   width: 100%;
 }
 
+
 button {
   display: flex;
   width: 100%;
@@ -138,6 +139,7 @@ border-radius: 0;
 
 .map-mode-container .action-area {
 padding: 0 10px;
+
 }
 
 .map-mode-container .action-area:hover {
@@ -154,9 +156,9 @@ padding: 0 10px;
   display: flex;
 }
 
-.mapCount {
-  /* padding: 0 0.25rem 0 0; */
-}
+/* .mapCount {
+ padding: 0 0.25rem 0 0;
+} */
 
 .map-mode-container .action-area .explorer-mode-btn{
   width: 50%;
@@ -271,7 +273,7 @@ padding: 0 10px;
   position: absolute;
   margin: auto;
   padding: 15px 20px;
-  z-index: 1;
+  z-index: 3;
   width: max-content;
   right: 15px;
   border-radius: 6px;
@@ -308,7 +310,7 @@ button .filterAndSortBtn:active {
   display: none;
 }
 
-#mapsList{
+#exploreList{
   height: calc(100vh - 180px);
   overflow-y: auto;
   overflow-x: hidden;

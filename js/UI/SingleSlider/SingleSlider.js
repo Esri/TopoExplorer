@@ -15,7 +15,7 @@ const initSingleSlider = (values) => {
           </div>
             <div class = "slider-handles">
               <div class="input-track">
-                <input id="min" class="singleSlider" type="range" list="" value="0" min="0" max="100">
+                <input class="opacitySliderHandle" type="range" list="" value="0" min="0" max="100">
                 </input>
               </div>
               <div class="slider-background">

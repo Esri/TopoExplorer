@@ -3,6 +3,7 @@ import {
 	findMaxYear,
 	findMinScale,
 	findMaxScale,
+	// findAllScalesAndYears,
 } from './GetAllMapScalesAndYears.js?v=0.01';
 import { numberOfMapsinView, extentQuery } from './Query.js?v=0.01';
 import { getTopoMap, addTopoMap } from './ImageExportQuery.js?v=0.01';
@@ -19,8 +20,22 @@ import {
 // import { addTopoMap } from './ImageExportQuery';
 // import { checkIfQuerying } from './Query.js?v=0.01';
 
-const url =
-	'https://utility.arcgis.com/usrsvcs/servers/06ee78ba612c446f940d68e22a6b091b/rest/services/USGS_Historical_Topographic_Maps/ImageServer';
+const setURL = () => {
+	console.log(window.location.host);
+	if (window.location.host === 'livingatlas.arcgis.com') {
+		return 'https://utility.arcgis.com/usrsvcs/servers/06ee78ba612c446f940d68e22a6b091b/rest/services/USGS_Historical_Topographic_Maps/ImageServer';
+	} else if (window.location.host === 'livingatlasstg.arcgis.com') {
+		return 'https://historical1-stg.arcgis.com/arcgis/rest/services/USGS_Historical_Topographic_Maps/ImageServer';
+	} else {
+		return 'https://utility.arcgis.com/usrsvcs/servers/06ee78ba612c446f940d68e22a6b091b/rest/services/USGS_Historical_Topographic_Maps/ImageServer';
+		//'https://52.9.122.15:6443/arcgis/rest/services/USA_Historical_Topo_Maps_update_ovs/ImageServer';
+		// 'http://52.9.122.15:6080/arcgis/rest/services/USA_Historical_Topo_Maps_update_ovs/ImageServer';
+	}
+};
+
+const url = setURL();
+console.log('target url', url);
+
 let whereStatement = 'year >= 1878';
 
 const objectId = 'ObjectID';
@@ -37,6 +52,7 @@ const getMinYear = findMinYear(`${url}/query`);
 const getMaxYear = findMaxYear(`${url}/query`);
 const getMinScale = findMinScale(`${url}/query`);
 const getMaxScale = findMaxScale(`${url}/query`);
+// const getAllScalesAndYears = findAllScalesAndYears(`${url}/query`);
 
 const renderTopoMap = (view, oid, mapGeometry) => {
 	getTopoMap(url, view, oid, mapGeometry).then((topoMapImage) => {
@@ -133,22 +149,24 @@ const queryConfig = {
 	resultRecordCount: 25,
 	totalMaps: 0,
 	totalMapsInExtentParams: function () {
-		return {
+		return new URLSearchParams({
 			where: this.where,
 			geometry: this.geometry,
-			geometryType: 'esriGeometryEnvelope',
+			geometryType: 'esriGeometryPolygon',
 			spatialRel: this.spatialRelation,
+			inSR: 4326,
 			returnCountOnly: true,
 			f: 'json',
-		};
+		});
 	},
 	mapDataParams: function () {
-		return {
+		return new URLSearchParams({
 			where: this.where,
 			geometry: this.geometry,
-			geometryType: 'esriGeometryEnvelope',
+			geometryType: 'esriGeometryPolygon',
 			spatialRel: this.spatialRelation,
 			returnGeometry: true,
+			inSR: 4326,
 			// returnQueryGeometry: true,
 			outFields: this.queryOutfields,
 			resultOffset: this.resultOffset,
@@ -156,7 +174,7 @@ const queryConfig = {
 			// NOTE: for the time-being we will not be using 'orderByFields'. This is to see how including 'OrderBy' can effect query-time.
 			orderByFields: this.sortChoice,
 			f: 'json',
-		};
+		});
 	},
 	queryMapData: function () {
 		extentQuery(this.url, this.mapDataParams())
@@ -251,8 +269,72 @@ const queryConfig = {
 		}));
 	},
 	setGeometry: function (locationData) {
-		console.log(locationData);
-		return (queryConfig.geometry = JSON.stringify(locationData));
+		console.log('this is the geometry data to change?', locationData);
+		require([
+			'esri/geometry/support/webMercatorUtils',
+			'esri/geometry/Polygon',
+		], (webMercatorUtils, Polygon) => {
+			const createPolygon = Polygon.fromExtent(locationData);
+
+			const convertPolygonToWGS =
+				webMercatorUtils.webMercatorToGeographic(createPolygon);
+
+			console.log(convertPolygonToWGS);
+
+			const geographicAdjustedLocation =
+				webMercatorUtils.webMercatorToGeographic(locationData);
+
+			if (geographicAdjustedLocation.xmin > geographicAdjustedLocation.xmax) {
+				console.log('xmin is greater than xmax');
+				geographicAdjustedLocation.xmin -= 360;
+			}
+
+			// const simplifiedGeographicExtent = {
+			// 	xmin: geographicAdjustedLocation.xmin.toFixed(2),
+			// 	ymin: geographicAdjustedLocation.ymin.toFixed(2),
+			// 	xmax: geographicAdjustedLocation.xmax.toFixed(2),
+			// 	ymax: geographicAdjustedLocation.ymax.toFixed(2),
+			// 	spatialReference: {
+			// 		wkid: 4326,
+			// 	},
+			// };
+
+			const polygon = new Polygon({
+				hasZ: false,
+				hasM: false,
+				rings: [
+					[
+						[
+							geographicAdjustedLocation.xmin.toFixed(2),
+							geographicAdjustedLocation.ymin.toFixed(2),
+						],
+						[
+							geographicAdjustedLocation.xmin.toFixed(2),
+							geographicAdjustedLocation.ymax.toFixed(2),
+						],
+						[
+							geographicAdjustedLocation.xmax.toFixed(2),
+							geographicAdjustedLocation.ymax.toFixed(2),
+						],
+						[
+							geographicAdjustedLocation.xmax.toFixed(2),
+							geographicAdjustedLocation.ymin.toFixed(2),
+						],
+						[
+							geographicAdjustedLocation.xmin.toFixed(2),
+							geographicAdjustedLocation.ymin.toFixed(2),
+						],
+					],
+				],
+				spatialReference: {
+					wkid: 4326,
+				},
+			});
+
+			console.log('converted extent', geographicAdjustedLocation);
+
+			return (queryConfig.geometry = JSON.stringify(polygon));
+		});
 	},
 	setSortChoice: function (choiceValue) {
 		console.log('this is the choice for sorting', this.sortChoice);
@@ -284,6 +366,7 @@ export {
 	getMaxYear,
 	getMinScale,
 	getMaxScale,
+	// getAllScalesAndYears,
 	renderTopoMap,
 	removeTopoMap,
 };

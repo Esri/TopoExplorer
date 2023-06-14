@@ -77,13 +77,27 @@ const initView = async () => {
 				},
 			];
 
-			const random = () => Math.floor(Math.random() * extentOption.length);
+			const locations = [
+				[-121.7306, 45.602],
+				[-80.3331, 25.7823],
+				[-74.3817, 43.8713],
+				[-84.7638, 45.8004],
+				[-95.0008, 29.5024],
+				[-117.1944, 32.6901],
+			];
+			// const random = () => Math.floor(Math.random() * extentOption.length);
+			const randomLocation = () => Math.floor(Math.random() * locations.length);
 
 			const view = new MapView({
 				container: 'viewDiv',
 				map: map,
 				layerView: [],
-				extent: new Extent(extentOption[random()]),
+				center: locations[randomLocation()],
+				zoom: 10,
+				constraints: {
+					minZoom: 3,
+				},
+				// extent: new Extent(extentOption[random()]),
 			});
 
 			const searchWidget = new Search({

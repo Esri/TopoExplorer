@@ -7,6 +7,7 @@ import {
 	getMaxYear,
 	getMinScale,
 	getMaxScale,
+	// getAllScalesAndYears,
 } from './support/QueryConfig.js?v=0.01';
 // import { getAllMapsScalesAndYears } from './support/GetAllMapScalesAndYears.js?=v0.01';
 import { initDualSlider } from './UI/DualSlider/DualSlider.js?v=0.01';
@@ -27,6 +28,7 @@ const initApp = async () => {
 		//Initializing 'mapView', which contains 'map'.
 		const getMinMaxyears = Promise.all([getMinYear, getMaxYear]);
 		const getMinMaxScales = Promise.all([getMinScale, getMaxScale]);
+		// getAllScalesAndYears;
 
 		const minMaxYears = getMinMaxyears;
 		const minMaxScales = getMinMaxScales;
@@ -87,14 +89,21 @@ const initApp = async () => {
 		sortChoice(setSortOptions);
 
 		const view = await initView();
+		// const zoomDiv = document.createElement('div');
+		// zoomDiv.innerHTML = 'Zoom level is...';
+		// zoomDiv.classList.add('zoomDiv');
+		// document.querySelector('#viewDiv').append(zoomDiv);
 
 		view.when(
 			// NOTE: compafe view.center before and during event. if they are the same end/cancel the
 			require(['esri/core/reactiveUtils'], (reactiveUtils) => {
 				let prevCenter = view.center;
-				reactiveUtils.watch(
-					() => view?.center,
+				console.log('view info', view);
+				// console.log(view.constraints.effectiveLODs);
+				reactiveUtils.when(
+					() => view?.stationary === true,
 					async () => {
+						console.log('view info', view);
 						if (prevCenter) {
 							if (prevCenter.x === view.center.x) {
 								// console.log(prevCenter, view.center, 'extent not changed');
@@ -104,6 +113,8 @@ const initApp = async () => {
 						console.log('extent moved >>> ', view?.center.toJSON());
 						// console.log('previous extent >>> ', prevCenter);
 						console.log('previous extent >>> ', prevCenter);
+						console.log('view info', view);
+						document.querySelector('.zoomDiv span').innerHTML = view.zoom;
 						queryConfig.setGeometry(view.extent);
 						queryConfig.mapView = view;
 						queryConfig.extentQueryCall();

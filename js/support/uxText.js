@@ -12,7 +12,7 @@
 // }
 
 const renderSidebarUXText = (helpText) => {
-	document.querySelector('#mapsList').innerHTML = '';
+	document.querySelector('#exploreList').innerHTML = '';
 	document.querySelector('#mapsListUxText').classList.remove('invisible');
 	document.querySelector('#mapsListUxText').innerHTML = helpText;
 };

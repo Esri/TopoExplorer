@@ -1,4 +1,4 @@
-const mapListScrollBar = document.querySelector('#mapsList');
+const mapListScrollBar = document.querySelector('#exploreList');
 
 const scrollPosition = () => {
 	return Math.abs(
