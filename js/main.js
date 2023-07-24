@@ -7,15 +7,13 @@ import {
 	getMaxYear,
 	getMinScale,
 	getMaxScale,
+	queryHashedTopos,
 	// getAllScalesAndYears,
 } from './support/QueryConfig.js?v=0.01';
 // import { getAllMapsScalesAndYears } from './support/GetAllMapScalesAndYears.js?=v0.01';
 import { initDualSlider } from './UI/DualSlider/DualSlider.js?v=0.01';
 import { isScrollAtPageEnd } from './support/eventListeners/ScrollListener.js?v=0.01';
-import // mapItemHover,
-// mouseLeavesMapItem,
-// mapItemClick,
-'./UI/MapCards/ListOfMaps.js?v=0.01';
+
 import { getTopoMap } from './support/ImageExportQuery.js?v=0.01';
 import {
 	allYearChoices,
@@ -52,33 +50,34 @@ const initApp = async () => {
 			queryConfig.extentQueryCall();
 		};
 
-		minMaxYears.then((minMaxYears) => {
-			allYearChoices(minMaxYears).then((years) => {
-				yearsAndMapScales.setMinMaxYears(years);
-				initDualSlider(
-					'years',
-					'YEARS',
-					getTheYear,
-					years,
-					years[0],
-					years[years.length - 1]
-				);
-			});
-		});
+		// minMaxYears.then((minMaxYears) => {
+		// 	allYearChoices(minMaxYears).then((years) => {
+		// 		yearsAndMapScales.setMinMaxYears(years);
+		// 		initDualSlider(
+		// 			'years',
+		// 			'YEARS',
+		// 			getTheYear,
+		// 			years,
+		// 			years[0],
+		// 			years[years.length - 1], view
+		// 		);
+		// 	});
+		// });
 
-		minMaxScales.then((minMaxScales) => {
-			allScaleChoices(minMaxScales).then((scales) => {
-				yearsAndMapScales.setMinMaxMapScales(scales);
-				initDualSlider(
-					'scales',
-					'SCALES',
-					getTheScale,
-					scales,
-					scales[0],
-					scales[scales.length - 1]
-				);
-			});
-		});
+		// minMaxScales.then((minMaxScales) => {
+		// 	allScaleChoices(minMaxScales).then((scales) => {
+		// 		yearsAndMapScales.setMinMaxMapScales(scales);
+		// 		initDualSlider(
+		// 			'scales',
+		// 			'SCALES',
+		// 			getTheScale,
+		// 			scales,
+		// 			scales[0],
+		// 			scales[scales.length - 1],
+		// 			view
+		// 		);
+		// 	});
+		// });
 
 		const setSortOptions = (choiceValue) => {
 			console.log('check the query Config', queryConfig);
@@ -98,33 +97,92 @@ const initApp = async () => {
 			// NOTE: compafe view.center before and during event. if they are the same end/cancel the
 			require(['esri/core/reactiveUtils'], (reactiveUtils) => {
 				let prevCenter = view.center;
-				console.log('view info', view);
+				// console.log('view info', view);
 				// console.log(view.constraints.effectiveLODs);
 				reactiveUtils.when(
 					() => view?.stationary === true,
 					async () => {
 						console.log('view info', view);
 						if (prevCenter) {
+							// console.log(prevCenter);
+							// console.log(view.extent.xmax);
+							// 	if (prevCenter.extent.xmax === view.extent.xmax)
 							if (prevCenter.x === view.center.x) {
+								console.log('previous center', prevCenter.x);
+								console.log('new center', view.center.x);
 								// console.log(prevCenter, view.center, 'extent not changed');
 								return;
 							}
 						}
-						console.log('extent moved >>> ', view?.center.toJSON());
+						// console.log('extent moved >>> ', view?.center.toJSON());
 						// console.log('previous extent >>> ', prevCenter);
-						console.log('previous extent >>> ', prevCenter);
-						console.log('view info', view);
-						document.querySelector('.zoomDiv span').innerHTML = view.zoom;
+						// console.log('previous extent >>> ', prevCenter);
+						// document.querySelector('.zoomDiv span').innerHTML = view.zoom;
 						queryConfig.setGeometry(view.extent);
 						queryConfig.mapView = view;
 						queryConfig.extentQueryCall();
+						// zoomDependentSelections(view);
 						prevCenter = view?.center;
 					}
 				);
+
+				// reactiveUtils.watch(
+				// 	() => view?.zoom,
+				// 	async () => {
+				// 		console.log('making the zommm work?');
+				// 		if (view.stationary === true) {
+				// 			console.log("okay, we're stationary");
+				// 			document.querySelector('.zoomDiv span').innerHTML = view.zoom;
+				// 			queryConfig.setGeometry(view.extent);
+				// 			queryConfig.mapView = view;
+				// 			queryConfig.extentQueryCall();
+				// 		}
+				// 	}
+				// );
+			}),
+			minMaxYears.then((minMaxYears) => {
+				allYearChoices(minMaxYears).then((years) => {
+					yearsAndMapScales.setMinMaxYears(years);
+					initDualSlider(
+						'years',
+						'YEARS',
+						getTheYear,
+						years,
+						years[0],
+						years[years.length - 1],
+						view
+					);
+				});
+			}),
+
+			minMaxScales.then((minMaxScales) => {
+				allScaleChoices(minMaxScales).then((scales) => {
+					yearsAndMapScales.setMinMaxMapScales(scales);
+					initDualSlider(
+						'scales',
+						'SCALES',
+						getTheScale,
+						scales,
+						scales[0],
+						scales[scales.length - 1],
+						view
+					);
+				});
 			})
 		);
 
-		console.log('heres the view', view);
+		if (window.location.hash) {
+			queryHashedTopos(view);
+		}
+		//NOTE: not sure if this is the best idea: setting up the render for any topos in the URL's hash, but it's worth a go, I suppose
+		//It doesn't seem to be working. ...I think I'll have to call this from the queryConfig folder? the function needs the query's URL.
+
+		// const hashCheck = new URL(window.location.href);
+		// if (hashCheck.hash) {
+		// 	console.log(hashCheck.hash);
+		// 	console.log(view);
+		// 	renderHashedTopoMaps(view);
+		// }
 
 		// const mapFootprintLayer = view.map.layers.find((layer) => {
 		// 	layer.title === 'mapFootprint';
@@ -132,7 +190,7 @@ const initApp = async () => {
 		// 	return layer;
 		// });
 
-		let footprintTest;
+		// let footprintTest;
 
 		// const addMapFootprint = (mapOutline) => {
 		// 	mapFootprintLayer.graphics.push(mapOutline);
@@ -153,20 +211,20 @@ const initApp = async () => {
 		// mapItemHover(mapPerimeter);
 		// mouseLeavesMapItem(removeMapFootprint);
 
-		const imageQuery = (oid, mapGeometry) => {
-			renderTopoMap(view, oid, mapGeometry);
-		};
+		// const imageQuery = (oid, mapGeometry) => {
+		// 	renderTopoMap(view, oid, mapGeometry);
+		// };
 
 		//NOTE This 'remove' func is likely going to move. Probably to the imageExport file
 		// const removeTopo = (oid, mapGeometry) => {
 		// 	removeTopoMap(view, oid, mapGeometry);
 		// };
 
-		const zoomToTopo = (lat, long) => {
-			view.goTo({
-				center: [long, lat],
-			});
-		};
+		// const zoomToTopo = (lat, long) => {
+		// 	view.goTo({
+		// 		center: [long, lat],
+		// 	});
+		// };
 
 		// mapItemClick(imageQuery, removeTopo, zoomToTopo);
 

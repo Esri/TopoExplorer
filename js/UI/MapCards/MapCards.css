@@ -45,19 +45,6 @@
   inset 2px 2px 1px #B8C2D3;
 }
 
-.left-margin .drag-grip{
-  margin: 10px 0
-}
-
-.left-margin .drag-grip .grip-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  box-shadow: 
-  inset -2px -2px 1px #FFFFFF,
-  inset 2px 2px 1px #B8C2D3;
-}
-
 .map-list-item:hover {
   cursor: pointer;
   border-radius: 12px;
@@ -68,10 +55,40 @@
   6px 6px 8px #B3BED0;
   }
 
-.map-list-item:active{
+#exploreList .map-list-item:active{
   border-radius: 12px;
   background: #F7F9F9;
   box-shadow:  inset 6px 6px 6px #D8E0E7;
+}
+
+
+#pinnedList .left-margin .drag-grip{
+  margin: 10px 0;
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+
+/* #pinnedList .left-margin .drag-grip:active .map-list-item{
+  
+cursor: grabbing;
+cursor: -moz-grabbing;
+cursor: -webkit-grabbing;
+} */
+
+.grabbing{
+cursor: grabbing;
+cursor: -moz-grabbing;
+cursor: -webkit-grabbing;
+}
+
+.left-margin .drag-grip .grip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  box-shadow: 
+  inset -2px -2px 1px #FFFFFF,
+  inset 2px 2px 1px #B8C2D3;
 }
 
   /* NOTE: I was using this in the event for the drag-ability of the pinned map-cards*/
@@ -149,7 +166,7 @@ box-shadow:
 border-radius: 6px;
 }
 
-.action-area .icon {
+ .icon {
   position: relative;
   overflow: hidden;
   height: 40px;
@@ -159,6 +176,7 @@ border-radius: 6px;
   background: #F1F4F5;
   box-shadow:
   4px 4px 6px #B8C2D3;
+  cursor: pointer;
 }
 
 /* .icon.pushpin {
@@ -247,10 +265,6 @@ border-radius: 6px;
   top: -2px;
 }
 
-.mapCard-slider input[type=range]::-webkit-slider-thumb::before {
-color: chartreuse;
-}
-
 .mapCard-slider input[type=range]::-moz-range-thumb {
   appearance: none;
   pointer-events: all;
@@ -303,4 +317,40 @@ background-color: chartreuse;
   background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(209,216,226,1) 100%);
   width: 100%;
   border-radius: 3px;
+}
+
+#pinnedList .drag-sort-active{
+  /* background: transparent; */
+  /* color: transparent; */
+  /* border: 1px solid #4ca1af; */
+  /* background: #637287;
+  color: #637287; */
+  opacity: 0;
+  cursor: grabbing;
+}
+
+/* #pinnedList .drag-sort-active:active {
+  /* background: transparent; */
+  /* color: transparent; */
+  /* border: 1px solid #4ca1af; */
+  /* background: #637287;
+  color: #637287;
+  opacity: 0;
+  cursor: grabbing;
+} */
+
+.drag-sort-background {
+  background-color: darkgrey;
+  border-radius: 12px;
+  /* box-shadow: inset 6px 6px 6px #EAEEF1, -6px -6px 8px #F9FBFB, 6px 6px 8px #D8E0E7; */
+}
+
+#pinnedList div.mapCard-container  div:active {
+  cursor: grabbing;
+}
+
+.grabbedItemImage {
+  position:absolute;
+  top: -200px;
+  width:350px;
 }

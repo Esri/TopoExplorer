@@ -13,9 +13,10 @@ const cancelQuery = () => {
 };
 
 const extentQuery = async (url, params) => {
-	console.log(
-		`query to get ${params.resultRecordCount} maps at position ${params.resultOffset}`
-	);
+	// console.log(params);
+	// console.log(
+	// 	`query to get ${params.resultRecordCount} maps at position ${params.resultOffset}`
+	// );
 
 	//TODO: need to refactor the querySelector and 'hidden' class removal. It occurs twice and shouldn't really be here.
 	if (isQuerying !== true) {

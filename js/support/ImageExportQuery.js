@@ -36,8 +36,8 @@ const getTopoMap = (oid, url) => {
 		) => {
 			//NOTE: I'm not a fan of this approach to finding the layer I want. Will need to look for a better method: something more sustainable.
 
-			console.log(url);
-			console.log(oid);
+			// console.log(url);
+			// console.log(oid);
 			// console.log(mapGeometry);
 
 			// console.log(bbox);
@@ -81,7 +81,7 @@ const getTopoMap = (oid, url) => {
 			// 	f: 'image',
 			// });
 
-			console.log('getting map image');
+			// console.log('getting map image');
 			// console.log(`${url}?${params}`);
 			// const topoImageURL = `${url}?${params}`;
 			// axios.get(url, { params }).then((response) => {
@@ -138,7 +138,7 @@ const getTopoMap = (oid, url) => {
 				// }),
 			});
 
-			console.log('new imagery layer', topoMapLayer);
+			// console.log('new imagery layer', topoMapLayer);
 			resolve(topoMapLayer);
 			// addTopoMap(view, topoMapImage);
 			// });

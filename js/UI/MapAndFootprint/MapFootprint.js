@@ -1,6 +1,6 @@
 const mapFootprintOutline = 2;
 
-const mapFootprint = (geometry) => {
+const mapFootprint = (mapCardID, geometry) => {
 	return new Promise((resolve, reject) => {
 		require(['esri/layers/GraphicsLayer', 'esri/Graphic'], function (
 			GraphicsLayer,
@@ -8,9 +8,9 @@ const mapFootprint = (geometry) => {
 		) {
 			// console.log(geometry);
 			// console.log(JSON.parse(geometry));
-			const mapObj = JSON.parse(geometry);
+			// const mapObj = JSON.parse(geometry);
 			// console.log(mapObj.mapBoundry);
-			const mapOutline = mapObj.mapBoundry;
+			const mapOutline = JSON.parse(geometry);
 			// console.log(mapOutline);
 			// // console.log(geometry.rings);
 			// console.log(JSON.parse(geometry));
@@ -25,19 +25,66 @@ const mapFootprint = (geometry) => {
 			};
 
 			const footprintFill = {
-				type: 'simple-fill',
-				color: '#7f7f7f',
-				outline: {
-					color: '#FFFFFF',
-					width: mapFootprintOutline,
+				type: 'cim',
+				data: {
+					type: 'CIMSymbolReference',
+					symbol: {
+						type: 'CIMPolygonSymbol',
+						symbolLayers: [
+							{
+								type: 'CIMSolidStroke',
+								enable: true,
+								capStyle: 'Round',
+								joinStyle: 'Round',
+								lineStyle3D: 'Strip',
+								miterLimit: 10,
+								width: 2.65,
+								color: [255, 255, 255, 255],
+							},
+							{
+								type: 'CIMHatchFill',
+								enable: true,
+								lineSymbol: {
+									type: 'CIMLineSymbol',
+									symbolLayers: [
+										{
+											type: 'CIMSolidStroke',
+											enable: true,
+											capStyle: 'Butt',
+											joinStyle: 'Miter',
+											lineStyle3D: 'Strip',
+											miterLimit: 10,
+											width: 3.75,
+											color: [255, 255, 255, 160],
+										},
+									],
+								},
+								rotation: 45,
+								separation: 10,
+							},
+							{
+								type: 'CIMSolidFill',
+								color: [153, 153, 153, 255],
+							},
+						],
+					},
 				},
 			};
+
+			// {
+			// 	type: 'simple-fill',
+			// 	color: '#7f7f7f',
+			// 	outline: {
+			// 		color: '#FFFFFF',
+			// 		width: mapFootprintOutline,
+			// 	},
+			// };
 
 			const mapFootprintGraphic = new Graphic({
 				geometry: footprintPolygon,
 				symbol: footprintFill,
 				attributes: {
-					id: mapObj.OBJECTID,
+					id: mapCardID,
 				},
 			});
 

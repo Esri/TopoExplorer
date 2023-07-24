@@ -16,7 +16,8 @@ const initDualSlider = (
 	onChangeHandler,
 	values,
 	min,
-	max
+	max,
+	view
 ) => {
 	const container = document.getElementById(`${containerId}`);
 	//NOTE: I'm using an 'ondragstart' attribute to stop any drag events on that element. I'm using it to try and solve a bug. if this DOES work, I should implement this attribute more responsibly.
@@ -29,9 +30,11 @@ const initDualSlider = (
             <span class="headerSpan">
               ${formatNumbersForSliderHeader(min)}
 						</span> 
-            - <span class="headerSpan">${formatNumbersForSliderHeader(
-							max
-						)}</span>
+            - <span class="headerSpan">${formatNumbersForSliderHeader(max)}
+            </span>
+            <span class="tooltipText">Zoom in to see this ${title
+							.substring(0, title.length - 1)
+							.toLowerCase()}</span>
           </p>
         </div>
       </button>
@@ -61,15 +64,67 @@ const initDualSlider = (
               <span class="minSliderValue">${formatSliderNumbers(min)}</span>
               <span class="maxSliderValue">${formatSliderNumbers(max)}</span>
             </div>
+            <div class='zoomInHelpText hidden'>
+                  Zoom in to see this ${title
+										.substring(0, title.length - 1)
+										.toLowerCase()}
+            </div>
           </div>
        </div>
     </div>
   </div>
 `;
 
-	const sliderComponents = container.querySelector('.inputs');
+	const zoomDependentSelections = () => {
+		if (view.zoom === 4) {
+			return values.length - 1;
+		}
+		if (view.zoom === 5 || view.zoom === 6) {
+			console.log('zomm is actaully 5 or 6');
+			console.log(view.zoom);
+			return values.length - 2;
+		}
+		if (view.zoom === 7 || view.zoom === 8) {
+			console.log('zomm is actaully 7 or 8');
+			return values.length - 3;
+		}
+		if (view.zoom >= 9) {
+			return -1;
+		}
+	};
 
-	console.log(sliderComponents);
+	const isScaleValueWithinAvailableRange = (handle, value) => {
+		const maxScaleChoice = sliderComponents.querySelector('.maxSlider').value;
+		const minScaleChoice = sliderComponents.querySelector('.minSlider').value;
+
+		// console.log(zoomDependentSelections());
+		let isAvailable;
+		if (value < zoomDependentSelections()) {
+			isAvailable = false;
+			udpdateSliderHeading(handle, value, isAvailable);
+			debounceInput(handle, value);
+		} else {
+			isAvailable = true;
+			udpdateSliderHeading(handle, value, isAvailable);
+			debounceInput(handle, value);
+		}
+
+		if (
+			minScaleChoice < zoomDependentSelections() &&
+			maxScaleChoice < zoomDependentSelections()
+		) {
+			const noMapsText = `<div class='helpText'>
+      Change your map extent,
+      or adjust filter selections,
+      to find topo maps.
+      </div>
+      `;
+			document.querySelector('.mapCount').innerHTML = 0;
+			document.querySelector('#exploreList').innerHTML = noMapsText;
+		}
+	};
+
+	const sliderComponents = container.querySelector('.inputs');
 
 	//creating the slider sections on the track. Highlighting the change of slection whn the handles move
 	const sliderBar = values
@@ -110,9 +165,26 @@ const initDualSlider = (
 	container.querySelector('.tickmarks-container').innerHTML =
 		sliderOptionsHTMLStr;
 
-	const udpdateSliderHeading = (child, value) => {
-		container.querySelectorAll(`.sliderBtn span`)[child].innerHTML =
-			formatNumbersForSliderHeader(values[value]);
+	//This querySelector finds the minValue for the Scale slider's header and adds a transparency effect to it. Because the initial value is outside the available range.
+	//I'm not a big fan of implementing this kind of solution, but I needed something quick at the moment.
+	if (container.querySelectorAll('#scales .sliderBtn span')[0]) {
+		container
+			.querySelectorAll('#scales .sliderBtn span')[0]
+			.classList.add('transparency');
+	}
+
+	const udpdateSliderHeading = (child, value, isAvailable) => {
+		const headerSpan = container.querySelectorAll(`.sliderBtn span`)[child];
+		const headerSpanWithOpacity = headerSpan.classList.contains('transparency');
+		headerSpan.innerHTML = formatNumbersForSliderHeader(values[value]);
+
+		if (isAvailable) {
+			console.log('is availble for spanning');
+			headerSpan.classList.remove('transparency');
+		} else {
+			console.log('is availble for opacity');
+			headerSpan.classList.add('transparency');
+		}
 	};
 
 	const addSliderTooltipVisibility = (index) => {
@@ -124,7 +196,7 @@ const initDualSlider = (
 
 	const removeSliderToolTipVisibility = () => {
 		container.querySelectorAll('.tooltip').forEach((tooltip) => {
-			console.log(tooltip);
+			// console.log(tooltip);
 			if (!tooltip.classList.contains('invisible')) {
 				tooltip.classList.add('invisible');
 			}
@@ -141,6 +213,17 @@ const initDualSlider = (
 				section.classList.add('slider-color');
 			}
 		});
+	};
+
+	const unavailbleScalesToolTip = (value) => {
+		const zoomInHelpTextElement = document.querySelector(
+			'#scales .zoomInHelpText'
+		);
+		if (value < zoomDependentSelections()) {
+			zoomInHelpTextElement.classList.remove('hidden');
+		} else {
+			zoomInHelpTextElement.classList.add('hidden');
+		}
 	};
 
 	//Debounce
@@ -177,14 +260,12 @@ const initDualSlider = (
 	sliderComponents.querySelectorAll('input').forEach((input) => {
 		//updating the color of the selected range AND controling the interaction between the min & max slider handles
 		input.addEventListener('input', (e) => {
-			console.log(e);
-			// console.log(input.querySelector('.minSlider'));
 			let minRange = parseInt(minRangeHandle.value);
-			console.log(minRange);
 			let maxRange = parseInt(maxRangeHandle.value);
 
 			//controling the limits of slider handels. Making sure they don't overlap over each other.
 			//TODO: I want them to overlap now. how do I do that AND make sure you can access the previously used slider??
+			//TODO: That's done, but now I need the sliders to recognize which handle is getting pulled when they overlap each other
 			if (minRange >= maxRange) {
 				if (e.target.className === 'minSlider') {
 					minRangeHandle.value = maxRange;
@@ -192,19 +273,31 @@ const initDualSlider = (
 					maxRangeHandle.value = minRange;
 				}
 			}
+
+			if (e.target.closest('#scales')) {
+				unavailbleScalesToolTip(e.target.valueAsNumber);
+			}
+
 			// else {
 			//NOTE: needs a better name
 			adjustSliderTrackSelection(e.target, e.target.valueAsNumber);
 			// }
 		});
 
+		//adding a 'change' event listener for ONLY the '#scales' slider
+		// if (input.closest('#scales')) {
+		// 	input.addEventListener('change', (e) => {
+		// 		console.log('scale slider changin');
+		// 		console.log('this is a scales handle');
+		// 		zoomDependentSelections(view);
+		// 	});
+		// }
 		input.addEventListener('input', (e) => {
 			// console.log(e);
 			addSliderTooltipVisibility(e.target.value);
 		});
 
 		input.addEventListener('mouseup', (e) => {
-			console.log(e);
 			removeSliderToolTipVisibility();
 		});
 
@@ -225,18 +318,32 @@ const initDualSlider = (
 			let maxHandleDiffernce = Math.abs(
 				currentSelection - maxRangeHandle.value
 			);
-			console.log(minHandleDiffernce);
-			console.log(maxHandleDiffernce);
+
 			if (minHandleDiffernce <= maxHandleDiffernce) {
 				minRangeHandle.value = currentSelection;
 				adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
+
+				if (e.target.closest('#scales')) {
+					isScaleValueWithinAvailableRange(0, minRangeHandle.value);
+					unavailbleScalesToolTip(minRangeHandle.value);
+					return;
+				}
+
 				debounceInput(0, minRangeHandle.value);
-				udpdateSliderHeading(0, minRangeHandle.value);
+				udpdateSliderHeading(0, minRangeHandle.value, true);
 			} else {
 				maxRangeHandle.value = currentSelection;
 				adjustSliderTrackSelection(maxRangeHandle, maxRangeHandle.value);
+
+				if (e.target.closest('#scales')) {
+					console.log('clickable for scales only');
+					isScaleValueWithinAvailableRange(1, maxRangeHandle.value);
+					unavailbleScalesToolTip(minRangeHandle.value);
+					return;
+				}
+
 				debounceInput(1, maxRangeHandle.value);
-				udpdateSliderHeading(1, maxRangeHandle.value);
+				udpdateSliderHeading(1, maxRangeHandle.value, true);
 			}
 		});
 
@@ -314,18 +421,31 @@ const initDualSlider = (
 
 	//Listener that will updating the slider's header and the values
 	//Is this a good method?
-	container.querySelector('.minSlider').addEventListener('change', (evt) => {
-		let minVal = evt.target.value;
+	container.querySelector('.minSlider').addEventListener('change', (event) => {
+		let minVal = event.target.value;
+		let sliderHandle = 0;
 
+		if (event.target.closest('#scales')) {
+			isScaleValueWithinAvailableRange(sliderHandle, minVal);
+
+			return;
+		}
 		debounceInput(0, minVal);
-		udpdateSliderHeading(0, minVal);
+		udpdateSliderHeading(0, minVal, true);
 	});
 
-	container.querySelector('.maxSlider').addEventListener('change', (evt) => {
-		let maxVal = evt.target.value;
+	container.querySelector('.maxSlider').addEventListener('change', (event) => {
+		let maxVal = event.target.value;
+		let sliderHandle = 1;
+
+		if (event.target.closest('#scales')) {
+			isScaleValueWithinAvailableRange(sliderHandle, maxVal);
+
+			return;
+		}
 
 		debounceInput(1, maxVal);
-		udpdateSliderHeading(1, maxVal);
+		udpdateSliderHeading(1, maxVal, true);
 	});
 
 	//Listener to toggle the slider container and sort choice container visibility

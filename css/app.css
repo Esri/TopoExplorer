@@ -55,6 +55,10 @@ button {
   display: none;
 }
 
+.transparency {
+  opacity: 30%;
+}
+
 .flex {
   display: flex;
 }
@@ -69,6 +73,48 @@ button {
   font-weight: bold;
 }
 
+.export-prompt{
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  z-index: 5;
+  background: radial-gradient(circle, rgba(231,235,238,1) 0%, rgba(184,194,211,0.9) 100%);
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
+/* .export-prompt div{
+  font-size: 16px;
+} */
+
+.close-btn {
+  text-align: right;
+}
+
+.export-prompt input {
+  background-color: #EAEEF1;
+  box-shadow: 
+    inset 0px 0px 6px #FFFFFF,
+    inset 0px 4px 4px #B8C2D3;
+  border: 0;
+  border-radius: 3px;
+  height: 32px;
+  width: 100%;
+  font-family: 'Roboto Condensed', sans-serif;
+  color: #637287;
+  font-size: 14px;
+}
+
+.export-prompt label {
+  margin: 0 0 0 10px;
+}
+
+.export-prompt .warning-btns {
+  margin: 10px 17px;
+  font-size: 14px;
+}
 #viewDiv{
   width: 100%;
   float: right
@@ -76,6 +122,17 @@ button {
 
 #viewDiv .esri-ui-top-right{
   flex-flow: row;
+}
+
+#viewDiv .esri-ui-corner #user-icon.esri-component{
+  background-color: #F1F4F5;
+
+  border-radius: 50%;
+}
+
+#viewDiv .esri-ui-corner #user-icon.esri-component .profile {
+  border-radius: 50%;
+  border: 2px solid #F1F4F5
 }
 
 #viewDiv .esri-zoom{
@@ -103,8 +160,8 @@ button {
   box-shadow: 4px 4px 6px #111111;
 }
 
-#viewDiv .esri-search{
-  margin-right: 25px;
+#viewDiv .esri-ui-top-right.esri-ui-corner .esri-component{
+  margin-right: 15px;
 }
 
 #viewDiv .esri-search__container .esri-search__input, .esri-search__container .esri-widget--button:last-child {
@@ -250,9 +307,168 @@ padding: 0 10px;
   filter: invert(1);
 }
 
-#filtersAndSorting{
+/* .mode-options {
   height:40px;
+} */
+
+/* #filtersAndSorting{
+  height:40px;
+  display: flex;
+  position: relative;
+} */
+
+.pinned-mode-options {
+flex: auto;
+justify-content: space-around;
+/* width: 100%; */
+margin: 0px 20px 0 5px;
+}
+
+.pinned-mode-sub-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+}
+
+.pinned-mode-options .divider{
+  border-left: 1px solid #ffffff;
+  padding: 1.5rem 0;
+  margin: 0 -0.7rem;
+  /* height: 100%; */
+}
+
+.animation-slider-container{
+  width: 70%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.animation-slider-title{
+  font-size: 0.8rem;
+  margin: 0 auto;
+}
+
+.animation-second-row{
+display: flex;}
+
+.animation-speed {
+  margin: 0 5px;
+}
+.animation-slider-container input{
+  width: 86%;
+}
+
+.animation-second-row input[type="range"] {
   /* position: relative; */
+  /* z-index: 1; */
+  appearance: none; 
+  background: transparent;
+  background-repeat: no-repeat;
+  /* pointer-events: all; */
+  border-radius: 3px;
+  width: 100%;
+}
+
+.animation-second-row input[type=range]::-webkit-slider-thumb {
+  position: relative;
+  top: -1px;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: #F1F4F5;
+  outline: solid 2px #D4DBE4;
+  border-radius: 50%;
+  box-shadow: 0px 0px 6px #D4DBE4;
+}
+
+.animation-second-row input[type=range]::-moz-range-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: #F1F4F5;
+  outline: solid 2px #D4DBE4;
+  border-radius: 50%;
+  box-shadow: 0px 0px 6px #D4DBE4;
+}
+
+.animation-second-row input[type=range]::-webkit-slider-thumb:hover {
+  background: #f7f7f7;
+}
+
+.animation-second-row input[type=range]::-webkit-slider-runnable-track  {
+  -webkit-appearance: none;
+  box-shadow: none;
+  border: none;
+  background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(209,216,226,1) 100%);
+  height: 8px;
+  border-radius: 4px;
+}
+
+.mapCard-slider input[type=range]::-webkit-slider-thumb {
+  appearance: none;
+  pointer-events: all;
+  width: 12px;
+  height: 12px;
+  background: #F1F4F5;
+  outline: solid 2px #D4DBE4;
+  border-radius: 50%;
+  box-shadow: 0px 0px 6px #D4DBE4;
+  cursor: pointer;
+  position: relative;
+  top: -2px;
+}
+
+.mapCard-slider input[type=range]::-moz-range-thumb {
+  appearance: none;
+  pointer-events: all;
+  width: 12px;
+  height: 12px;
+  background: #F1F4F5;
+  outline: solid 2px #D4DBE4;
+  border-radius: 50%;
+  box-shadow: 0px 0px 6px #D4DBE4;
+  cursor: pointer;
+  position: relative;
+  top: -2px;
+}
+
+.icon .unpin-all{
+  transform: rotate(45deg);
+}
+
+.unpin-action-warning {
+  position: absolute;
+  z-index: 2;
+  margin: 0 0 0 10px;
+  padding: 5px 10px 5px 10px;
+  background: #F1F4F5;
+  border-radius: 12px;
+  box-shadow:
+  6px 6px 6px #D8E0E7,
+  -6px -6px 8px #D8E0E7,
+  6px 6px 8px #D8E0E7;
+}
+
+.unpin-action-warning p {
+  padding: 10px 0;
+}
+
+.btn-container {
+  display: flex;
+  justify-content: space-around;
+}
+.warning-btns{
+  /* display: inline; */
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 4px;
+  background: #f1f4f5;
+  box-shadow: inset 6px 6px 6px #eaeef1, -2px -2px 3px #f9fbfb,
+    3px 3px 4px #d8e0e7;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 .filter{
@@ -301,21 +517,38 @@ button .filterAndSortBtn:active {
   transition: transform 150ms ease;
 }
 
-#mapsListUxText{
-  /* position: absolute;
-  top: 0; */
-  margin: 50% 32%;
-  padding: 50% 0; 
-  text-align: center;
-  display: none;
-}
-
+/* I don't know why  have two different instances of the 'explore' and 'pinned' selectors when they have the same traits*/
 #exploreList{
-  height: calc(100vh - 180px);
+  height: calc(99vh - 180px);
   overflow-y: auto;
   overflow-x: hidden;
   margin: 0px 0px 0 -10px;
   padding: 0 1rem 0 1.5rem;
+}
+
+#pinnedList {
+  height: calc(99vh - 180px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin: 0px 0px 0 -10px;
+  padding: 0 1rem 0 1.5rem;
+}
+
+#exploreList .notificationMessage{
+padding: 0 2rem;
+font-size: 1rem;
+font-style: italic;
+}
+
+.helpText{
+  margin: 50% 32%;
+  padding: 50% 0; 
+  text-align: center;
+  line-height: 1.5rem
+}
+
+svg{
+  fill: #637287;
 }
 
 /* 

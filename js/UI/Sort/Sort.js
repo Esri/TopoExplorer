@@ -3,9 +3,7 @@ const sortOptions = sortBtn.querySelector('.sortOptions');
 const sortChoices = sortOptions.querySelectorAll('a');
 
 const sortChoice = (callBack) => {
-	console.log('sorties');
 	sortBtn.addEventListener('click', (event) => {
-		console.log('choices');
 		document.querySelectorAll('.sliderElement').forEach((filterSlider) => {
 			!filterSlider.classList.contains('invisible')
 				? filterSlider.classList.add('invisible')
@@ -26,8 +24,7 @@ const sortChoice = (callBack) => {
 			});
 
 			event.target.classList.add('bold');
-			console.log(event);
-			console.log(event.target.attributes.value.value);
+
 			callBack(event.target.attributes.value.value);
 		});
 	});
