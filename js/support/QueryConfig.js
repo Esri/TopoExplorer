@@ -1,3 +1,5 @@
+//NOTE: This whole file has gotten out of hand, a lot of elements need to be reviewed to make a more effecive refactor..
+//this is cerainly not an ideal layout, but I want to see what other additions I may have to add before I look at refactoring
 import {
 	findMinYear,
 	findMaxYear,
@@ -5,8 +7,11 @@ import {
 	findMaxScale,
 	// findAllScalesAndYears,
 } from './GetAllMapScalesAndYears.js?v=0.01';
-import { numberOfMapsinView, extentQuery } from './Query.js?v=0.01';
-import { getTopoMap, addTopoMap } from './ImageExportQuery.js?v=0.01';
+import {
+	numberOfMapsinView,
+	extentQuery,
+	queryForHashedTopos,
+} from './Query.js?v=0.01';
 import {
 	hideMapCount,
 	updateMapcount,
@@ -17,6 +22,7 @@ import {
 	clearMapsList,
 	createMapSlotItems,
 } from '../UI/MapCards/ListOfMaps.js?v=0.01';
+import { checkForPreviousTopos } from '../support/HashParams.js?v=0.01';
 // import { addTopoMap } from './ImageExportQuery';
 // import { checkIfQuerying } from './Query.js?v=0.01';
 
@@ -309,6 +315,10 @@ const yearsAndMapScales = {
 					tickMark.classList.remove('transparency');
 				}
 			});
+			//This transparency added to the minimum scale value seems to be causing a problem occasionally during initialization.
+			//I think it's getting an error because it's possible that the min slider value doesn't exist yet.
+			//I'm going to comment it out. I'm not sure I need it at this level of detail(map-zoom).
+			console.log(scaleNumber);
 			scaleNumber.classList.add('transparency');
 
 			// console.log(this.scales.maxScaleSliderPositionValue);
@@ -624,55 +634,119 @@ const extentQueryCall = debounce((url, totalMapsInExtentParams) => {
 const setHashedTopoQueryParams = (oid) => {
 	const params = new URLSearchParams({
 		where: `${objectId} IN (${oid})`,
+		// where: `OBJECTID = ${oid}`,
 		returnGeometry: true,
 		outFields: queryConfig.queryOutfields,
 		f: 'json',
 	});
 
-	// console.log(params);
 	return params;
+	// console.log(params);
 };
 
 const queryHashedTopos = async (view) => {
 	// const arrayOfHashedMaps = window.location.hash.substring(1).split(',');
-	// console.log(arrayOfHashedMaps);
+	// console.log(window.location.hash.substring(1));
+	console.log(!checkForPreviousTopos());
+	console.log(checkForPreviousTopos());
+	if (!checkForPreviousTopos()) {
+		return;
+	}
 
-	//iterate through the hash oids
+	const originalOrderHashedTopos = checkForPreviousTopos().split(',');
 
 	// console.log(hashedOID);
-	const newParams = setHashedTopoQueryParams(window.location.hash.substring(1));
+	const newParams = setHashedTopoQueryParams(checkForPreviousTopos());
 
-	extentQuery(queryConfig.url, newParams)
+	// console.log('hashed ids ...look at the order', newParams);
+
+	queryForHashedTopos(queryConfig.url, newParams)
 		.then((hashedTopoData) => {
 			// console.log(hashedTopoData);
 			const hashDataArray = hashedTopoData.data.features;
-			// console.log(hashDataArray);
+			console.log(hashDataArray);
 			return queryConfig.processMapData(hashDataArray);
 		})
 		.then((topoMapData) => {
 			// topoMapData[topoMapData.length - 1].previousPinnedMap = true;
-			// console.log(topoMapData);
+			console.log(topoMapData);
 			// console.log(queryConfig.mapView);
-			topoMapData.map((singleMap) => {
+
+			console.log(originalOrderHashedTopos);
+
+			topoMapData.map((mapData) => {
+				const properIndex = originalOrderHashedTopos.indexOf(
+					`${mapData.OBJECTID}`
+				);
+				console.log(properIndex);
+				originalOrderHashedTopos.splice(properIndex, 1, mapData);
+			});
+
+			console.log(originalOrderHashedTopos);
+			originalOrderHashedTopos.map((singleMap) => {
 				singleMap.previousPinnedMap = true;
 				// console.log(singleMap);
 				createMapSlotItems([singleMap], view, url);
 			});
 		});
+
+	// const hashOIDArray = checkForPreviousTopos().split(',');
+	// console.log(hashOIDArray);
+	// hashOIDArray.map((oid) => {
+	// 	const queryParams = setHashedTopoQueryParams(oid);
+
+	// 	queryParams.then((params) => {
+	// 		console.log(params);
+	// 		queryForHashedTopos(queryConfig.url, params)
+	// 			.then((queryRes) => {
+	// 				console.log(queryRes);
+	// 				const hashDataArray = queryRes.data.features;
+	// 				console.log(hashDataArray);
+	// 				return queryConfig.processMapData(hashDataArray);
+	// 			})
+	// 			.then((topoMapData) => {
+	// 				// topoMapData[topoMapData.length - 1].previousPinnedMap = true;
+	// 				console.log(topoMapData);
+	// 				// console.log(queryConfig.mapView);
+	// 				topoMapData.reverse().map((singleMap) => {
+	// 					singleMap.previousPinnedMap = true;
+	// 					console.log(singleMap);
+	// 					createMapSlotItems([singleMap], view, url);
+	// 				});
+	// 			});
+	// 	});
+	// });
 };
 
 //when  the user switches from pin-list to the explore-list, and the explore-list is empty, query the current map extent to populate a new list of the maps in the view.
-document
-	.querySelector('.map-mode-container')
-	.addEventListener('click', (event) => {
-		if (
-			event.target.closest('.explorer-mode-btn') &&
-			document.querySelector('#exploreList').innerHTML === ''
-		) {
-			showSpinnerIcon();
-			queryConfig.queryMapData();
-		}
-	});
+// document
+// 	.querySelector('.explorer-mode-btn')
+// 	.addEventListener('change', (event) => {
+// 		if (
+// 			event.target.closest('.explorer-mode-btn') &&
+// 			document.querySelector('#exploreList').innerHTML === ''
+// 		) {
+// 			showSpinnerIcon();
+// 			queryConfig.queryMapData();
+// 		}
+// 	});
+
+const explorerMode = document.querySelector('.explorer-mode');
+
+const styleListenerConfig = { attributes: true };
+
+const onStyleChange = (mutation, observer) => {
+	console.log('frasier crane');
+	console.log(observer);
+	if (document.querySelector('#exploreList').innerHTML === '') {
+		showSpinnerIcon();
+		queryConfig.queryMapData();
+	}
+};
+
+const explorerModeObserver = new MutationObserver(onStyleChange);
+
+explorerModeObserver.observe(explorerMode, styleListenerConfig);
 
 export {
 	queryConfig,

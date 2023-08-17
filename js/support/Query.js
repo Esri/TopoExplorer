@@ -13,11 +13,6 @@ const cancelQuery = () => {
 };
 
 const extentQuery = async (url, params) => {
-	// console.log(params);
-	// console.log(
-	// 	`query to get ${params.resultRecordCount} maps at position ${params.resultOffset}`
-	// );
-
 	//TODO: need to refactor the querySelector and 'hidden' class removal. It occurs twice and shouldn't really be here.
 	if (isQuerying !== true) {
 		// console.log(isQuerying !== true);
@@ -27,9 +22,6 @@ const extentQuery = async (url, params) => {
 		cancelQuery();
 		isQuerying = true;
 	}
-
-	// console.log(url);
-	// console.log(params);
 
 	//Do I want to move params to the queryConfig? I would need to make another OBJ within it for the total maps and the 25 maps queries
 	return new Promise((resolve, reject) => {
@@ -74,5 +66,13 @@ const numberOfMapsinView = async (url, params) => {
 	});
 };
 
+const queryForHashedTopos = (url, params) => {
+	return new Promise((resolve, reject) => {
+		axios.get(url, { params }).then((response) => {
+			resolve(response);
+		});
+	});
+};
+
 //NOTE: do I need to export both?
-export { extentQuery, numberOfMapsinView };
+export { extentQuery, numberOfMapsinView, queryForHashedTopos };

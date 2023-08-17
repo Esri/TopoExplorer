@@ -93,28 +93,45 @@ button {
   text-align: right;
 }
 
-.export-prompt input {
+.export-prompt textarea {
+  padding: 8px 0;
   background-color: #EAEEF1;
   box-shadow: 
     inset 0px 0px 6px #FFFFFF,
     inset 0px 4px 4px #B8C2D3;
   border: 0;
   border-radius: 3px;
-  height: 32px;
+  height: 33px;
   width: 100%;
+  max-width: 100%;
   font-family: 'Roboto Condensed', sans-serif;
   color: #637287;
   font-size: 14px;
+}
+
+textarea.summary {
+  height: 4rem;
+}
+
+.exportBtnContainer {
+  justify-content: flex-end;
 }
 
 .export-prompt label {
   margin: 0 0 0 10px;
 }
 
-.export-prompt .warning-btns {
-  margin: 10px 17px;
-  font-size: 14px;
+.export-prompt .prompt-btns {
+  margin: 10px 5px;
+  font-size: 1rem;
 }
+
+.export-prompt .processing-indicator {
+  margin: 20px 0 0 0;
+  font-weight: 700;
+  text-align: right;
+}
+
 #viewDiv{
   width: 100%;
   float: right
@@ -459,7 +476,7 @@ display: flex;}
   display: flex;
   justify-content: space-around;
 }
-.warning-btns{
+.prompt-btns{
   /* display: inline; */
   margin: 10px 0;
   padding: 10px;

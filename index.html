@@ -28,34 +28,35 @@
 	<body>
 		<main>
       <div class="export-prompt invisible">
-          <div> 
-            <div class="close-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M18.01 6.697L12.707 12l5.303 5.303-.707.707L12 12.707 6.697 18.01l-.707-.707L11.293 12 5.99 6.697l.707-.707L12 11.293l5.303-5.303z"></path></svg>
+          <div style="width: 350px;"> 
+            <div style="text-align: right;">
+                <svg class="close-btn" xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M18.01 6.697L12.707 12l5.303 5.303-.707.707L12 12.707 6.697 18.01l-.707-.707L11.293 12 5.99 6.697l.707-.707L12 11.293l5.303-5.303z"></path></svg>
             </div>
             <div class="prompt-box">
               <form>
                 <div>
                   <label> ArcGIS Online Web Map Name* </label>
                   <br>
-                  <input class="mapName" type="text">
+                  <textarea class="mapName" type="text" contenteditable="true"></textarea>
                 </div>
                 <div>
                   <label>Tags</label>
                   <br>
-                  <input class="tags" type="text">
+                  <textarea class="tags" type="text" contenteditable="true"></textarea>
                 </div>
                 <div>
                   <label>Summary</label>
                   <br>
-                  <input class="summary" type="text">
+                  <textarea class="summary" type="text" contenteditable="true"></textarea>
                 </div>
-                <div style="display: flex;">
-                  <div class="warning-btns"> CANCEL </div>
-                  <div class="warning-btns"> CREATE WEB MAP</div>
+                <div class="exportBtnContainer flex">
+                  <div class="prompt-btns">CANCEL</div>
+                  <div class="prompt-btns">CREATE WEB MAP</div>
                 </div>
                 <div></div>
               </form>
             </div>
+            <div class="processing-indicator invisible"> CREATING WEB MAP...</div>
           </div>
       </div>
 			<div style="background-color: #e7ebee">
@@ -109,7 +110,7 @@
 								</div>
 							</div>
 							<div class="divider"></div>
-							<div class="mode pin-mode-btn">
+							<div class="mode pin-mode-btn transparency">
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									height="28"
@@ -120,7 +121,7 @@
 										d="M5 0h7v1.417l-1 .581v6l1 .502v1.498H9v6l-.5 1-.5-1v-6H5V8.5l1-.502v-6L5 1.5V0z"
 									/>
 								</svg>
-								<div class="pinned-mode btn-text">
+								<div class="pinned-mode btn-text ">
 									<span class="pinCount"></span>
 									<span class="pinnedText">Pinned Topo Map</span>
 								</div>
@@ -224,8 +225,8 @@
             <div class="unpin-action-warning invisible">
               <p> Are you sure you want to unpin all your topo maps? </p>
               <div class="btn-container">
-                <div class="warning-btns"> CANCEL </div>
-                <div class="warning-btns"> YES, UNPIN ALL</div>
+                <div class="prompt-btns warning-btns"> CANCEL </div>
+                <div class="prompt-btns warning-btns"> YES, UNPIN ALL</div>
               </div>
             </div>
 					</div>

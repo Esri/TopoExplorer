@@ -1,7 +1,8 @@
 // import { mapItemListener } from '../../support/eventListeners/MapItemListener.js?v=0.01';
+import { updateHashParams } from '../../support/HashParams.js?v=0.01';
 import { mapFootprint } from '../../UI/MapAndFootprint/MapFootprint.js?v=0.01';
 import { getTopoMap } from '../../support/ImageExportQuery.js?v=0.01';
-import { mapExportProcess } from '../Export/export.js?v=0.01';
+import { singleMapExportProcess } from '../ExportMaps/exportMaps.js?v=0.01';
 const url = new URL(window.location.href);
 
 const sideBarElement = document.querySelector('#sideBar');
@@ -9,6 +10,8 @@ const mapsList = document.querySelector('#exploreList');
 const mapModes = document.querySelector('.map-mode-container .action-area');
 const explorerList = document.querySelector('#exploreList');
 const pinList = document.querySelector('#pinnedList');
+const currentStateOfPinnedList = () =>
+	Array.from(pinList.querySelectorAll('.mapCard-container'));
 
 // const mapListDetails = [];
 
@@ -31,6 +34,7 @@ let mapListItems;
 // let currentMapCard;
 let mapGeometry;
 let topoOnMapPlaceholder;
+let arrayFromPinListHTML;
 
 const createMapSlotItems = (list, view, url) => {
 	if (!urlTest) {
@@ -69,10 +73,10 @@ const createMapSlotItems = (list, view, url) => {
 		.map((topoMap) => {
 			// mapListDetails.push(topoMap);
 
-			console.log(topoMap.previousPinnedMap);
+			// console.log(topoMap.previousPinnedMap);
 			const isCardPinned =
 				topoMap.previousPinnedMap || getPinnedTopoIndex(`${topoMap.OBJECTID}`);
-			console.log(isCardPinned);
+			// console.log(isCardPinned);
 
 			//NOTE: I'm calling the same function for the same purpose (but a different class result) twice. There has to be a better way than what I have.
 			return ` 
@@ -231,25 +235,19 @@ const toggleListVisibility = () => {
 };
 
 mapModes.addEventListener('click', (event) => {
+	//the user should not explore and pin
 	const toplevel = event.target.closest('.mode');
+
 	if (toplevel.querySelector('.btn-text').classList.contains('underline')) {
 		return;
 	}
+
+	if (pinnedCardIDsArray.length === 0) {
+		return;
+	}
+
 	toggleListVisibility();
 });
-
-//NOTE: do I even need this value?
-// const mapCardData = (mapItem) => {
-// 	return new Promise((resolve, reject) => {
-// 		mapListDetails.find((cardData) => {
-// 			if (cardData.OBJECTID == mapItem.attributes.oid.value) {
-// 				// console.log(cardData);
-// 				currentMapCard = cardData;
-// 				resolve(cardData);
-// 			}
-// 		});
-// 	});
-// };
 
 const setTopoMapPlaceholder = (oid) => {
 	if (
@@ -283,13 +281,24 @@ const checkAnyOpenMapCards = (oid) => {
 	});
 };
 
-const updateHashParams = () => {
-	const topoIDsString = pinnedCardIDsArray.join();
+//NOTE: look at this for setting & parsing hash https://stackoverflow.com/questions/23699666/javascript-get-and-set-url-hash-parameters
+// const updateHashParams = () => {
+// 	const topoIDsString = pinnedCardIDsArray.join();
 
-	url.hash = `${topoIDsString}`;
+// 	url.hash = `maps=${topoIDsString}&loc=${viewTest.center.x}, ${viewTest.center.y}&LoD=${viewTest.zoom}`;
 
-	window.location.hash = url.hash;
-};
+// 	const parseHashParams = url.hash
+// 		.substring(1)
+// 		.split('&')
+// 		.reduce((res, item) => {
+// 			const paramElement = item.split('=');
+// 			res[paramElement[0]] = paramElement[1];
+// 			return res;
+// 		}, {});
+
+// 	console.log(parseHashParams);
+// 	window.location.hash = url.hash;
+// };
 
 const updatePinnedNumberHeader = () => {
 	const pinnedNumber = pinnedCardIDsArray.length || '';
@@ -303,7 +312,7 @@ const updatePinnedNumberHeader = () => {
 };
 
 const updatePinnedListHTML = (mapObj) => {
-	console.log(pinnedCardHTMLArray);
+	// console.log(pinnedCardHTMLArray);
 	// pinList.innerHTML =
 	// const pinnedMapSlot = pinnedCardHTMLArray
 	// 	.map((pinnedMap) => {
@@ -319,7 +328,7 @@ const updatePinnedListHTML = (mapObj) => {
 	pinnedCardContainer.classList.add('mapCard-container');
 	pinnedCardContainer.setAttribute('draggable', false);
 	pinnedCardContainer.innerHTML = mapObj.html;
-	pinList.append(pinnedCardContainer);
+	pinList.prepend(pinnedCardContainer);
 };
 
 const formatPinnedListMapCard = (targetOID, targetMapCard) => {
@@ -329,17 +338,18 @@ const formatPinnedListMapCard = (targetOID, targetMapCard) => {
 		id: targetOID,
 		html: targetMapCard,
 	};
-	console.log(mapObj);
-	pinnedCardHTMLArray.push(mapObj);
+	// console.log(mapObj);
+	pinnedCardHTMLArray.unshift(mapObj);
 	updatePinnedListHTML(mapObj);
 };
 
 const addToPinnedArray = (oid, targetMapCard) => {
 	pinnedCardIDsArray.push(`${oid}`);
-	console.log(pinnedCardIDsArray);
+	// console.log(pinnedCardIDsArray);
 	formatPinnedListMapCard(oid, targetMapCard);
 	updatePinnedNumberHeader();
-	updateHashParams();
+	updateHashParams(pinnedCardIDsArray);
+	updatePinButtonStyle();
 };
 
 const removePinnedCardFromHTML = (oid) => {
@@ -358,7 +368,8 @@ const removePinnedTopo = (index, oid) => {
 	// console.log(pinnedCardHTMLArray);
 	// updatePinnedListHTML();
 	updatePinnedNumberHeader();
-	updateHashParams();
+	updateHashParams(pinnedCardIDsArray);
+	updatePinButtonStyle();
 };
 
 const getPinnedTopoIndex = (oid) => {
@@ -370,7 +381,7 @@ const getPinnedTopoIndex = (oid) => {
 const isCurrentMapPinned = (targetMapCard, callback) => {
 	const oid =
 		targetMapCard.querySelector('.map-list-item').attributes.oid.value;
-	console.log(oid);
+	// console.log(oid);
 	// const searchPinnedArray = pinnedCardIDsArray.indexOf(oid);
 	// console.log(getPinnedTopoIndex(oid));
 	//if the targetMapCard is not in the array, it has just been pinned. Add the mapCard to the pinnedArray, render the topo on the map.
@@ -380,8 +391,8 @@ const isCurrentMapPinned = (targetMapCard, callback) => {
 			targetMapCard.querySelector('input').value;
 
 		const cardHTML = targetMapCard.innerHTML;
-		console.log(targetMapCard);
-		console.log(cardHTML);
+		// console.log(targetMapCard);
+		// console.log(cardHTML);
 		callback(oid, cardHTML);
 		return;
 	} else {
@@ -461,6 +472,10 @@ const addTopoToMap = (target, url) => {
 		// console.log(topoImageLayer);
 		//NOTE: maybe give this it's own function. Just to make things easier to parse
 		viewTest.map.add(topoImageLayer);
+		viewTest.map.layers.reorder(
+			mapFootprintLayer,
+			viewTest.map.layers.length - 1
+		);
 	});
 };
 
@@ -603,10 +618,16 @@ const saveEvent = (eventTarget) => {
 	if (!eventTarget.closest('.save')) {
 		return;
 	}
+	// const currentStateOfPinnedList =
+	// 	pinList.querySelectorAll('.mapCard-container');
 
 	console.log('this would save and export');
-	const mapDetails = eventTarget.closest('.map-list-item');
-	mapExportProcess(mapDetails);
+	const mapContainer = eventTarget.closest('.mapCard-container');
+	const mapDetails = Array.from(
+		mapContainer.querySelectorAll('.map-list-item')
+	);
+	console.log(mapDetails);
+	singleMapExportProcess(mapDetails);
 };
 
 const openMapCard = (target) => {
@@ -745,13 +766,17 @@ const exportAllPinned = (event) => {
 		return;
 	}
 	console.log('export');
+	const pinMapsToExport = currentStateOfPinnedList();
+	singleMapExportProcess(pinMapsToExport);
 };
 
 const reorderPinnedListHTML = () => {
-	const currentStateOfPinnedList =
-		pinList.querySelectorAll('.mapCard-container');
+	// const currentStateOfPinnedList =
+	// 	pinList.querySelectorAll('.mapCard-container');
 
-	const arrayFromPinListHTML = Array.from(currentStateOfPinnedList);
+	arrayFromPinListHTML = currentStateOfPinnedList();
+
+	console.log(arrayFromPinListHTML);
 
 	pinList.innerHTML = '';
 
@@ -766,11 +791,11 @@ const reorderMapLayers = () => {
 
 	viewTest.map.layers.reverse();
 
-	const footprintLayer = viewTest.map.layers.at(viewTest.map.layers.length - 1);
-	const haloLayer = viewTest.map.layers.at(viewTest.map.layers.length - 2);
-
-	viewTest.map.layers.reorder(footprintLayer, 0);
-	viewTest.map.layers.reorder(haloLayer, 1);
+	viewTest.map.layers.reorder(
+		mapFootprintLayer,
+		viewTest.map.layers.length - 1
+	);
+	viewTest.map.layers.reorder(mapHaloGraphicLayer, 0);
 };
 
 sideBarElement.addEventListener('click', (event) => {
@@ -854,14 +879,31 @@ sideBarElement.addEventListener(
 	true
 );
 
+const updatePinButtonStyle = () => {
+	if (pinnedCardIDsArray.length === 0) {
+		document.querySelector('.pin-mode-btn').classList.add('transparency');
+		if (
+			mapModes.querySelector('.pinned-mode').classList.contains('underline')
+		) {
+			console.log('no more');
+			toggleListVisibility();
+		}
+	}
+
+	if (pinnedCardIDsArray.length === 1) {
+		document.querySelector('.pin-mode-btn').classList.remove('transparency');
+	}
+};
+
 document.querySelectorAll('.warning-btns').forEach((warningBtn) => {
 	warningBtn.addEventListener('click', (event) => {
 		if (!event.target.innerHTML.includes('CANCEL')) {
 			// console.log('remove');
-			const currentStateOfPinnedList =
-				pinList.querySelectorAll('.mapCard-container');
+			updatePinButtonStyle();
+			// toggleListVisibility();
+			const arrayFromPinList = currentStateOfPinnedList();
 
-			currentStateOfPinnedList.forEach((mapCard) => {
+			arrayFromPinList.forEach((mapCard) => {
 				console.log(mapCard);
 				// isCurrentMapPinned(mapCard, removeTopoFromMap);
 				const mapCardOID =
@@ -1004,23 +1046,66 @@ const endDrag = (event) => {
 	console.log('ending drag?');
 	movingCard.classList.remove('drag-sort-background');
 	movingCardItem.classList.remove('drag-sort-active');
-	const listOfPinnedIDs = pinList.querySelectorAll('.map-list-item');
-	console.log(listOfPinnedIDs);
+	// const listOfPinnedIDs = pinList.querySelectorAll('.map-list-item');
+	const listOfPinnedCards = Array.prototype.slice
+		.call(pinList.querySelectorAll('.map-list-item'))
+		.reverse();
+	console.log(listOfPinnedCards);
 	console.log(movingCardItem.attributes.oid.value);
 	console.log(getPinnedTopoIndex(movingCardItem.attributes.oid.value));
 
+	// for (let i = listOfPinnedIDs.length; i < 0; i--) {
+	// 	console.log(i);
+	// 	console.log(listOfPinnedIDs[i]);
+	// 	if (
+	// 		listOfPinnedIDs[i].attributes.oid.value ===
+	// 		movingCardItem.attributes.oid.value
+	// 	) {
+	// 		console.log('this was moved recently', index);
+	// 		findTopoLayer(movingCardItem.attributes.oid.value).then((movedMap) => {
+	// 			console.log(movedMap, index);
+	// 			// console.log(viewTest.map.layers);
+
+	// 			viewTest.map.layers.reorder(movedMap, index);
+
+	// 			viewTest.map.layers.reorder(
+	// 				mapFootprintLayer,
+	// 				viewTest.map.layers.length - 1
+	// 			);
+
+	// 			viewTest.map.layers.reorder(mapHaloGraphicLayer, 0);
+
+	// 			console.log('layers after reorder drag', viewTest.map.layers);
+	// 		});
+	// 	}
+	// }
+	const listOfPinnedIDs = listOfPinnedCards.map((mapHTML) => {
+		console.log(mapHTML.attributes.oid.value);
+		return mapHTML.attributes.oid.value;
+	});
+
 	listOfPinnedIDs.forEach((pinCard, index) => {
-		console.log(pinCard.attributes.oid.value);
-		if (pinCard.attributes.oid.value === movingCardItem.attributes.oid.value) {
-			console.log(index);
+		console.log(pinCard);
+		if (pinCard === movingCardItem.attributes.oid.value) {
+			console.log('this was moved recently', index);
 			findTopoLayer(movingCardItem.attributes.oid.value).then((movedMap) => {
-				console.log(movedMap);
-				console.log(viewTest.map.layers);
-				viewTest.map.layers.reorder(movedMap, index + 2);
-				console.log(viewTest.map.layers);
+				console.log(movedMap, index);
+				// console.log(viewTest.map.layers);
+
+				viewTest.map.layers.reorder(movedMap, index + 1);
+
+				viewTest.map.layers.reorder(
+					mapFootprintLayer,
+					viewTest.map.layers.length - 1
+				);
+
+				viewTest.map.layers.reorder(mapHaloGraphicLayer, 0);
+
+				console.log('layers after reorder drag', viewTest.map.layers);
 			});
 		}
 	});
+	updateHashParams(listOfPinnedIDs);
 };
 
 const dragEnter = (event) => {

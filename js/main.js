@@ -14,12 +14,17 @@ import {
 import { initDualSlider } from './UI/DualSlider/DualSlider.js?v=0.01';
 import { isScrollAtPageEnd } from './support/eventListeners/ScrollListener.js?v=0.01';
 
-import { getTopoMap } from './support/ImageExportQuery.js?v=0.01';
+import {
+	updateHashParams,
+	hashCoordinates,
+} from './support/HashParams.js?v=0.01';
 import {
 	allYearChoices,
 	allScaleChoices,
 } from './support/YearsAndScalesProcessing.js?v=0.01';
 import { sortChoice } from './UI/Sort/Sort.js?v=0.01';
+
+// let prevCenter;
 
 const initApp = async () => {
 	try {
@@ -93,87 +98,106 @@ const initApp = async () => {
 		// zoomDiv.classList.add('zoomDiv');
 		// document.querySelector('#viewDiv').append(zoomDiv);
 
-		view.when(
-			// NOTE: compafe view.center before and during event. if they are the same end/cancel the
-			require(['esri/core/reactiveUtils'], (reactiveUtils) => {
-				let prevCenter = view.center;
-				// console.log('view info', view);
-				// console.log(view.constraints.effectiveLODs);
-				reactiveUtils.when(
-					() => view?.stationary === true,
-					async () => {
-						console.log('view info', view);
-						if (prevCenter) {
-							// console.log(prevCenter);
-							// console.log(view.extent.xmax);
-							// 	if (prevCenter.extent.xmax === view.extent.xmax)
-							if (prevCenter.x === view.center.x) {
-								console.log('previous center', prevCenter.x);
-								console.log('new center', view.center.x);
-								// console.log(prevCenter, view.center, 'extent not changed');
-								return;
+		view
+			.when(
+				location.hash ? queryHashedTopos(view) : null,
+
+				minMaxYears.then((minMaxYears) => {
+					allYearChoices(minMaxYears).then((years) => {
+						yearsAndMapScales.setMinMaxYears(years);
+						initDualSlider(
+							'years',
+							'YEARS',
+							getTheYear,
+							years,
+							years[0],
+							years[years.length - 1],
+							view
+						);
+					});
+				}),
+
+				minMaxScales.then((minMaxScales) => {
+					allScaleChoices(minMaxScales).then((scales) => {
+						yearsAndMapScales.setMinMaxMapScales(scales);
+						initDualSlider(
+							'scales',
+							'SCALES',
+							getTheScale,
+							scales,
+							scales[0],
+							scales[scales.length - 1],
+							view
+						);
+					});
+				})
+			)
+			.then(() => {
+				require(['esri/core/reactiveUtils'], (reactiveUtils) => {
+					// console.log('extent changed. view info,', view);
+					// console.log(view.constraints.effectiveLODs);
+					let prevCenter;
+					reactiveUtils.when(
+						() => view?.stationary === true,
+						async () => {
+							console.log('view info', view);
+							console.log('view info', view.extent.xmax);
+							// console.log(location.hash);
+							// console.log(location);
+
+							// console.log('previous layer count', prevCenter.map.layers.length);
+							console.log('new layer count', view.map.layers.length);
+							if (prevCenter) {
+								// console.log(prevCenter);
+								// console.log(view.extent.xmax);
+								// 	if (prevCenter.extent.xmax === view.extent.xmax)
+								if (prevCenter.x === view.center.x) {
+									console.log('previous center', prevCenter.x);
+									console.log('new center', view.center.x);
+									// console.log(prevCenter, view.center, 'extent not changed');
+									return;
+								}
 							}
+
+							// console.log('extent moved >>> ', view?.center.toJSON());
+							// console.log('previous extent >>> ', prevCenter);
+							// console.log('previous extent >>> ', prevCenter);
+							// document.querySelector('.zoomDiv span').innerHTML = view.zoom;
+							queryConfig.setGeometry(view.extent);
+							queryConfig.mapView = view;
+							queryConfig.extentQueryCall();
+							updateHashParams(view);
+
+							// zoomDependentSelections(view);
+							prevCenter = view?.center;
 						}
-						// console.log('extent moved >>> ', view?.center.toJSON());
-						// console.log('previous extent >>> ', prevCenter);
-						// console.log('previous extent >>> ', prevCenter);
-						// document.querySelector('.zoomDiv span').innerHTML = view.zoom;
-						queryConfig.setGeometry(view.extent);
-						queryConfig.mapView = view;
-						queryConfig.extentQueryCall();
-						// zoomDependentSelections(view);
-						prevCenter = view?.center;
-					}
-				);
+					);
 
-				// reactiveUtils.watch(
-				// 	() => view?.zoom,
-				// 	async () => {
-				// 		console.log('making the zommm work?');
-				// 		if (view.stationary === true) {
-				// 			console.log("okay, we're stationary");
-				// 			document.querySelector('.zoomDiv span').innerHTML = view.zoom;
-				// 			queryConfig.setGeometry(view.extent);
-				// 			queryConfig.mapView = view;
-				// 			queryConfig.extentQueryCall();
-				// 		}
-				// 	}
-				// );
-			}),
-			minMaxYears.then((minMaxYears) => {
-				allYearChoices(minMaxYears).then((years) => {
-					yearsAndMapScales.setMinMaxYears(years);
-					initDualSlider(
-						'years',
-						'YEARS',
-						getTheYear,
-						years,
-						years[0],
-						years[years.length - 1],
-						view
+					reactiveUtils.watch(
+						() => view.scale,
+						async () => {
+							queryConfig.setGeometry(view.extent);
+							queryConfig.mapView = view;
+							queryConfig.extentQueryCall();
+							updateHashParams(view);
+						}
 					);
 				});
-			}),
 
-			minMaxScales.then((minMaxScales) => {
-				allScaleChoices(minMaxScales).then((scales) => {
-					yearsAndMapScales.setMinMaxMapScales(scales);
-					initDualSlider(
-						'scales',
-						'SCALES',
-						getTheScale,
-						scales,
-						scales[0],
-						scales[scales.length - 1],
-						view
-					);
-				});
-			})
-		);
+				// if (hashCoordinates()) {
+				// 	const hashLocation = hashCoordinates();
 
-		if (window.location.hash) {
-			queryHashedTopos(view);
-		}
+				// 	console.log(hashLocation);
+
+				// 	view.goTo({
+				// 		center: hashLocation,
+				// 	});
+				// }
+			});
+
+		// if (window.location.hash) {
+		// queryHashedTopos(view);
+		// }
 		//NOTE: not sure if this is the best idea: setting up the render for any topos in the URL's hash, but it's worth a go, I suppose
 		//It doesn't seem to be working. ...I think I'll have to call this from the queryConfig folder? the function needs the query's URL.
 

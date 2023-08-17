@@ -1,5 +1,5 @@
 // import { mapFootprint } from '../UI/MapAndFootprint/MapFootprint';
-
+import { hashCoordinates, hashLoD } from '../support/HashParams.js?v=0.01';
 const initView = async () => {
 	return new Promise((resolve, reject) => {
 		//creating the view object and incorporating map.
@@ -32,15 +32,18 @@ const initView = async () => {
 				portalItem: {
 					id: '2e8a3ccdfd6d42a995b79812b3b0ebc6',
 				},
-				layers: [footprintLayer, haloLayer],
+				layers: [haloLayer, footprintLayer],
 			});
+
+			console.log(location.hash);
+			// console.log(hashCoordinates());
 
 			const view = new MapView({
 				container: 'viewDiv',
 				map: map,
 				layerView: [],
-				center: [-98.5357, 40.1549],
-				zoom: 4,
+				center: hashCoordinates() || [-98.5357, 40.1549],
+				zoom: hashLoD() || 4,
 				constraints: {
 					minZoom: 4,
 				},
