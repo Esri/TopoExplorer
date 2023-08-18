@@ -1,6 +1,9 @@
 // import { mapItemListener } from '../../support/eventListeners/MapItemListener.js?v=0.01';
 import { updateHashParams } from '../../support/HashParams.js?v=0.01';
-import { mapFootprint } from '../../UI/MapAndFootprint/MapFootprint.js?v=0.01';
+import {
+	mapFootprint,
+	mapHalo,
+} from '../../UI/MapAndFootprint/MapFootprint.js?v=0.01';
 import { getTopoMap } from '../../support/ImageExportQuery.js?v=0.01';
 import { singleMapExportProcess } from '../ExportMaps/exportMaps.js?v=0.01';
 const url = new URL(window.location.href);
@@ -10,6 +13,7 @@ const mapsList = document.querySelector('#exploreList');
 const mapModes = document.querySelector('.map-mode-container .action-area');
 const explorerList = document.querySelector('#exploreList');
 const pinList = document.querySelector('#pinnedList');
+
 const currentStateOfPinnedList = () =>
 	Array.from(pinList.querySelectorAll('.mapCard-container'));
 
@@ -140,9 +144,16 @@ const createMapSlotItems = (list, view, url) => {
                       <svg xmlns="http://www.w3.org/2000/svg" width="10" height="12"viewBox="-3 3 32 32"><path fill="#EAEEF1" d="M11.927 22l-6.882-6.883-3 3L11.927 28 31.204 8.728l-3.001-3.001z"/></svg>
                     </div>
                   </div>
-                  <div class="unpinned svgContainer ${
+                  <div class="unpinned svgContainer 
+                  ${
 										isCardPinned === true || isCardPinned !== -1 ? 'pinned' : ''
-									}">
+									}
+                  ${
+										pinnedCardIDsArray.length === 25 && isCardPinned === -1
+											? 'transparency'
+											: ''
+									}
+                  ">
                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6 28 28"><path d="M5 0h7v1.417l-1 .581v6l1 .502v1.498H9v6l-.5 1-.5-1v-6H5V8.5l1-.502v-6L5 1.5V0z"/></svg>
                   </div>
                 </div>
@@ -350,6 +361,10 @@ const addToPinnedArray = (oid, targetMapCard) => {
 	updatePinnedNumberHeader();
 	updateHashParams(pinnedCardIDsArray);
 	updatePinButtonStyle();
+	if (pinnedCardIDsArray.length === 25) {
+		console.log("we're at max");
+		pinBtnUnavailable();
+	}
 };
 
 const removePinnedCardFromHTML = (oid) => {
@@ -370,23 +385,28 @@ const removePinnedTopo = (index, oid) => {
 	updatePinnedNumberHeader();
 	updateHashParams(pinnedCardIDsArray);
 	updatePinButtonStyle();
+	if (pinnedCardIDsArray.length < 25) {
+		console.log("we're at max");
+		pinBtnAvailable();
+	}
 };
 
 const getPinnedTopoIndex = (oid) => {
 	// console.log(pinnedCardHTMLArray, oid);
 
-	return pinnedCardHTMLArray.map((topo) => topo.id).indexOf(oid);
+	return pinnedCardIDsArray.map((topoID) => topoID).indexOf(oid);
 };
 
 const isCurrentMapPinned = (targetMapCard, callback) => {
 	const oid =
 		targetMapCard.querySelector('.map-list-item').attributes.oid.value;
-	// console.log(oid);
+	console.log(oid);
 	// const searchPinnedArray = pinnedCardIDsArray.indexOf(oid);
 	// console.log(getPinnedTopoIndex(oid));
 	//if the targetMapCard is not in the array, it has just been pinned. Add the mapCard to the pinnedArray, render the topo on the map.
 	//otherwise the mapCard must already be pinned, remove it (and it's topo).
 	if (getPinnedTopoIndex(oid) === -1) {
+		console.log('adding topo to pin list');
 		targetMapCard.querySelector('input').attributes.value.value =
 			targetMapCard.querySelector('input').value;
 
@@ -547,7 +567,7 @@ const addHalo = (oid, geometry) => {
 	// const mapCardGeometry = mapItem.attributes.geometry.value;
 	// console.log(oid, geometry);
 	// console.log('mapCard Data info', cardInfo);
-	mapFootprint(oid, geometry).then((topoOutline) => {
+	mapHalo(oid, geometry).then((topoOutline) => {
 		// console.log('the Halo', topoOutline);
 		mapHaloGraphicLayer.graphics.add(topoOutline);
 		// console.log('the view', view);
@@ -559,9 +579,11 @@ const pinEvent = (eventTarget, mapCard, targetOID) => {
 	console.log(!eventTarget.closest('.pushpin'));
 	console.log(!eventTarget.closest('.unpin-action-warning'));
 	if (
-		!eventTarget.closest('.unpin-action-warning') &&
-		!eventTarget.closest('.pushpin')
+		(!eventTarget.closest('.unpin-action-warning') &&
+			!eventTarget.closest('.pushpin')) ||
+		(pinnedCardIDsArray.length === 25 && !mapCard.querySelector('.pinned'))
 	) {
+		console.log('stopping the pin event');
 		return;
 	}
 
@@ -851,6 +873,20 @@ sideBarElement.addEventListener('input', (event) => {
 	opacitySliderEvent(event, eventTarget, targetOID);
 });
 
+sideBarElement.addEventListener('mousedown', (event) => {
+	if (!event.target.closest('.opacity-slider')) {
+		return;
+	}
+	mapFootprintLayer.visible = false;
+});
+
+sideBarElement.addEventListener('mouseup', (event) => {
+	if (!event.target.closest('.opacity-slider')) {
+		return;
+	}
+	mapFootprintLayer.visible = true;
+});
+
 sideBarElement.addEventListener(
 	'mouseenter',
 	(event) => {
@@ -895,6 +931,32 @@ const updatePinButtonStyle = () => {
 	}
 };
 
+const pinBtnUnavailable = () => {
+	console.log('adding a bunch a transparency');
+	const unpinnedIcons = explorerList.querySelectorAll(
+		'.pushpin .unpinned.svgContainer'
+	);
+	unpinnedIcons.forEach((pinIcon) => {
+		if (
+			pinIcon.classList.contains('transparency') ||
+			pinIcon.classList.contains('pinned')
+		) {
+			return;
+		}
+		pinIcon.classList.add('transparency');
+	});
+};
+
+const pinBtnAvailable = () => {
+	const unpinnedIcons = explorerList.querySelectorAll(
+		'.pushpin .unpinned.svgContainer.transparency'
+	);
+
+	unpinnedIcons.forEach((pinIcon) => {
+		pinIcon.classList.remove('transparency');
+	});
+};
+
 document.querySelectorAll('.warning-btns').forEach((warningBtn) => {
 	warningBtn.addEventListener('click', (event) => {
 		if (!event.target.innerHTML.includes('CANCEL')) {
@@ -903,6 +965,7 @@ document.querySelectorAll('.warning-btns').forEach((warningBtn) => {
 			// toggleListVisibility();
 			const arrayFromPinList = currentStateOfPinnedList();
 
+			console.log(arrayFromPinList);
 			arrayFromPinList.forEach((mapCard) => {
 				console.log(mapCard);
 				// isCurrentMapPinned(mapCard, removeTopoFromMap);
