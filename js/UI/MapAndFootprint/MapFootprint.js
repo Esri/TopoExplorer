@@ -54,7 +54,7 @@ const mapFootprint = (mapCardID, geometry) => {
 											joinStyle: 'Miter',
 											lineStyle3D: 'Strip',
 											miterLimit: 10,
-											width: 3.75,
+											width: 2,
 											color: [255, 255, 255, 160],
 										},
 									],
@@ -64,7 +64,7 @@ const mapFootprint = (mapCardID, geometry) => {
 							},
 							{
 								type: 'CIMSolidFill',
-								color: [153, 153, 153, 255],
+								color: [153, 153, 153, 0],
 							},
 						],
 					},
@@ -96,4 +96,40 @@ const mapFootprint = (mapCardID, geometry) => {
 		});
 	});
 };
-export { mapFootprint };
+
+const mapHalo = (mapCardID, geometry) => {
+	return new Promise((resolve, reject) => {
+		require(['esri/layers/GraphicsLayer', 'esri/Graphic'], function (
+			GraphicsLayer,
+			Graphic
+		) {
+			const mapOutline = JSON.parse(geometry);
+
+			const haloPolygon = {
+				type: 'polygon',
+				rings: mapOutline.rings,
+				spatialReference: mapOutline.spatialReference,
+			};
+
+			const haloFill = {
+				type: 'simple-fill',
+				color: '#7f7f7f',
+				outline: {
+					color: '#FFFFFF',
+					width: mapFootprintOutline,
+				},
+			};
+
+			const mapHaloGraphic = new Graphic({
+				geometry: haloPolygon,
+				symbol: haloFill,
+				attributes: {
+					id: mapCardID,
+				},
+			});
+
+			resolve(mapHaloGraphic);
+		});
+	});
+};
+export { mapFootprint, mapHalo };
