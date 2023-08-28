@@ -12,6 +12,14 @@ const scrollPosition = () => {
 
 const isScrollAtPageEnd = (callBack) => {
 	mapListScrollBar.addEventListener('scroll', () => {
+		if (
+			mapListScrollBar.firstElementChild.classList.contains(
+				'notificationMessage'
+			)
+		) {
+			return;
+		}
+
 		if (scrollPosition() < 1) {
 			callBack(true);
 			// console.log(scrollPosition());

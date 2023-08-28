@@ -1,5 +1,6 @@
 //NOTE: This whole file has gotten out of hand, a lot of elements need to be reviewed to make a more effecive refactor..
 //this is cerainly not an ideal layout, but I want to see what other additions I may have to add before I look at refactoring
+//At the risk of being redundant: I want to know what this file is doing before I try to refactor it.
 import {
 	findMinYear,
 	findMaxYear,
@@ -161,11 +162,13 @@ const yearsAndMapScales = {
 		// console.log(this);
 		this.years.minYear = this.years.allYears[sliderPosition];
 		updateWhereStatement();
+		resetQueryOffsetNumber();
 	},
 	updateMaxYear: function (sliderPosition) {
 		// console.log(sliderPosition);
 		this.years.maxYear = this.years.allYears[sliderPosition];
 		updateWhereStatement();
+		resetQueryOffsetNumber();
 	},
 	//setting values
 	setMinMaxMapScales: function (mapScales) {
@@ -182,11 +185,13 @@ const yearsAndMapScales = {
 		this.scales.minScaleSliderPositionValue =
 			this.scales.allScales[sliderPosition];
 		// updateWhereStatement();
+		resetQueryOffsetNumber();
 	},
 	updateMaxScale: function (sliderPosition) {
 		this.scales.maxScale = this.scales.allScales[sliderPosition];
 		this.scales.maxScaleSliderPositionValue =
 			this.scales.allScales[sliderPosition];
+		resetQueryOffsetNumber();
 		// updateWhereStatement();
 	},
 	//NOTE: for the record, I'm not sure I like this approach and it's inclusion in this file, but...it works for now. I think it'll be a headache later on, though.
@@ -319,7 +324,7 @@ const yearsAndMapScales = {
 			//This transparency added to the minimum scale value seems to be causing a problem occasionally during initialization.
 			//I think it's getting an error because it's possible that the min slider value doesn't exist yet.
 			//I'm going to comment it out. I'm not sure I need it at this level of detail(map-zoom).
-			console.log(scaleNumber);
+			// console.log(scaleNumber);
 			scaleNumber.classList.add('transparency');
 
 			// console.log(this.scales.maxScaleSliderPositionValue);
@@ -382,6 +387,9 @@ const yearsAndMapScales = {
 const updateWhereStatement = () => {
 	queryConfig.where = `${mapYear} >= ${yearsAndMapScales.years.minYear} AND ${mapYear} <= ${yearsAndMapScales.years.maxYear} AND map_scale >= ${yearsAndMapScales.scales.minScale} AND map_scale <= ${yearsAndMapScales.scales.maxScale}`;
 	console.log(queryConfig.where);
+	// console.log('from the whereClause update', queryConfig.resultOffset);
+	//NOTE: I shouldn't put this statement here, it should go in it's own function, but at the moment I'm testing to see if this resolves a bug
+	// queryConfig.resultOffset = 0;
 };
 
 const queryConfig = {
@@ -442,15 +450,17 @@ const queryConfig = {
 			.then((response) => {
 				// console.log(response);
 				this.topoMapsInExtent = response.data.features;
-				this.resultOffset = this.resultOffset + this.resultRecordCount;
-				console.log(this.resultOffset);
+
+				// console.log('new offset', this.resultOffset);
 				return this.topoMapsInExtent;
 			})
 			.then((listOfTopos) => {
+				//moved this down here to stop it from affecting the amount of maps returned
+				// console.log(this.resultRecordCount);
+				this.resultOffset = this.resultOffset + this.resultRecordCount;
 				return this.processMapData(listOfTopos);
 			})
 			.then((mapsList) => {
-				console.log('checking if this should even happen');
 				if (yearsAndMapScales.setZoomDependentScale() === -1) {
 					return;
 				}
@@ -471,10 +481,12 @@ const queryConfig = {
 	},
 	getNewMaps: function () {
 		//TODO: these two 'result' changes should be put together in a seperate function
-		if (this.resultOffset !== 0) {
-			console.log('resetting');
-			(this.resultOffset = 0), (this.resultRecordCount = 25);
-		}
+		// if (this.resultOffset !== 0) {
+		// 	console.log('resetting');
+		// 	(this.resultOffset = 0), (this.resultRecordCount = 25);
+		// }
+		this.resultOffset = 0;
+		this.resultRecordCount = 25;
 
 		isQueryInProcess = true;
 		clearMapsList(),
@@ -482,9 +494,9 @@ const queryConfig = {
 			hideMapCount(),
 			numberOfMapsinView(this.url, this.totalMapsInExtentParams())
 				.then((response) => {
-					console.log(response);
+					// console.log(response);
 					this.totalMaps = response.data.count;
-					console.log(this.totalMaps);
+					// console.log(this.totalMaps);
 				})
 				.then(() => {
 					updateMapcount(this.totalMaps);
@@ -500,12 +512,18 @@ const queryConfig = {
 					}
 					isQueryInProcess = false;
 					this.queryMapData();
+					return;
 				});
+		return;
 	},
 	checkAvailableNumberOfMaps: function () {
 		console.log('checking the this.resultOffset', this.resultOffset);
 		if (this.resultOffset === 0) {
-			console.log('this.resultOffset is 0', this.resultOffset);
+			// console.log(
+			// 	'this.resultOffset is 0',
+			// 	'this is the resultRecordCount',
+			// 	this.resultRecordCount
+			// );
 			this.resultOffset = this.resultRecordCount;
 		}
 
@@ -519,14 +537,14 @@ const queryConfig = {
 			showSpinnerIcon();
 			console.log('equal to');
 			this.resultRecordCount = this.totalMaps - this.resultOffset;
-			console.log('the total offset is', this.resultOffset);
-			console.log('the total result RecordCount is', this.resultRecordCount);
+			// console.log('the total offset is', this.resultOffset);
+			// console.log('the total result RecordCount is', this.resultRecordCount);
 
 			this.queryMapData();
 		} else if (this.resultOffset + this.resultRecordCount <= this.totalMaps) {
 			showSpinnerIcon();
 			// this.resultOffset = this.resultOffset + this.resultRecordCount;
-			console.log(isQueryInProcess);
+			// console.log(isQueryInProcess);
 			this.queryMapData();
 		}
 
@@ -633,6 +651,8 @@ const queryConfig = {
 		extentQueryCall(this.url, this.totalMapsInExtentParams());
 	},
 };
+
+const resetQueryOffsetNumber = () => (queryConfig.resultOffset = 0);
 
 const debounce = (func, wait) => {
 	let timer;
