@@ -137,6 +137,8 @@ const initApp = async () => {
 					// console.log('extent changed. view info,', view);
 					// console.log(view.constraints.effectiveLODs);
 					let prevCenter;
+					let currentZoom;
+
 					reactiveUtils.when(
 						() => view?.stationary === true,
 						async () => {
@@ -173,26 +175,30 @@ const initApp = async () => {
 						}
 					);
 
+					// reactiveUtils.watch(
+					// 	() => view.scale,
+					// 	async () => {
+					// 		console.log('zoom fired');
+					// 		queryConfig.setGeometry(view.extent);
+					// 		queryConfig.mapView = view;
+					// 		queryConfig.extentQueryCall();
+					// 		updateHashParams(view);
+					// 	}
+					// );
+
 					reactiveUtils.watch(
-						() => view.scale,
-						async () => {
-							queryConfig.setGeometry(view.extent);
-							queryConfig.mapView = view;
-							queryConfig.extentQueryCall();
-							updateHashParams(view);
+						() => [view.stationary, view.zoom],
+						([stationary, zoom]) => {
+							if (stationary && zoom !== currentZoom) {
+								queryConfig.setGeometry(view.extent);
+								queryConfig.mapView = view;
+								queryConfig.extentQueryCall();
+								updateHashParams(view);
+								currentZoom = zoom;
+							}
 						}
 					);
 				});
-
-				// if (hashCoordinates()) {
-				// 	const hashLocation = hashCoordinates();
-
-				// 	console.log(hashLocation);
-
-				// 	view.goTo({
-				// 		center: hashLocation,
-				// 	});
-				// }
 			});
 
 		// if (window.location.hash) {

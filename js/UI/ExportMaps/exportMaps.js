@@ -90,11 +90,32 @@ document.querySelector('.prompt-box').addEventListener('click', (event) => {
 		closeExportPrompt();
 	}
 	if (event.target.innerHTML.trim() === 'CREATE WEB MAP') {
+		if (document.querySelector('.export-prompt textarea').value === '') {
+			return;
+		}
 		promptBox.classList.add('transparency');
 		closeBtn.classList.add('invisible');
 		removeExportBtn();
 		toggleProcessingIndicator();
 	}
 });
+
+//this is looking at attributes. I'm not sure that's what it should be looking at.
+const styleListenerConfig = { attributes: true };
+
+const exportBtnUnavailable = (mutation, observer) => {
+	console.log('checking the title name');
+	console.log(observer);
+	if (document.querySelector('.export-prompt textarea').value === '') {
+		document.querySelectorAll('.prompt-btns')[1].classList.add('transparency');
+	}
+};
+
+const explorerModeObserver = new MutationObserver(exportBtnUnavailable);
+
+explorerModeObserver.observe(
+	document.querySelector('.export-prompt textarea'),
+	styleListenerConfig
+);
 
 export { singleMapExportProcess };

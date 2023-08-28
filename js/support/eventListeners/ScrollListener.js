@@ -9,12 +9,16 @@ const scrollPosition = () => {
 };
 
 //NOTE: Get feedback on this event listener. Is this a reliable way to find the bottom of an elements scroll?
+
 const isScrollAtPageEnd = (callBack) => {
 	mapListScrollBar.addEventListener('scroll', () => {
 		if (scrollPosition() < 1) {
-			if (mapListScrollBar.scrollTop !== 0) {
-				callBack(true);
-			}
+			callBack(true);
+			// console.log(scrollPosition());
+			// if (mapListScrollBar.scrollTop !== 0) {
+			// 	console.log('calling query');
+			// 	callBack(true);
+			// }
 		}
 	});
 };

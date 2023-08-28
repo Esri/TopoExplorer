@@ -9,7 +9,15 @@ const initView = async () => {
 			'esri/layers/GraphicsLayer',
 			'esri/geometry/SpatialReference',
 			'esri/widgets/Search',
-		], (WebMap, MapView, GraphicsLayer, SpatialReference, Search) => {
+			'esri/widgets/Search/LocatorSearchSource',
+		], (
+			WebMap,
+			MapView,
+			GraphicsLayer,
+			SpatialReference,
+			Search,
+			LocatorSearchSource
+		) => {
 			const footprintLayer = new GraphicsLayer({
 				id: 'mapFootprint',
 				title: 'mapFootprint',
@@ -49,12 +57,49 @@ const initView = async () => {
 				},
 			});
 
+			// const searchWidget = new Search({
+			// 	sources: [
+			// 		{
+			// 			locator: new LocatorSearchSource({
+			// 				url: 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer',
+			// 			}),
+			// 			countryCode: 'US',
+			// 			// singleLineFieldName: 'SingleLine',
+			// 			// name: 'Custom Geocoding Service',
+			// 			// localSearchOptions: {
+			// 			// 	minScale: 300000,
+			// 			// 	distance: 50000,
+			// 			// },
+			// 			placeholder: 'Find address or place',
+			// 			maxResults: 3,
+			// 			maxSuggestions: 6,
+			// 			suggestionsEnabled: true,
+			// 			minSuggestCharacters: 0,
+			// 		},
+			// 	],
+			// 	view: view,
+			// 	includeDefaultSources: false,
+			// });
+
+			//TODO: Add API Key to this. Then it will work
 			const searchWidget = new Search({
 				view: view,
 				resultGraphicEnabled: false,
 				popupEnabled: false,
-				includeDefaultSources: true,
+				includeDefaultSources: false,
 				countryCode: 'US',
+				sources: [
+					{
+						url: 'https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer',
+						apiKey:
+							'AAPKe259b9f8cc57489cb0533ceb6da4b459DGbL3xnlg-YC7ah0DSbIB_1bJzAnUIegpFFBoigwoOvqAHj4aVreEZWdTaR28PEW',
+						singleLineFieldName: 'SingleLine',
+						outFields: ['Addr_type'],
+						name: 'ArcGIS World Geocoding Service',
+						placeholder: 'Find address or place',
+						countryCode: 'US',
+					},
+				],
 			});
 
 			view.ui.move('zoom', 'top-right');

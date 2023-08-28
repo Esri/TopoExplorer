@@ -40,6 +40,7 @@ const setURL = () => {
 };
 
 const url = setURL();
+let isQueryInProcess = false;
 
 // const isExploreModeActive = document
 // 	.querySelector('.explorer-mode.btn-text')
@@ -379,7 +380,7 @@ const yearsAndMapScales = {
 };
 
 const updateWhereStatement = () => {
-	queryConfig.where = `year >= ${yearsAndMapScales.years.minYear} AND year <= ${yearsAndMapScales.years.maxYear} AND map_scale >= ${yearsAndMapScales.scales.minScale} AND map_scale <= ${yearsAndMapScales.scales.maxScale}`;
+	queryConfig.where = `${mapYear} >= ${yearsAndMapScales.years.minYear} AND ${mapYear} <= ${yearsAndMapScales.years.maxYear} AND map_scale >= ${yearsAndMapScales.scales.minScale} AND map_scale <= ${yearsAndMapScales.scales.maxScale}`;
 	console.log(queryConfig.where);
 };
 
@@ -432,15 +433,24 @@ const queryConfig = {
 		});
 	},
 	queryMapData: function () {
+		if (isQueryInProcess) {
+			console.log('query already in progress');
+			return;
+		}
+		isQueryInProcess = true;
 		extentQuery(this.url, this.mapDataParams())
 			.then((response) => {
 				// console.log(response);
-				return (this.topoMapsInExtent = response.data.features);
+				this.topoMapsInExtent = response.data.features;
+				this.resultOffset = this.resultOffset + this.resultRecordCount;
+				console.log(this.resultOffset);
+				return this.topoMapsInExtent;
 			})
 			.then((listOfTopos) => {
 				return this.processMapData(listOfTopos);
 			})
 			.then((mapsList) => {
+				console.log('checking if this should even happen');
 				if (yearsAndMapScales.setZoomDependentScale() === -1) {
 					return;
 				}
@@ -448,22 +458,25 @@ const queryConfig = {
 				hideSpinnerIcon();
 			})
 			.then(() => {
-				this.resultOffset = this.resultOffset + this.resultRecordCount;
-				console.log(this.resultOffset);
+				// this.resultOffset = this.resultOffset + this.resultRecordCount;
+				// console.log(this.resultOffset);
 				// if (this.resultRecordCount !== 25) {
 				// this.resultOffset = this.resultRecordCount;
 				// this.resultOffset = this.resultOffset + this.resultRecordCount;
 				// }
+				console.log('resetting query status to false');
+				isQueryInProcess = false;
 				return;
 			});
 	},
 	getNewMaps: function () {
 		//TODO: these two 'result' changes should be put together in a seperate function
 		if (this.resultOffset !== 0) {
-			// console.log('resetting');
+			console.log('resetting');
 			(this.resultOffset = 0), (this.resultRecordCount = 25);
 		}
 
+		isQueryInProcess = true;
 		clearMapsList(),
 			showSpinnerIcon(),
 			hideMapCount(),
@@ -485,11 +498,14 @@ const queryConfig = {
 						hideSpinnerIcon();
 						return;
 					}
+					isQueryInProcess = false;
 					this.queryMapData();
 				});
 	},
 	checkAvailableNumberOfMaps: function () {
+		console.log('checking the this.resultOffset', this.resultOffset);
 		if (this.resultOffset === 0) {
+			console.log('this.resultOffset is 0', this.resultOffset);
 			this.resultOffset = this.resultRecordCount;
 		}
 
@@ -503,11 +519,14 @@ const queryConfig = {
 			showSpinnerIcon();
 			console.log('equal to');
 			this.resultRecordCount = this.totalMaps - this.resultOffset;
+			console.log('the total offset is', this.resultOffset);
+			console.log('the total result RecordCount is', this.resultRecordCount);
 
 			this.queryMapData();
 		} else if (this.resultOffset + this.resultRecordCount <= this.totalMaps) {
 			showSpinnerIcon();
 			// this.resultOffset = this.resultOffset + this.resultRecordCount;
+			console.log(isQueryInProcess);
 			this.queryMapData();
 		}
 
@@ -603,8 +622,9 @@ const queryConfig = {
 	extentQueryCall: function () {
 		// console.log('zoom-level for query:', this.mapView.zoom);
 		// console.log(yearsAndMapScales.setZoomDependentScale());
+		console.log('running a test');
 		if (yearsAndMapScales.setZoomDependentScale() === -1) {
-			// console.log('bad choices');
+			console.log('bad choices finally');
 			// console.log(this.where);
 			hideSpinnerIcon();
 			return;

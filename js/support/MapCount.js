@@ -11,6 +11,7 @@ const hideMapCount = () => {
 };
 
 const updateMapcount = (number) => {
+	console.log(number);
 	if (number) {
 		mapCount.innerHTML = number.toLocaleString();
 		mapCount.classList.remove('hidden');

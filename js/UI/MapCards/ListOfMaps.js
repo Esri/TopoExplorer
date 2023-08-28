@@ -78,6 +78,7 @@ const createMapSlotItems = (list, view, url) => {
 			// mapListDetails.push(topoMap);
 
 			// console.log(topoMap.previousPinnedMap);
+
 			const isCardPinned =
 				topoMap.previousPinnedMap || getPinnedTopoIndex(`${topoMap.OBJECTID}`);
 			// console.log(isCardPinned);
@@ -575,15 +576,11 @@ const addHalo = (oid, geometry) => {
 };
 
 const pinEvent = (eventTarget, mapCard, targetOID) => {
-	console.log(mapCard);
-	console.log(!eventTarget.closest('.pushpin'));
-	console.log(!eventTarget.closest('.unpin-action-warning'));
 	if (
 		(!eventTarget.closest('.unpin-action-warning') &&
 			!eventTarget.closest('.pushpin')) ||
 		(pinnedCardIDsArray.length === 25 && !mapCard.querySelector('.pinned'))
 	) {
-		console.log('stopping the pin event');
 		return;
 	}
 
