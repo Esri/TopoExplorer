@@ -1,3 +1,5 @@
+import { isMobileFormat } from '../UI/EventsAndSelectors/EventsAndSelectors.js?v=0.01';
+
 const spinnerIcon = document.querySelector('.queryIndicator');
 const mapCount = document.querySelector('.mapCount');
 
@@ -7,18 +9,40 @@ queryNotificationMessage.classList.add('notificationMessage');
 queryNotificationMessage.innerHTML = 'gathering topographic maps...';
 
 const hideMapCount = () => {
+	if (isMobileFormat() && document.querySelector('.mobile-header .mapCount')) {
+		// document.querySelector('.mobile-header .mapCount');
+		document.querySelector('.mobile-header .mapCount').classList.add('hidden');
+	}
+
 	mapCount.classList.add('hidden');
 };
 
 const updateMapcount = (number) => {
-	console.log(number);
-	if (number) {
-		mapCount.innerHTML = number.toLocaleString();
-		mapCount.classList.remove('hidden');
+	if (!number) {
+		return;
 	}
+	if (isMobileFormat() && document.querySelector('.mobile-header .mapCount')) {
+		document.querySelector('.mobile-header .mapCount').innerHTML =
+			number.toLocaleString();
+		document
+			.querySelector('.mobile-header .mapCount')
+			.classList.remove('hidden');
+	}
+
+	console.log(number);
+
+	mapCount.innerHTML = number.toLocaleString();
+	mapCount.classList.remove('hidden');
 };
 
 const hideSpinnerIcon = () => {
+	if (isMobileFormat() && document.querySelector('.mobile-header .mapCount')) {
+		document
+			.querySelector('.mobile-header .queryIndicator')
+			.classList.add('hidden');
+		document.querySelector('.notificationMessage').remove();
+	}
+
 	spinnerIcon.classList.add('hidden');
 	if (document.querySelector('.notificationMessage')) {
 		document.querySelector('.notificationMessage').remove();
@@ -26,6 +50,14 @@ const hideSpinnerIcon = () => {
 };
 
 const showSpinnerIcon = () => {
+	if (isMobileFormat() && document.querySelector('.mobile-header .mapCount')) {
+		document
+			.querySelector('.mobile-header .queryIndicator')
+			.classList.remove('hidden');
+
+		document.querySelector('#exploreList').append(queryNotificationMessage);
+	}
+
 	spinnerIcon.classList.remove('hidden');
 	document.querySelector('#exploreList').append(queryNotificationMessage);
 };

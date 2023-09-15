@@ -1,63 +1,130 @@
-//Not sure if it's a good/useful idea to create another module just to manage the URL's hash params,
-//but, at the moment, I wasn't sure how else to structure my code to accomodate the fact that
-//the map IDs and the location/zoom information rely on different modules and both will ned to access the hash params.
-//I am VERY open to other solutions.
+// const parseHashParams = urlHash
+// 	.substring(1)
+// 	.split('&')
+// 	.reduce((res, item) => {
+// 		const paramElement = item.split('=');
+// 		res[paramElement[0]] = paramElement[1];
+// 		return res;
+// 	}, {});
 
-const urlHash = window.location.hash;
+let parsedHashParams = null;
 
-const parseHashParams = urlHash
-	.substring(1)
-	.split('&')
-	.reduce((res, item) => {
-		const paramElement = item.split('=');
-		res[paramElement[0]] = paramElement[1];
-		return res;
-	}, {});
+const parseHashParams = () => {
+	if (parsedHashParams) {
+		return;
+	}
+
+	const urlHash = window.location.hash;
+	console.log('asking hash update', urlHash);
+	parsedHashParams = urlHash
+		.substring(1)
+		.split('&')
+		.reduce((res, item) => {
+			const paramElement = item.split('=');
+			res[paramElement[0]] = paramElement[1];
+			return res;
+		}, {});
+};
 
 const updateHashParams = (data) => {
 	//NOTE: I'm not sure if using one function to update the hashParams string is the best idea,
 	//I'm worried that it could clutter the goal of the function,
 	//but I thought this apporach might be a simple way to track and implement the changes to the hash params
-	console.log(data);
-	console.log(typeof data);
+	// console.log(data);
+	// console.log(typeof data);
 
 	if (Array.isArray(data)) {
 		// console.log(data)
 		// data.reverse();
-		parseHashParams.maps = data.join(',');
+		parsedHashParams.maps = data.join(',');
 	} else {
-		parseHashParams.loc = `${data.center.longitude.toFixed(
+		parsedHashParams.loc = `${data.center.longitude.toFixed(
 			2
 		)},${data.center.latitude.toFixed(2)}`;
-		parseHashParams.LoD = data.zoom;
+		parsedHashParams.LoD = data.zoom;
 	}
 
-	console.log(parseHashParams);
+	// console.log(parsedHashParams);
 
-	const hashString = `maps=${parseHashParams.maps || ''}&loc=${
-		parseHashParams.loc
-	}&LoD=${parseHashParams.LoD}`;
+	const exportParams = parsedHashParams.export
+		? `&export=${parsedHashParams.export}`
+		: '';
+
+	const hashString = `maps=${parsedHashParams.maps || ''}&loc=${
+		parsedHashParams.loc
+	}&LoD=${parsedHashParams.LoD}${exportParams}`;
 
 	window.location.hash = hashString;
 };
 
+const invertHashedMapOrder = () => {
+	console.log(parsedHashParams.maps);
+
+	const invertedMapOrder = parsedHashParams.maps.split(',').reverse();
+
+	updateHashParams(invertedMapOrder);
+};
+const addHashExportPrompt = (mapDetails) => {
+	console.log(mapDetails);
+	const mapIDs = mapDetails
+		.map((mapDetail) => {
+			console.log(mapDetail.attributes.oid.value);
+			return mapDetail.attributes.oid.value;
+		})
+		.join(',');
+	console.log('adding export info');
+	window.location.hash += `&export=${mapIDs}`;
+};
+
 const hashCoordinates = () => {
-	if (!parseHashParams.loc) {
+	parseHashParams();
+
+	if (!parsedHashParams.loc) {
 		return;
 	}
 
-	return parseHashParams.loc.split(',');
+	return parsedHashParams.loc.split(',');
 };
 
 const hashLoD = () => {
-	if (!parseHashParams.LoD) {
+	parseHashParams();
+
+	if (!parsedHashParams.LoD) {
 		return;
 	}
 
-	return parseHashParams.LoD;
+	return parsedHashParams.LoD;
 };
 
 const checkForPreviousTopos = () => {
-	return parseHashParams.maps;
+	parseHashParams();
+
+	return parsedHashParams.maps;
 };
-export { updateHashParams, hashCoordinates, checkForPreviousTopos, hashLoD };
+
+const activeExport = () => {
+	parseHashParams;
+
+	return parsedHashParams.export;
+};
+
+const removeExportParam = () => {
+	parseHashParams;
+
+	const hashString = `maps=${parsedHashParams.maps || ''}&loc=${
+		parsedHashParams.loc
+	}&LoD=${parsedHashParams.LoD}`;
+
+	window.location.hash = hashString;
+};
+
+export {
+	updateHashParams,
+	invertHashedMapOrder,
+	addHashExportPrompt,
+	activeExport,
+	removeExportParam,
+	hashCoordinates,
+	checkForPreviousTopos,
+	hashLoD,
+};

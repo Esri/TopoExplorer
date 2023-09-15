@@ -1,11 +1,20 @@
 // import { mapItemListener } from '../../support/eventListeners/MapItemListener.js?v=0.01';
-import { updateHashParams } from '../../support/HashParams.js?v=0.01';
+import {
+	isMobileFormat,
+	maxPinToolTip,
+} from '../EventsAndSelectors/EventsAndSelectors.js?v=0.01';
+import {
+	updateHashParams,
+	addHashExportPrompt,
+	invertHashedMapOrder,
+} from '../../support/HashParams.js?v=0.01';
 import {
 	mapFootprint,
 	mapHalo,
 } from '../../UI/MapAndFootprint/MapFootprint.js?v=0.01';
 import { getTopoMap } from '../../support/ImageExportQuery.js?v=0.01';
-import { singleMapExportProcess } from '../ExportMaps/exportMaps.js?v=0.01';
+import { mapExportProcess } from '../ExportMaps/ExportMapsPrompt.js?v=0.01';
+import { authorization } from '../../support/OAuth.js?v=0.01';
 const url = new URL(window.location.href);
 
 const sideBarElement = document.querySelector('#sideBar');
@@ -136,7 +145,11 @@ const createMapSlotItems = (list, view, url) => {
 								: 'invisible'
 						}'>
               <div class='action-area'>
-                <div class='icon pushpin'>
+              <span class='tooltipText hidden'>cannot pin more than 25 topos</span>
+                <div class='icon pushpin ${
+									isMobileFormat() ? 'invisible' : null
+								}'>
+                
                   <div class="checkmarkBackground ${
 										isCardPinned === true || isCardPinned !== -1 ? '' : 'hidden'
 									}">
@@ -155,6 +168,7 @@ const createMapSlotItems = (list, view, url) => {
 											: ''
 									}
                   ">
+                  
                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6 28 28"><path d="M5 0h7v1.417l-1 .581v6l1 .502v1.498H9v6l-.5 1-.5-1v-6H5V8.5l1-.502v-6L5 1.5V0z"/></svg>
                   </div>
                 </div>
@@ -202,14 +216,14 @@ const createMapSlotItems = (list, view, url) => {
 
 	if (list[0].previousPinnedMap) {
 		// pinList.innerHTML = mapSlot;
-		console.log(list);
+		// console.log(list);
 		// console.log(mapSlot);
 		const mapItem = mapSlot;
 		const mapCardContainingDiv = document.createElement('div');
 		mapCardContainingDiv.innerHTML = mapSlot;
 		const containingItem =
 			mapCardContainingDiv.querySelector('.mapCard-container');
-		console.log(containingItem);
+		// console.log(containingItem);
 		// addToPinnedArray(list[0].OBJECTID, mapSlot);
 		addTopoToMap(list[0].OBJECTID, url);
 		addHalo(list[0].OBJECTID, JSON.stringify(list[0].mapBoundry));
@@ -262,6 +276,10 @@ mapModes.addEventListener('click', (event) => {
 });
 
 const setTopoMapPlaceholder = (oid) => {
+	//if mobile is active, do not keep track of the most recently opened topo
+	if (isMobileFormat()) {
+		return;
+	}
 	if (
 		topoOnMapPlaceholder !== parseInt(oid) &&
 		pinnedCardIDsArray.indexOf(`${topoOnMapPlaceholder}`) === -1
@@ -361,7 +379,7 @@ const addToPinnedArray = (oid, targetMapCard) => {
 	formatPinnedListMapCard(oid, targetMapCard);
 	updatePinnedNumberHeader();
 	updateHashParams(pinnedCardIDsArray);
-	updatePinButtonStyle();
+	updatePinHeaderButtonStyle();
 	if (pinnedCardIDsArray.length === 25) {
 		console.log("we're at max");
 		pinBtnUnavailable();
@@ -385,9 +403,9 @@ const removePinnedTopo = (index, oid) => {
 	// updatePinnedListHTML();
 	updatePinnedNumberHeader();
 	updateHashParams(pinnedCardIDsArray);
-	updatePinButtonStyle();
+	updatePinHeaderButtonStyle();
 	if (pinnedCardIDsArray.length < 25) {
-		console.log("we're at max");
+		console.log('less than max pinned');
 		pinBtnAvailable();
 	}
 };
@@ -401,7 +419,7 @@ const getPinnedTopoIndex = (oid) => {
 const isCurrentMapPinned = (targetMapCard, callback) => {
 	const oid =
 		targetMapCard.querySelector('.map-list-item').attributes.oid.value;
-	console.log(oid);
+	// console.log(oid);
 	// const searchPinnedArray = pinnedCardIDsArray.indexOf(oid);
 	// console.log(getPinnedTopoIndex(oid));
 	//if the targetMapCard is not in the array, it has just been pinned. Add the mapCard to the pinnedArray, render the topo on the map.
@@ -428,7 +446,7 @@ const isCurrentMapPinned = (targetMapCard, callback) => {
 		console.log(targetMapCard.closest('#pinnedList'));
 		if (targetMapCard.closest('#pinnedList')) {
 			console.log('these are pinned');
-			callback(oid);
+			callback(oid); //This callback should always remove the specific topo layer from the map.
 			relatedMapCard ? closeMapCard(relatedMapCard) : null;
 			removePinnedTopo(pinnedCardIDsArray.indexOf(oid), oid);
 			return;
@@ -623,7 +641,7 @@ const zoomEvent = (eventTarget, oid) => {
 	if (!eventTarget.closest('.zoom')) {
 		return;
 	}
-
+	console.log(eventTarget, oid);
 	const targetGeometry =
 		eventTarget.closest('.map-list-item').attributes.geometry.value;
 
@@ -637,19 +655,22 @@ const saveEvent = (eventTarget) => {
 	if (!eventTarget.closest('.save')) {
 		return;
 	}
-	// const currentStateOfPinnedList =
-	// 	pinList.querySelectorAll('.mapCard-container');
-
-	console.log('this would save and export');
 	const mapContainer = eventTarget.closest('.mapCard-container');
 	const mapDetails = Array.from(
 		mapContainer.querySelectorAll('.map-list-item')
 	);
-	console.log(mapDetails);
-	singleMapExportProcess(mapDetails);
+
+	addHashExportPrompt(mapDetails);
+	console.log('this would save and export');
+	authorization.getCredentials();
+	mapExportProcess(mapDetails, url);
 };
 
 const openMapCard = (target) => {
+	if (isMobileFormat()) {
+		return;
+	}
+
 	target
 		.closest('.map-list-item')
 		.querySelector('.action-container')
@@ -669,12 +690,13 @@ const handleOpacityChange = (targetOID, sliderValue) => {
 	});
 };
 
-const opacitySliderEvent = (event, eventTarget, targetOID) => {
+const opacitySliderEvent = (eventTarget, targetOID) => {
 	if (!eventTarget.closest('.mapCard-slider')) {
 		return;
 	}
 
-	const sliderValue = event.target.value;
+	// console.log('slider?');
+	const sliderValue = eventTarget.value;
 
 	handleOpacityChange(targetOID, sliderValue);
 	sliderColorPosition(sliderValue, targetOID);
@@ -692,6 +714,9 @@ const sliderColorPosition = (value, targetOID) => {
 };
 
 const closeMapCard = (target) => {
+	if (isMobileFormat()) {
+		return;
+	}
 	target
 		.closest('.map-list-item')
 		.querySelector('.action-container')
@@ -774,7 +799,6 @@ document.addEventListener('click', (event) => {
 		!event.target.closest('.unpin-action-warning') &&
 		!event.target.closest('.unpin')
 	) {
-		console.log('different');
 		document.querySelector('.unpin-action-warning').classList.add('invisible');
 		return;
 	}
@@ -784,9 +808,13 @@ const exportAllPinned = (event) => {
 	if (!event.target.closest('.save-all')) {
 		return;
 	}
-	console.log('export');
-	const pinMapsToExport = currentStateOfPinnedList();
-	singleMapExportProcess(pinMapsToExport);
+
+	// const pinMapsToExport = currentStateOfPinnedList();
+	// const mapContainer = pinList
+	const mapDetails = Array.from(pinList.querySelectorAll('.map-list-item'));
+	addHashExportPrompt(mapDetails);
+	authorization.getCredentials();
+	mapExportProcess(mapDetails, url);
 };
 
 const reorderPinnedListHTML = () => {
@@ -815,6 +843,8 @@ const reorderMapLayers = () => {
 		viewTest.map.layers.length - 1
 	);
 	viewTest.map.layers.reorder(mapHaloGraphicLayer, 0);
+
+	invertHashedMapOrder();
 };
 
 sideBarElement.addEventListener('click', (event) => {
@@ -867,7 +897,7 @@ sideBarElement.addEventListener('input', (event) => {
 	const eventTarget = event.target;
 	const targetOID = eventTarget.closest('.map-list-item').attributes.oid.value;
 
-	opacitySliderEvent(event, eventTarget, targetOID);
+	opacitySliderEvent(eventTarget, targetOID);
 });
 
 sideBarElement.addEventListener('mousedown', (event) => {
@@ -887,6 +917,10 @@ sideBarElement.addEventListener('mouseup', (event) => {
 sideBarElement.addEventListener(
 	'mouseenter',
 	(event) => {
+		if (isMobileFormat()) {
+			return;
+		}
+
 		if (event.target.matches('.map-list-item')) {
 			let mapItem = event.target;
 
@@ -912,7 +946,7 @@ sideBarElement.addEventListener(
 	true
 );
 
-const updatePinButtonStyle = () => {
+const updatePinHeaderButtonStyle = () => {
 	if (pinnedCardIDsArray.length === 0) {
 		document.querySelector('.pin-mode-btn').classList.add('transparency');
 		if (
@@ -942,6 +976,8 @@ const pinBtnUnavailable = () => {
 		}
 		pinIcon.classList.add('transparency');
 	});
+
+	maxPinToolTip();
 };
 
 const pinBtnAvailable = () => {
@@ -958,7 +994,7 @@ document.querySelectorAll('.warning-btns').forEach((warningBtn) => {
 	warningBtn.addEventListener('click', (event) => {
 		if (!event.target.innerHTML.includes('CANCEL')) {
 			// console.log('remove');
-			updatePinButtonStyle();
+			updatePinHeaderButtonStyle();
 			// toggleListVisibility();
 			const arrayFromPinList = currentStateOfPinnedList();
 
@@ -1114,31 +1150,6 @@ const endDrag = (event) => {
 	console.log(movingCardItem.attributes.oid.value);
 	console.log(getPinnedTopoIndex(movingCardItem.attributes.oid.value));
 
-	// for (let i = listOfPinnedIDs.length; i < 0; i--) {
-	// 	console.log(i);
-	// 	console.log(listOfPinnedIDs[i]);
-	// 	if (
-	// 		listOfPinnedIDs[i].attributes.oid.value ===
-	// 		movingCardItem.attributes.oid.value
-	// 	) {
-	// 		console.log('this was moved recently', index);
-	// 		findTopoLayer(movingCardItem.attributes.oid.value).then((movedMap) => {
-	// 			console.log(movedMap, index);
-	// 			// console.log(viewTest.map.layers);
-
-	// 			viewTest.map.layers.reorder(movedMap, index);
-
-	// 			viewTest.map.layers.reorder(
-	// 				mapFootprintLayer,
-	// 				viewTest.map.layers.length - 1
-	// 			);
-
-	// 			viewTest.map.layers.reorder(mapHaloGraphicLayer, 0);
-
-	// 			console.log('layers after reorder drag', viewTest.map.layers);
-	// 		});
-	// 	}
-	// }
 	const listOfPinnedIDs = listOfPinnedCards.map((mapHTML) => {
 		console.log(mapHTML.attributes.oid.value);
 		return mapHTML.attributes.oid.value;
@@ -1203,4 +1214,4 @@ const addDragEventListener = () => {
 // 		document.querySelector('.unpin-action-warning').classList.add('invisible');
 // 	}
 // });
-export { clearMapsList, createMapSlotItems };
+export { clearMapsList, createMapSlotItems, opacitySliderEvent, zoomEvent };

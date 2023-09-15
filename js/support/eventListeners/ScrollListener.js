@@ -31,22 +31,4 @@ const isScrollAtPageEnd = (callBack) => {
 	});
 };
 
-// const bottom =
-// 			e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
-
-// 		console.log(
-// 			mapListScrollBar.scrollHeight -
-// 				mapListScrollBar.clientHeight -
-// 				mapListScrollBar.scrollTop
-// 		);
-// 		console.log('scrolltop', e.target.scrollTop);
-// 		console.log(bottom);
-// 		console.log('clientheight', e.target.clientHeight);
-// 		console.log(e.target.scrollHeight);
-// 		if (bottom) {
-// 			if (e.target.scrollTop !== 0) {
-// 				callBack(true);
-// 			}
-// 		}
-
 export { isScrollAtPageEnd };

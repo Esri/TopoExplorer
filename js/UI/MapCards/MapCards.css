@@ -5,6 +5,16 @@
   margin: auto;
   }
   
+.mobile-header .map-info{
+  transform: translateX(5px);
+  text-overflow: ellipsis;
+  width: 40vw;
+  }
+
+.mobile-header .mapCard-slider{
+  margin: 0 -20px 0 0;
+}
+
 .map-list-item {
   cursor: default;
   display: flex;
@@ -154,7 +164,7 @@ cursor: -webkit-grabbing;
 }
 
 .action-area{
-/* display: flex & display none conflict with each other. */
+position: relative;
 display: flex;
 flex: auto;
 justify-content: space-around;
@@ -221,6 +231,27 @@ border-radius: 6px;
 .icon.pushpin .pinned{
   transform: rotate(0deg);
 }
+
+.action-area .tooltipText {
+  position: absolute;
+  left: 42px;
+  width: 100px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  z-index: 1;
+  top: -50px;
+  margin-left: -60px;
+  /* opacity: 0; */
+  transition: opacity 0.3s;
+}
+/* 
+.action-area ~ .tooltipText .icon .transparency:hover  {
+  visibility: visible;
+  opacity: 1;
+} */
 
 .action-area .icon svg{
   fill: #637287;

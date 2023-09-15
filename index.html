@@ -16,6 +16,7 @@
 			type="module"
 			src="https://js.arcgis.com/calcite-components/1.2.0/calcite.esm.js"
 		></script>
+   
 		<link
 			rel="stylesheet"
 			type="text/css"
@@ -38,7 +39,7 @@
                 <div>
                   <label> ArcGIS Online Web Map Name* </label>
                   <br>
-                  <textarea class="mapName" type="text" contenteditable="true"></textarea>
+                  <textarea class="title" type="text" contenteditable="true"></textarea>
                 </div>
                 <div>
                   <label>Tags</label>
@@ -52,16 +53,16 @@
                 </div>
                 <div class="exportBtnContainer flex">
                   <div class="prompt-btns">CANCEL</div>
-                  <div class="prompt-btns">CREATE WEB MAP</div>
+                  <div class="prompt-btns export">CREATE WEB MAP</div>
                 </div>
-                <div></div>
+                <!-- <div></div> -->
               </form>
             </div>
             <div class="processing-indicator invisible"> CREATING WEB MAP...</div>
           </div>
       </div>
-			<div style="background-color: #e7ebee">
-				<div id="sideBar">
+			<aside id="sideBarWrapper" class="flex">
+				<div id="sideBar" class="flex">
 					<div id="header">
 						<div class="heading">
 							HISTORICAL TOPO
@@ -84,7 +85,7 @@
 							/>
 						</div>
 					</div>
-					<div class="map-mode-container">
+					<div class="map-mode-container flex">
 						<div class="action-area">
 							<div class="mode explorer-mode-btn">
 								<svg xmlns="http://www.w3.org/2000/svg" height="32" width="32">
@@ -110,23 +111,25 @@
 									</div>
 								</div>
 							</div>
-							<div class="divider"></div>
-							<div class="mode pin-mode-btn transparency">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									height="28"
-									width="28"
-									viewBox="-3 -3 21 21"
-								>
-									<path
-										d="M5 0h7v1.417l-1 .581v6l1 .502v1.498H9v6l-.5 1-.5-1v-6H5V8.5l1-.502v-6L5 1.5V0z"
-									/>
-								</svg>
-								<div class="pinned-mode btn-text ">
-									<span class="pinCount"></span>
-									<span class="pinnedText">Pinned Topo Map</span>
-								</div>
-							</div>
+              <div class="for-desktop display-content ">
+                <div class="divider"></div>
+                <div class="mode pin-mode-btn transparency">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="28"
+                    width="28"
+                    viewBox="-3 -3 21 21"
+                  >
+                    <path
+                      d="M5 0h7v1.417l-1 .581v6l1 .502v1.498H9v6l-.5 1-.5-1v-6H5V8.5l1-.502v-6L5 1.5V0z"
+                    />
+                  </svg>
+                  <div class="pinned-mode btn-text ">
+                    <span class="pinCount"></span>
+                    <span class="pinnedText">Pinned Topo Map</span>
+                  </div>
+                </div>
+              </div>
 						</div>
 					</div>
 					<div class="mode-options">
@@ -163,7 +166,7 @@
 						</div>
 						<div class="pinned-mode-options invisible">
               <!-- I'm adding the style width -->
-							<div class="pinned-mode-sub-section" style="width:30%;">
+							<div class="pinned-mode-sub-section flex" style="width:30%;">
 								<div class="icon reorder">
                   <div>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6   42 40">
@@ -191,8 +194,8 @@
                 </div>
                 </div>
 							</div>
-							<div class="divider"></div>
-							<div class="pinned-mode-sub-section" style="width:47%;">
+							<div class="divider hidden"></div>
+							<div class="pinned-mode-sub-section hidden" style="width:47%;">
 								<!-- <div></div> -->
 								<div class="icon">
                   <div class="play-pause">
@@ -238,32 +241,19 @@
           </div>
           
 				</div>
-			</div>
+			</aside>
 			<div id="viewDiv">
         <div id="user-icon">
           <div class="profile">
-            <svg xmlns="http://www.w3.org/2000/svg" height="26" width="32"><path d="M19.5 15h-7A6.508 6.508 0 0 0 6 21.5V29h20v-7.5a6.508 6.508 0 0 0-6.5-6.5zM25 28H7v-6.5a5.506 5.506 0 0 1 5.5-5.5h7a5.506 5.506 0 0 1 5.5 5.5zm-9-14.2A5.8 5.8 0 1 0 10.2 8a5.806 5.806 0 0 0 5.8 5.8zm0-10.633A4.833 4.833 0 1 1 11.167 8 4.839 4.839 0 0 1 16 3.167z"></path></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="1.5 -2 24 24" height="30" width="30"><path d="M19.5 15h-7A6.508 6.508 0 0 0 6 21.5V29h20v-7.5a6.508 6.508 0 0 0-6.5-6.5zM25 28H7v-6.5a5.506 5.506 0 0 1 5.5-5.5h7a5.506 5.506 0 0 1 5.5 5.5zm-9-14.2A5.8 5.8 0 1 0 10.2 8a5.806 5.806 0 0 0 5.8 5.8zm0-10.633A4.833 4.833 0 1 1 11.167 8 4.839 4.839 0 0 1 16 3.167z"></path></svg>
           </div>
         </div>
-				<!-- <div
-					class="zoomDiv"
-					style="
-						position: absolute;
-						background-color: #e7ebee;
-						top: 1rem;
-						left: 26rem;
-						font-size: 1.2rem;
-						text-align: center;
-						padding: 1% 1%;
-					"
-				>
-					Zoom-level is <span></span>
-				</div> -->
+				
 			</div>
       <div class="grabbedItemImage"></div>
 		</main>
 		<script src="./Libraries/axios1.13.min.js"></script>
-		<script type="text/javascript" src="https://js.arcgis.com/4.24/"></script>
+		<script type="text/javascript" src="https://js.arcgis.com/4.25/"></script>
 		<script type="module" src="js/main.js?v=0.01"></script>
 	</body>
 </html>
