@@ -145,7 +145,7 @@ const addExportBtn = () => {
 	exportBtnContainer.classList.add('flex');
 };
 
-document.addEventListener('click', (event) => {
+promptBox.addEventListener('click', (event) => {
 	event.preventDefault();
 	if (!event.target.classList.contains(webBtnClass)) {
 		return;
@@ -155,7 +155,7 @@ document.addEventListener('click', (event) => {
 	closeExportPrompt();
 });
 
-document.querySelector('.prompt-box').addEventListener('click', (event) => {
+promptBox.addEventListener('click', (event) => {
 	if (event.target.innerHTML.trim() === 'CANCEL') {
 		closeExportPrompt();
 	}
@@ -181,13 +181,13 @@ closeBtn.addEventListener('click', (event) => {
 });
 
 const exportTitleQC = () => {
-	document
+	promptBox
 		.querySelector('.export-prompt textarea')
 		.addEventListener('input', (event) => {
 			// console.log('changing');
 			event.preventDefault();
 			if (
-				document.querySelector('.export-prompt textarea').value.trim() === ''
+				promptBox.querySelector('.export-prompt textarea').value.trim() === ''
 			) {
 				promptBox
 					.querySelector(`.${promptBtnsClass}.export`)

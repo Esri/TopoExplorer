@@ -40,7 +40,6 @@ sideBar.addEventListener(
 const addAccountImage = (accountInfo) => {
 	account = accountInfo;
 	const profileImg = document.createElement('img');
-	console.log(accountInfo.img);
 	if (accountInfo.img) {
 		profileImg.setAttribute('src', `${accountInfo.img}`);
 		document.querySelector('#user-icon .profile svg').remove();

@@ -102,7 +102,7 @@ const createMapSlotItems = (list, view, url) => {
           <div class='topRow'>
             <div class='left-margin'>
 
-              <div class="animate-checkbox hidden">
+              <div class="animate checkbox hidden">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="1 0 20 20" height="16" width="16">
                   <path class="" d="M5.5 12L2 8.689l.637-.636L5.5 10.727l8.022-7.87.637.637z"></path>
                 </svg>
@@ -847,8 +847,10 @@ const reorderMapLayers = () => {
 	invertHashedMapOrder();
 };
 
+//Icon events for mapcard
 sideBarElement.addEventListener('click', (event) => {
 	const eventTarget = event.target;
+	console.log(eventTarget.closest('.map-list-item'));
 
 	if (event.target.closest('.pinned-mode-options')) {
 		reorderPinListEvent(event);
@@ -872,7 +874,8 @@ sideBarElement.addEventListener('click', (event) => {
 		isMapCardOpen(eventTarget, targetOID);
 	}
 
-	if (eventTarget.closest('.animate-checkbox')) {
+	if (eventTarget.closest('.animate.checkbox')) {
+		console.log('is this working?');
 		toggleAnimateCheckbox(eventTarget);
 	}
 

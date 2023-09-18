@@ -19,6 +19,7 @@ import { authorization } from './support/OAuth.js?v=0.01';
 import { addAccountImage } from './UI/EventsAndSelectors/EventsAndSelectors.js?v=0.01';
 // import { setUserItemPageURL } from './UI/ExportMapsPrompt/exportPromptUI.js?v=0.01';
 import { setBaseMapInfo } from './UI/ExportMaps/ExportMapsPrompt.js?v=0.01';
+import { initLayerToggle } from './UI/Basemaps/basemaps.js?v=0.01';
 import { setAccountData } from './support/AddItemRequest.js?v=0.01';
 
 // console.log('set to mobile format?', isMobileFormat());
@@ -45,6 +46,7 @@ const initApp = async () => {
 			.then(() => {
 				sliderValues;
 				setBaseMapInfo(view);
+				initLayerToggle(view);
 			})
 			.then(() => {
 				getPreviousTopos;

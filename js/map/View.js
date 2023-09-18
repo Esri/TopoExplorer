@@ -38,7 +38,7 @@ const initView = () => {
 
 			const map = new WebMap({
 				portalItem: {
-					id: '2e8a3ccdfd6d42a995b79812b3b0ebc6',
+					id: '710264327ad24ff5ba996e2a7c773b7f',
 				},
 				layers: [haloLayer, footprintLayer],
 			});
