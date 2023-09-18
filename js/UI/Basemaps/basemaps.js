@@ -4,6 +4,7 @@ console.log(config);
 let mapView;
 let terrainLayer;
 let imageryLayer;
+let outdoorBasemapLabels;
 
 const setLayers = async (view) => {
 	mapView = view;
@@ -30,13 +31,21 @@ const setLayers = async (view) => {
 			}
 		});
 
+		outdoorBasemapLabels = view.map.layers.items.find((layer) => {
+			if (layer.portalItem) {
+				if (
+					layer.portalItem.id ===
+					config.environment.webMap.webMapLayers.outdoorLabels
+				)
+					return layer;
+			}
+		});
+
 		resolve();
 	});
 };
 
 const addLayerToggleToMap = () => {
-	console.log(terrainLayer);
-	console.log(imageryLayer);
 	const layerToggleHTML = `
     <div id='layerToggle' class='flex'>
       <div class='mapLayer flex satellite'>
@@ -82,7 +91,7 @@ const toggleMapLayer = (checkmark) => {
 			imageryLayer.visible = false;
 		}
 
-		if (checkmark.closest('terrain')) {
+		if (checkmark.closest('.terrain')) {
 			console.log(terrainLayer);
 			terrainLayer.visible = false;
 		}
@@ -95,7 +104,7 @@ const toggleMapLayer = (checkmark) => {
 		imageryLayer.visible = true;
 	}
 
-	if (checkmark.closest('terrain')) {
+	if (checkmark.closest('.terrain')) {
 		console.log(terrainLayer);
 		terrainLayer.visible = true;
 	}
@@ -105,6 +114,10 @@ const initLayerToggle = (view) => {
 	setLayers(view)
 		.then((item) => {
 			addLayerToggleToMap();
+		})
+		.then(() => {
+			mapView.map.layers.reorder(imageryLayer, 0);
+			mapView.map.layers.reorder(outdoorBasemapLabels, 1);
 		})
 		.then(() => {
 			const mapLayer = document.querySelectorAll('.mapLayer');

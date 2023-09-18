@@ -510,11 +510,12 @@ const addTopoToMap = (target, url) => {
 		// console.log(viewTest);
 		// console.log(topoImageLayer);
 		//NOTE: maybe give this it's own function. Just to make things easier to parse
-		viewTest.map.add(topoImageLayer);
+		viewTest.map.add(topoImageLayer, 3);
 		viewTest.map.layers.reorder(
 			mapFootprintLayer,
 			viewTest.map.layers.length - 1
 		);
+		viewTest.map.layers.reorder(mapHaloGraphicLayer, 4);
 	});
 };
 
@@ -551,7 +552,6 @@ const removeTopoFromMap = (oid) => {
 	findTopoLayer(oid)
 		.then((specificTopo) => {
 			viewTest.map.remove(specificTopo);
-			// mapHaloGraphicLayer.graphics.remove(specificTopo);
 		})
 		.then(() => {
 			removeHalo(oid);
@@ -559,12 +559,9 @@ const removeTopoFromMap = (oid) => {
 };
 
 const findHaloGraphic = (oid) => {
-	// console.log(mapHaloGraphicLayer);
 	const haloGraphicsList = mapHaloGraphicLayer.graphics.items;
 	return new Promise((resolve, reject) => {
 		haloGraphicsList.find((mapHaloGraphic) => {
-			// console.log(mapHaloGraphic);
-			// console.log("here's the oid", oid);
 			if (mapHaloGraphic.attributes.id == oid) {
 				resolve(mapHaloGraphic);
 			}
@@ -573,23 +570,14 @@ const findHaloGraphic = (oid) => {
 };
 
 const removeHalo = (oid) => {
-	// console.log('was remove halo called?');
 	findHaloGraphic(oid).then((specificHalo) => {
-		// console.log('the specific halo', specificHalo);
 		mapHaloGraphicLayer.graphics.remove(specificHalo);
-		// console.log(mapHaloGraphicLayer);
 	});
 };
 
 const addHalo = (oid, geometry) => {
-	// const mapCardID = mapItem.attributes.oid.value;
-	// const mapCardGeometry = mapItem.attributes.geometry.value;
-	// console.log(oid, geometry);
-	// console.log('mapCard Data info', cardInfo);
 	mapHalo(oid, geometry).then((topoOutline) => {
-		// console.log('the Halo', topoOutline);
 		mapHaloGraphicLayer.graphics.add(topoOutline);
-		// console.log('the view', view);
 	});
 };
 
@@ -842,7 +830,7 @@ const reorderMapLayers = () => {
 		mapFootprintLayer,
 		viewTest.map.layers.length - 1
 	);
-	viewTest.map.layers.reorder(mapHaloGraphicLayer, 0);
+	viewTest.map.layers.reorder(mapHaloGraphicLayer, 5);
 
 	invertHashedMapOrder();
 };
@@ -1173,7 +1161,7 @@ const endDrag = (event) => {
 					viewTest.map.layers.length - 1
 				);
 
-				viewTest.map.layers.reorder(mapHaloGraphicLayer, 0);
+				viewTest.map.layers.reorder(mapHaloGraphicLayer, 5);
 
 				console.log('layers after reorder drag', viewTest.map.layers);
 			});

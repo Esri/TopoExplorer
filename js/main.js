@@ -46,7 +46,7 @@ const initApp = async () => {
 			.then(() => {
 				sliderValues;
 				setBaseMapInfo(view);
-				// initLayerToggle(view);
+				initLayerToggle(view);
 			})
 			.then(() => {
 				getPreviousTopos;
