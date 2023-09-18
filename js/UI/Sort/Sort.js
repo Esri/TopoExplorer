@@ -15,6 +15,7 @@ const sortChoice = (callBack) => {
 			: sortOptions.classList.add('invisible');
 	});
 
+	//selecting a new sort option
 	sortChoices.forEach((choice) => {
 		choice.addEventListener('click', (event) => {
 			event.stopPropagation();
@@ -30,4 +31,13 @@ const sortChoice = (callBack) => {
 	});
 };
 
+// if the user clicks anywhere ouside of the sort-choice element, close the sort-choice element
+document.addEventListener('click', (event) => {
+	if (!event.target.closest('.sortOrder')) {
+		!sortOptions.classList.contains('invisible')
+			? sortOptions.classList.add('invisible')
+			: null;
+		return;
+	}
+});
 export { sortChoice };

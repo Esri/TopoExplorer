@@ -1,6 +1,6 @@
 // import { mapFootprint } from '../UI/MapAndFootprint/MapFootprint';
 import { hashCoordinates, hashLoD } from '../support/HashParams.js?v=0.01';
-const initView = async () => {
+const initView = () => {
 	return new Promise((resolve, reject) => {
 		//creating the view object and incorporating map.
 		require([
@@ -38,13 +38,10 @@ const initView = async () => {
 
 			const map = new WebMap({
 				portalItem: {
-					id: '2e8a3ccdfd6d42a995b79812b3b0ebc6',
+					id: '710264327ad24ff5ba996e2a7c773b7f',
 				},
 				layers: [haloLayer, footprintLayer],
 			});
-
-			console.log(location.hash);
-			// console.log(hashCoordinates());
 
 			const view = new MapView({
 				container: 'viewDiv',
@@ -56,30 +53,6 @@ const initView = async () => {
 					minZoom: 4,
 				},
 			});
-
-			// const searchWidget = new Search({
-			// 	sources: [
-			// 		{
-			// 			locator: new LocatorSearchSource({
-			// 				url: 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer',
-			// 			}),
-			// 			countryCode: 'US',
-			// 			// singleLineFieldName: 'SingleLine',
-			// 			// name: 'Custom Geocoding Service',
-			// 			// localSearchOptions: {
-			// 			// 	minScale: 300000,
-			// 			// 	distance: 50000,
-			// 			// },
-			// 			placeholder: 'Find address or place',
-			// 			maxResults: 3,
-			// 			maxSuggestions: 6,
-			// 			suggestionsEnabled: true,
-			// 			minSuggestCharacters: 0,
-			// 		},
-			// 	],
-			// 	view: view,
-			// 	includeDefaultSources: false,
-			// });
 
 			//TODO: Add API Key to this. Then it will work
 			const searchWidget = new Search({

@@ -53,9 +53,6 @@ const allScaleAndYears = JSON.stringify([
 const findMinYear = (url) => {
 	// const outStatsParams
 	return new Promise((resolve, reject) => {
-		// const url =
-		// 	'https://utility.arcgis.com/usrsvcs/servers/06ee78ba612c446f940d68e22a6b091b/rest/services/USGS_Historical_Topographic_Maps/ImageServer/query';
-		//NOTE: you need to take these out of here. They
 		const params = new URLSearchParams({
 			where: '',
 			returnGeometry: false,
@@ -75,7 +72,7 @@ const findMinYear = (url) => {
 			})
 			.then((response) => {
 				//NOTE: checking the years and scales of all the returned maps
-				console.log(response);
+				// console.log(response);
 				const minYear = response.data.features[0].attributes.MinMapYear;
 				// console.log(minYear);
 				resolve(minYear);
@@ -86,9 +83,6 @@ const findMinYear = (url) => {
 const findMaxYear = (url) => {
 	// const outStatsParams
 	return new Promise((resolve, reject) => {
-		// const url =
-		// 	'https://utility.arcgis.com/usrsvcs/servers/06ee78ba612c446f940d68e22a6b091b/rest/services/USGS_Historical_Topographic_Maps/ImageServer/query';
-		//NOTE: you need to take these out of here. They
 		const params = new URLSearchParams({
 			where: '',
 			returnGeometry: false,
@@ -97,7 +91,7 @@ const findMaxYear = (url) => {
 			returnCountOnly: false,
 			returnextentOnly: false,
 			returnDistinctValues: false,
-			// outFields: 'Map_Scale, Date_On_Map',
+
 			outStatistics: maxYearOutStats,
 			f: 'pjson',
 		});
@@ -107,7 +101,7 @@ const findMaxYear = (url) => {
 				params,
 			})
 			.then((response) => {
-				console.log(response);
+				// console.log(response);
 				const maxYear = response.data.features[0].attributes.MaxMapYear;
 				// console.log(maxYear);
 				resolve(maxYear);
@@ -118,9 +112,6 @@ const findMaxYear = (url) => {
 const findMinScale = (url) => {
 	// const outStatsParams
 	return new Promise((resolve, reject) => {
-		// const url =
-		// 	'https://utility.arcgis.com/usrsvcs/servers/06ee78ba612c446f940d68e22a6b091b/rest/services/USGS_Historical_Topographic_Maps/ImageServer/query';
-		//NOTE: you need to take these out of here. They
 		const params = new URLSearchParams({
 			where: '',
 			returnGeometry: false,
@@ -129,7 +120,7 @@ const findMinScale = (url) => {
 			returnCountOnly: false,
 			returnextentOnly: false,
 			returnDistinctValues: false,
-			// outFields: 'Map_Scale, Date_On_Map',
+
 			outStatistics: minScaleOutStats,
 			f: 'pjson',
 		});
@@ -139,7 +130,7 @@ const findMinScale = (url) => {
 				params,
 			})
 			.then((response) => {
-				console.log(response);
+				// console.log(response);
 				const minScale = response.data.features[0].attributes.MinMapScale;
 				// console.log(minScale);
 				resolve(minScale);
@@ -150,9 +141,6 @@ const findMinScale = (url) => {
 const findMaxScale = (url) => {
 	// const outStatsParams
 	return new Promise((resolve, reject) => {
-		// const url =
-		// 	'https://utility.arcgis.com/usrsvcs/servers/06ee78ba612c446f940d68e22a6b091b/rest/services/USGS_Historical_Topographic_Maps/ImageServer/query';
-		//NOTE: you need to take these out of here. They
 		const params = new URLSearchParams({
 			where: '',
 			returnGeometry: false,
@@ -161,7 +149,6 @@ const findMaxScale = (url) => {
 			returnCountOnly: false,
 			returnextentOnly: false,
 			returnDistinctValues: false,
-			// outFields: 'Map_Scale, Date_On_Map',
 			outStatistics: maxScaleOutStats,
 			f: 'pjson',
 		});

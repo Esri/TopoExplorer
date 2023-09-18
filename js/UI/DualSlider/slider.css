@@ -33,7 +33,7 @@
 }
 
 .tooltipText {
-  visibility: hidden;
+  /* visibility: hidden; */
   /* width: 120px; */
   background-color: #555;
   color: #fff;
@@ -45,7 +45,7 @@
   top: -50px;
   left: 54px;
   margin-left: -60px;
-  opacity: 0;
+  /* opacity: 0; */
   transition: opacity 0.3s;
 } 
 

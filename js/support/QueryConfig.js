@@ -1,6 +1,7 @@
 //NOTE: This whole file has gotten out of hand, a lot of elements need to be reviewed to make a more effecive refactor..
 //this is cerainly not an ideal layout, but I want to see what other additions I may have to add before I look at refactoring
 //At the risk of being redundant: I want to know what this file is doing before I try to refactor it.
+//TIP: this file should have as little involvement as possible with the UI.
 import {
 	findMinYear,
 	findMaxYear,
@@ -23,23 +24,27 @@ import {
 	clearMapsList,
 	createMapSlotItems,
 } from '../UI/MapCards/ListOfMaps.js?v=0.01';
-import { checkForPreviousTopos } from '../support/HashParams.js?v=0.01';
+import {
+	checkForPreviousTopos,
+	activeExport,
+} from '../support/HashParams.js?v=0.01';
+import { resumeExportPrompt } from '../UI/ExportMaps/ExportMapsPrompt.js?v=0.01';
+import { isMobileFormat } from '../UI/EventsAndSelectors/EventsAndSelectors.js?v=0.01';
 // import { addTopoMap } from './ImageExportQuery';
 // import { checkIfQuerying } from './Query.js?v=0.01';
 
 const setURL = () => {
-	console.log(window.location.host);
+	console.log('location from query config', window.location);
 	if (window.location.host === 'livingatlas.arcgis.com') {
-		return 'https://utility.arcgis.com/usrsvcs/servers/06ee78ba612c446f940d68e22a6b091b/rest/services/USGS_Historical_Topographic_Maps/ImageServer';
+		return 'https://utility.arcgis.com/usrsvcs/servers/88d12190e2494ce89374311800af4c4a/rest/services/USGS_Historical_Topographic_Maps/ImageServer';
 	} else if (window.location.host === 'livingatlasstg.arcgis.com') {
 		return 'https://historical1-stg.arcgis.com/arcgis/rest/services/USGS_Historical_Topographic_Maps/ImageServer';
 	} else {
-		return 'https://utility.arcgis.com/usrsvcs/servers/06ee78ba612c446f940d68e22a6b091b/rest/services/USGS_Historical_Topographic_Maps/ImageServer';
-		//'https://52.9.122.15:6443/arcgis/rest/services/USA_Historical_Topo_Maps_update_ovs/ImageServer';
-		// 'http://52.9.122.15:6080/arcgis/rest/services/USA_Historical_Topo_Maps_update_ovs/ImageServer';
+		return 'https://utility.arcgis.com/usrsvcs/servers/88d12190e2494ce89374311800af4c4a/rest/services/USGS_Historical_Topographic_Maps/ImageServer';
 	}
 };
 
+//NOTE: this needs a better variable name. This is the imageServiceURL. There are a lot of 'URLs' in this application.
 const url = setURL();
 let isQueryInProcess = false;
 
@@ -64,16 +69,6 @@ const getMaxYear = findMaxYear(`${url}/query`);
 const getMinScale = findMinScale(`${url}/query`);
 const getMaxScale = findMaxScale(`${url}/query`);
 // const getAllScalesAndYears = findAllScalesAndYears(`${url}/query`);
-
-// const renderTopoMap = (view, oid, mapGeometry) => {
-// 	getTopoMap(url, view, oid, mapGeometry).then((topoMapImage) => {
-// 		addTopoMap(view, topoMapImage);
-// 	});
-// };
-
-// const removeTopoMap = (view, oid) => {
-// 	removeTopoMapFromLayer(view, oid);
-// };
 
 //NOTE: I think I can move this OBJ into a different module...remember this when building out the sort Module.
 //Can definitely be moved to a different module. Just like the year & scale
@@ -386,7 +381,7 @@ const yearsAndMapScales = {
 
 const updateWhereStatement = () => {
 	queryConfig.where = `${mapYear} >= ${yearsAndMapScales.years.minYear} AND ${mapYear} <= ${yearsAndMapScales.years.maxYear} AND map_scale >= ${yearsAndMapScales.scales.minScale} AND map_scale <= ${yearsAndMapScales.scales.maxScale}`;
-	console.log(queryConfig.where);
+	// console.log(queryConfig.where);
 	// console.log('from the whereClause update', queryConfig.resultOffset);
 	//NOTE: I shouldn't put this statement here, it should go in it's own function, but at the moment I'm testing to see if this resolves a bug
 	// queryConfig.resultOffset = 0;
@@ -500,6 +495,7 @@ const queryConfig = {
 				})
 				.then(() => {
 					updateMapcount(this.totalMaps);
+					isQueryInProcess = false;
 				})
 				.then(() => {
 					if (
@@ -510,7 +506,7 @@ const queryConfig = {
 						hideSpinnerIcon();
 						return;
 					}
-					isQueryInProcess = false;
+					// isQueryInProcess = false;
 					this.queryMapData();
 					return;
 				});
@@ -556,7 +552,7 @@ const queryConfig = {
 	},
 	topoMapsInExtent: [],
 	processMapData: function (topos) {
-		console.log(topos);
+		// console.log(topos);
 		return topos.map((topo) => ({
 			topo,
 			OBJECTID: topo.attributes.OBJECTID,
@@ -587,16 +583,6 @@ const queryConfig = {
 			if (geographicAdjustedLocation.xmin > geographicAdjustedLocation.xmax) {
 				geographicAdjustedLocation.xmin -= 360;
 			}
-
-			// const simplifiedGeographicExtent = {
-			// 	xmin: geographicAdjustedLocation.xmin.toFixed(2),
-			// 	ymin: geographicAdjustedLocation.ymin.toFixed(2),
-			// 	xmax: geographicAdjustedLocation.xmax.toFixed(2),
-			// 	ymax: geographicAdjustedLocation.ymax.toFixed(2),
-			// 	spatialReference: {
-			// 		wkid: 4326,
-			// 	},
-			// };
 
 			const polygon = new Polygon({
 				hasZ: false,
@@ -640,7 +626,7 @@ const queryConfig = {
 	extentQueryCall: function () {
 		// console.log('zoom-level for query:', this.mapView.zoom);
 		// console.log(yearsAndMapScales.setZoomDependentScale());
-		console.log('running a test');
+		// console.log('running a test');
 		if (yearsAndMapScales.setZoomDependentScale() === -1) {
 			console.log('bad choices finally');
 			// console.log(this.where);
@@ -684,100 +670,89 @@ const setHashedTopoQueryParams = (oid) => {
 	// console.log(params);
 };
 
-const queryHashedTopos = async (view) => {
+const isHashedToposForQuery = async (view) => {
+	if (isMobileFormat()) {
+		return;
+	}
+
+	if (activeExport()) {
+		await dataForTopoExports();
+	}
+
+	if (checkForPreviousTopos()) {
+		await getDataForHashedTopos(view);
+	}
+};
+
+const dataForTopoExports = async () => {
+	if (!activeExport()) {
+		return;
+	}
+	const hashedToposForExport = activeExport();
+	// console.log(hashedToposForExport);
+	const paramsForExportTopos = setHashedTopoQueryParams(hashedToposForExport);
+
+	queryForHashedTopos(queryConfig.url, paramsForExportTopos)
+		.then((topos) => {
+			const toposForExport = topos.data.features;
+			return queryConfig.processMapData(toposForExport);
+		})
+		.then((exportTopoDetails) => {
+			resumeExportPrompt(exportTopoDetails);
+		});
+};
+
+const getDataForHashedTopos = async (view) => {
 	// const arrayOfHashedMaps = window.location.hash.substring(1).split(',');
-	// console.log(window.location.hash.substring(1));
-	console.log(!checkForPreviousTopos());
-	console.log(checkForPreviousTopos());
+
+	// console.log(response);
+
 	if (!checkForPreviousTopos()) {
 		return;
 	}
 
+	const hashedTopos = checkForPreviousTopos();
 	const originalOrderHashedTopos = checkForPreviousTopos().split(',');
 
-	// console.log(hashedOID);
-	const newParams = setHashedTopoQueryParams(checkForPreviousTopos());
+	const paramsForHashedTopos = setHashedTopoQueryParams(hashedTopos);
 
-	// console.log('hashed ids ...look at the order', newParams);
-
-	queryForHashedTopos(queryConfig.url, newParams)
+	queryForHashedTopos(queryConfig.url, paramsForHashedTopos)
 		.then((hashedTopoData) => {
 			// console.log(hashedTopoData);
 			const hashDataArray = hashedTopoData.data.features;
-			console.log(hashDataArray);
+			// console.log(hashDataArray);
 			return queryConfig.processMapData(hashDataArray);
 		})
 		.then((topoMapData) => {
 			// topoMapData[topoMapData.length - 1].previousPinnedMap = true;
-			console.log(topoMapData);
+			// console.log(topoMapData);
 			// console.log(queryConfig.mapView);
 
-			console.log(originalOrderHashedTopos);
+			// console.log(originalOrderHashedTopos);
 
 			topoMapData.map((mapData) => {
 				const properIndex = originalOrderHashedTopos.indexOf(
 					`${mapData.OBJECTID}`
 				);
-				console.log(properIndex);
+				// console.log(properIndex);
 				originalOrderHashedTopos.splice(properIndex, 1, mapData);
 			});
 
-			console.log(originalOrderHashedTopos);
+			// console.log(originalOrderHashedTopos);
 			originalOrderHashedTopos.map((singleMap) => {
 				singleMap.previousPinnedMap = true;
 				// console.log(singleMap);
 				createMapSlotItems([singleMap], view, url);
 			});
+			return originalOrderHashedTopos;
 		});
-
-	// const hashOIDArray = checkForPreviousTopos().split(',');
-	// console.log(hashOIDArray);
-	// hashOIDArray.map((oid) => {
-	// 	const queryParams = setHashedTopoQueryParams(oid);
-
-	// 	queryParams.then((params) => {
-	// 		console.log(params);
-	// 		queryForHashedTopos(queryConfig.url, params)
-	// 			.then((queryRes) => {
-	// 				console.log(queryRes);
-	// 				const hashDataArray = queryRes.data.features;
-	// 				console.log(hashDataArray);
-	// 				return queryConfig.processMapData(hashDataArray);
-	// 			})
-	// 			.then((topoMapData) => {
-	// 				// topoMapData[topoMapData.length - 1].previousPinnedMap = true;
-	// 				console.log(topoMapData);
-	// 				// console.log(queryConfig.mapView);
-	// 				topoMapData.reverse().map((singleMap) => {
-	// 					singleMap.previousPinnedMap = true;
-	// 					console.log(singleMap);
-	// 					createMapSlotItems([singleMap], view, url);
-	// 				});
-	// 			});
-	// 	});
-	// });
 };
-
-//when  the user switches from pin-list to the explore-list, and the explore-list is empty, query the current map extent to populate a new list of the maps in the view.
-// document
-// 	.querySelector('.explorer-mode-btn')
-// 	.addEventListener('change', (event) => {
-// 		if (
-// 			event.target.closest('.explorer-mode-btn') &&
-// 			document.querySelector('#exploreList').innerHTML === ''
-// 		) {
-// 			showSpinnerIcon();
-// 			queryConfig.queryMapData();
-// 		}
-// 	});
 
 const explorerMode = document.querySelector('.explorer-mode');
 
 const styleListenerConfig = { attributes: true };
 
 const onStyleChange = (mutation, observer) => {
-	console.log('frasier crane');
-	console.log(observer);
 	if (document.querySelector('#exploreList').innerHTML === '') {
 		showSpinnerIcon();
 		queryConfig.queryMapData();
@@ -789,13 +764,14 @@ const explorerModeObserver = new MutationObserver(onStyleChange);
 explorerModeObserver.observe(explorerMode, styleListenerConfig);
 
 export {
+	url,
 	queryConfig,
 	yearsAndMapScales,
 	getMinYear,
 	getMaxYear,
 	getMinScale,
 	getMaxScale,
-	queryHashedTopos,
+	isHashedToposForQuery,
 	// getAllScalesAndYears,
 	// renderTopoMap,
 	// removeTopoMap,
