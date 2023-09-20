@@ -41,6 +41,7 @@ const initView = () => {
 				portalItem: {
 					id: '710264327ad24ff5ba996e2a7c773b7f',
 				},
+				popupEnabled: false,
 				// layers: [],
 			});
 
@@ -55,8 +56,9 @@ const initView = () => {
 				},
 			});
 
-			map.layers.add(haloLayer, 3);
-			map.layers.add(footprintLayer, 5);
+			map.layers.add(haloLayer, map.layers, 2);
+			map.layers.add(footprintLayer, map.layers.length - 1);
+			console.log(map.layers.items);
 
 			const searchWidget = new Search({
 				view: view,

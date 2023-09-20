@@ -1,3 +1,8 @@
+import {
+	terrainLayer,
+	imageryLayer,
+	outdoorBasemapLabels,
+} from '../Basemaps/basemaps.js?v=0.01';
 import { activeExport } from '../../support/HashParams.js?v=0.01';
 import { url } from '../../support/QueryConfig.js?v=0.01';
 
@@ -15,16 +20,14 @@ import {
 } from '../ExportMapsPrompt/exportPromptUI.js?v=0.01';
 import { addWebMapToUserPortal } from '../../support/AddItemRequest.js?v=0.01';
 
-const exportForm = document.querySelector('.export-prompt');
 const promptBox = document.querySelector('.prompt-box');
-const closeBtn = document.querySelector('.export-prompt .close-btn');
-const exportBtnContainer = document.querySelector('.exportBtnContainer');
-const indicator = document.querySelector('.processing-indicator');
 
 const tags = 'Living Atlas, USGS, Topographic, Topo, Quad';
 let summaryText;
 
+let viewOperationalLayers;
 let baseMapInfo;
+
 const topoLayerInfo = [];
 
 const resumeExportPrompt = (exportTopoDetails) => {
@@ -37,6 +40,7 @@ const resumeExportPrompt = (exportTopoDetails) => {
 
 const setBaseMapInfo = (view) => {
 	baseMapInfo = view.map.basemap.baseLayers;
+	viewOperationalLayers = view.map.layers.items;
 };
 
 const mapExportProcess = (mapDetails) => {
@@ -104,15 +108,38 @@ const mapExportProcess = (mapDetails) => {
 	exportText.summary = summaryText;
 
 	fillTextFields(exportText);
-
+	//NOTE: you're going to have to put these layers in an array an map over them
+	//use ago assist to figure out how to set up these layers.
+	// addAdditionalOperationalLayers();
 	openExportPrompt();
 	addExportBtn();
 	exportTitleQC();
+
+	//after setting up object set up if(title === 'terrain'){topoLayerInfo.push(layer)}else{topoLayerInfo.unshift(layer);}
+};
+
+const addAdditionalOperationalLayers = () => {
+	// viewOperationalLayers.map(())
+	// console.log(outdoorBasemapLabels);
+	// console.log(imageryLayer);
+	// console.log(terrainLayer);
+	const outdoorBasemapLabelsData = {
+		id: '18a89a9fd19-layer-52',
+		title: 'Outdoor Labels',
+		visibility: true,
+		itemId: '65605d0db3bd4067ad4805a81a4689b8',
+		layerType: 'VectorTileLayer',
+		effect: null,
+		styleUrl: '',
+	};
+	topoLayerInfo.unshift(outdoorBasemapLabels);
+	topoLayerInfo.unshift(imageryLayer);
+	topoLayerInfo.push(terrainLayer);
 };
 
 const createWebMapExportDefinition = () => {
-	console.log(topoLayerInfo);
-	console.log(baseMapInfo);
+	topoLayerInfo.reverse();
+
 	const webMapDef = {
 		description: `${promptBox.querySelector('.summary').value}`,
 		tags: `${promptBox.querySelector('.tags').value}`,
@@ -146,7 +173,22 @@ const createWebMapExportDefinition = () => {
 				// 		'https://www.arcgis.com/sharing/rest/content/items/659e7c1b1e374f6c8a89eefe17b23380/resources/styles/root.json',
 				// },
 				// ]
-				title: 'Topographic',
+				title: 'Outdoor',
+			},
+			//Adding this initialState value to see
+			initialState: {
+				viewpoint: {
+					targetGeometry: {
+						spatialReference: {
+							latestWkid: 3857,
+							wkid: 102100,
+						},
+						xmin: -14106273.484573817,
+						ymin: -1358432.1785333147,
+						xmax: -7169460.293639312,
+						ymax: 10626893.856579196,
+					},
+				},
 			},
 			spatialReference: {
 				wkid: 102100,

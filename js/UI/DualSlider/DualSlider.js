@@ -337,72 +337,13 @@ const initDualSlider = (
 	sliderComponents.querySelectorAll('.clickable').forEach((area) => {
 		area.addEventListener('click', (e) => {
 			let currentSelection = e.target.attributes.value.value;
-			console.log('current clicky', currentSelection);
-			console.log('current clicky', minRangeHandle.value);
+
 			let minHandleDiffernce = Math.abs(
 				currentSelection - minRangeHandle.value
 			);
 			let maxHandleDiffernce = Math.abs(
 				currentSelection - maxRangeHandle.value
 			);
-
-			if (currentSelection < minRangeHandle.value) {
-				minRangeHandle.value = currentSelection;
-				adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
-				if (e.target.closest('#scales')) {
-					isScaleValueWithinAvailableRange(0, minRangeHandle.value);
-					unavailbleScalesToolTip(minRangeHandle.value);
-					return;
-				}
-
-				debounceInput(0, minRangeHandle.value);
-				udpdateSliderHeading(0, minRangeHandle.value, true);
-			}
-
-			if (currentSelection > maxRangeHandle.value) {
-				maxRangeHandle.value = currentSelection;
-				adjustSliderTrackSelection(maxRangeHandle, maxRangeHandle.value);
-				if (e.target.closest('#scales')) {
-					isScaleValueWithinAvailableRange(1, maxRangeHandle.value);
-					unavailbleScalesToolTip(maxRangeHandle.value);
-					return;
-				}
-
-				debounceInput(1, maxRangeHandle.value);
-				udpdateSliderHeading(1, maxRangeHandle.value, true);
-			}
-
-			if (
-				currentSelection > minRangeHandle.value &&
-				minHandleDiffernce < maxHandleDiffernce
-			) {
-				minRangeHandle.value = currentSelection;
-				adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
-				if (e.target.closest('#scales')) {
-					isScaleValueWithinAvailableRange(0, minRangeHandle.value);
-					unavailbleScalesToolTip(minRangeHandle.value);
-					return;
-				}
-
-				debounceInput(0, minRangeHandle.value);
-				udpdateSliderHeading(0, minRangeHandle.value, true);
-			}
-
-			if (
-				currentSelection < maxRangeHandle.value &&
-				minHandleDiffernce > maxHandleDiffernce
-			) {
-				maxRangeHandle.value = currentSelection;
-				adjustSliderTrackSelection(maxRangeHandle, maxRangeHandle.value);
-				if (e.target.closest('#scales')) {
-					isScaleValueWithinAvailableRange(1, maxRangeHandle.value);
-					unavailbleScalesToolTip(maxRangeHandle.value);
-					return;
-				}
-
-				debounceInput(1, maxRangeHandle.value);
-				udpdateSliderHeading(1, maxRangeHandle.value, true);
-			}
 
 			if (minHandleDiffernce === maxHandleDiffernce) {
 				if (currentSelection > maxRangeHandle.value) {
@@ -447,6 +388,70 @@ const initDualSlider = (
 					debounceInput(0, minRangeHandle.value);
 					udpdateSliderHeading(0, minRangeHandle.value, true);
 				}
+			}
+
+			if (
+				currentSelection < minRangeHandle.value &&
+				minHandleDiffernce < maxHandleDiffernce
+			) {
+				minRangeHandle.value = currentSelection;
+				adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
+				if (e.target.closest('#scales')) {
+					isScaleValueWithinAvailableRange(0, minRangeHandle.value);
+					unavailbleScalesToolTip(minRangeHandle.value);
+					return;
+				}
+
+				debounceInput(0, minRangeHandle.value);
+				udpdateSliderHeading(0, minRangeHandle.value, true);
+			}
+
+			if (
+				currentSelection > maxRangeHandle.value &&
+				minHandleDiffernce > maxHandleDiffernce
+			) {
+				maxRangeHandle.value = currentSelection;
+				adjustSliderTrackSelection(maxRangeHandle, maxRangeHandle.value);
+				if (e.target.closest('#scales')) {
+					isScaleValueWithinAvailableRange(1, maxRangeHandle.value);
+					unavailbleScalesToolTip(maxRangeHandle.value);
+					return;
+				}
+
+				debounceInput(1, maxRangeHandle.value);
+				udpdateSliderHeading(1, maxRangeHandle.value, true);
+			}
+
+			if (
+				currentSelection > minRangeHandle.value &&
+				minHandleDiffernce < maxHandleDiffernce
+			) {
+				minRangeHandle.value = currentSelection;
+				adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
+				if (e.target.closest('#scales')) {
+					isScaleValueWithinAvailableRange(0, minRangeHandle.value);
+					unavailbleScalesToolTip(minRangeHandle.value);
+					return;
+				}
+
+				debounceInput(0, minRangeHandle.value);
+				udpdateSliderHeading(0, minRangeHandle.value, true);
+			}
+
+			if (
+				currentSelection < maxRangeHandle.value &&
+				minHandleDiffernce > maxHandleDiffernce
+			) {
+				maxRangeHandle.value = currentSelection;
+				adjustSliderTrackSelection(maxRangeHandle, maxRangeHandle.value);
+				if (e.target.closest('#scales')) {
+					isScaleValueWithinAvailableRange(1, maxRangeHandle.value);
+					unavailbleScalesToolTip(maxRangeHandle.value);
+					return;
+				}
+
+				debounceInput(1, maxRangeHandle.value);
+				udpdateSliderHeading(1, maxRangeHandle.value, true);
 			}
 
 			// if (minHandleDiffernce <= maxHandleDiffernce) {

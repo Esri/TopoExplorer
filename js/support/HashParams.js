@@ -11,6 +11,7 @@ let parsedHashParams = null;
 
 const parseHashParams = () => {
 	if (parsedHashParams) {
+		console.log('cancelling hash params');
 		return;
 	}
 

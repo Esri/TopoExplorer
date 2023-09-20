@@ -131,4 +131,4 @@ const initLayerToggle = (view) => {
 		});
 };
 
-export { initLayerToggle };
+export { initLayerToggle, terrainLayer, imageryLayer, outdoorBasemapLabels };
