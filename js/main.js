@@ -39,6 +39,7 @@ const initApp = async () => {
 		});
 		const view = await initView();
 		const sliderValues = await getYearsAndScales(view);
+		// const layerToggleUI = await initLayerToggle(view);
 		const getPreviousTopos = await isHashedToposForQuery(view);
 		// const setLayerOrder = await setDefaultMapLayers(view)
 
@@ -48,8 +49,8 @@ const initApp = async () => {
 			})
 			.then(() => {
 				sliderValues;
-				setBaseMapInfo(view);
 				initLayerToggle(view);
+				setBaseMapInfo(view);
 			})
 			.then(() => {
 				getPreviousTopos;

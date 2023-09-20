@@ -30,6 +30,7 @@ const setLayers = async (view) => {
 					return layer;
 			}
 		});
+		imageryLayer.popupEnabled = false;
 
 		outdoorBasemapLabels = view.map.layers.items.find((layer) => {
 			if (layer.portalItem) {
@@ -110,7 +111,7 @@ const toggleMapLayer = (checkmark) => {
 	}
 };
 
-const initLayerToggle = (view) => {
+const initLayerToggle = async (view) => {
 	setLayers(view)
 		.then((item) => {
 			addLayerToggleToMap();

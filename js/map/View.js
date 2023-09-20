@@ -41,7 +41,6 @@ const initView = () => {
 				portalItem: {
 					id: '710264327ad24ff5ba996e2a7c773b7f',
 				},
-				popupEnabled: false,
 				// layers: [],
 			});
 
@@ -54,6 +53,7 @@ const initView = () => {
 				constraints: {
 					minZoom: 4,
 				},
+				popupEnabled: false,
 			});
 
 			map.layers.add(haloLayer, map.layers, 2);
