@@ -43,11 +43,15 @@ let urlTest;
 let viewTest;
 let mapFootprintLayer;
 let mapHaloGraphicLayer;
+let basemapTerrainLayer;
+let basemapSatellite;
+let basemapLables;
 let mapListItems;
 // let currentMapCard;
 let mapGeometry;
 let topoOnMapPlaceholder;
 let arrayFromPinListHTML;
+let gettingTopoID;
 
 const createMapSlotItems = (list, view, url) => {
 	if (!urlTest) {
@@ -72,6 +76,30 @@ const createMapSlotItems = (list, view, url) => {
 	if (!mapHaloGraphicLayer && view) {
 		mapHaloGraphicLayer = view.map.layers.find((layer) => {
 			if (layer.title === 'halo') {
+				return layer;
+			}
+		});
+	}
+
+	if (!basemapTerrainLayer && view) {
+		basemapTerrainLayer = view.map.layers.find((layer) => {
+			if (layer.title === 'World Hillshade') {
+				return layer;
+			}
+		});
+	}
+
+	if (!basemapSatellite && view) {
+		basemapSatellite = view.map.layers.find((layer) => {
+			if (layer.title === 'World Imagery') {
+				return layer;
+			}
+		});
+	}
+
+	if (!basemapLables && view) {
+		basemapLables = view.map.layers.find((layer) => {
+			if (layer.title === 'Outdoor Labels') {
 				return layer;
 			}
 		});
@@ -505,18 +533,60 @@ const findTopoLayer = (oid) => {
 };
 
 const addTopoToMap = (target, url) => {
-	// console.log(target);
+	// renderingTopo = true;
+	gettingTopoID = target;
 	getTopoMap(target, url).then((topoImageLayer) => {
 		// console.log(viewTest);
-		// console.log(topoImageLayer);
+		console.log('this is the returned image', topoImageLayer);
 		//NOTE: maybe give this it's own function. Just to make things easier to parse
+
+		//If the returned topo does not match the most recently called
+		if (gettingTopoID !== topoImageLayer.id) {
+			console.log('cancelling');
+			topoImageLayer.cancelLoad();
+			removeHalo(topoImageLayer.id);
+			return;
+		}
+
 		viewTest.map.add(topoImageLayer);
+
 		viewTest.map.layers.reorder(
 			mapFootprintLayer,
 			viewTest.map.layers.length - 1
 		);
+		viewTest.map.layers.reorder(
+			basemapTerrainLayer,
+			viewTest.map.layers.length - 1
+		),
+			// viewTest.map.layers.reorder(
+			// 	mapHaloGraphicLayer,
+			// 	2
+			// );
+			console.log(viewTest.map.layers.items);
 	});
 };
+
+// const getTopoMap = (oid, url) => {
+// 	return new Promise((resolve, reject) => {
+// 		require(['esri/layers/ImageryLayer'], (
+// 			ImageryLayer
+// 			// MosaicRule
+// 		) => {
+// 			topoMapLayer = new ImageryLayer({
+// 				id: oid,
+// 				url: url,
+
+// 				mosaicRule: {
+// 					mosaicMethod: 'LockRaster',
+// 					lockRasterIds: [oid],
+// 					where: `OBJECTID = ${oid}`,
+// 				},
+// 			});
+
+// 			resolve(topoMapLayer);
+// 		});
+// 	});
+// };
 
 const setTopoOpacity = (oid) => {
 	if (!document.querySelector(`.map-list-item[oid="${oid}"]`)) {
@@ -551,7 +621,6 @@ const removeTopoFromMap = (oid) => {
 	findTopoLayer(oid)
 		.then((specificTopo) => {
 			viewTest.map.remove(specificTopo);
-			// mapHaloGraphicLayer.graphics.remove(specificTopo);
 		})
 		.then(() => {
 			removeHalo(oid);
@@ -559,12 +628,9 @@ const removeTopoFromMap = (oid) => {
 };
 
 const findHaloGraphic = (oid) => {
-	// console.log(mapHaloGraphicLayer);
 	const haloGraphicsList = mapHaloGraphicLayer.graphics.items;
 	return new Promise((resolve, reject) => {
 		haloGraphicsList.find((mapHaloGraphic) => {
-			// console.log(mapHaloGraphic);
-			// console.log("here's the oid", oid);
 			if (mapHaloGraphic.attributes.id == oid) {
 				resolve(mapHaloGraphic);
 			}
@@ -573,23 +639,14 @@ const findHaloGraphic = (oid) => {
 };
 
 const removeHalo = (oid) => {
-	// console.log('was remove halo called?');
 	findHaloGraphic(oid).then((specificHalo) => {
-		// console.log('the specific halo', specificHalo);
 		mapHaloGraphicLayer.graphics.remove(specificHalo);
-		// console.log(mapHaloGraphicLayer);
 	});
 };
 
 const addHalo = (oid, geometry) => {
-	// const mapCardID = mapItem.attributes.oid.value;
-	// const mapCardGeometry = mapItem.attributes.geometry.value;
-	// console.log(oid, geometry);
-	// console.log('mapCard Data info', cardInfo);
 	mapHalo(oid, geometry).then((topoOutline) => {
-		// console.log('the Halo', topoOutline);
 		mapHaloGraphicLayer.graphics.add(topoOutline);
-		// console.log('the view', view);
 	});
 };
 
@@ -842,7 +899,17 @@ const reorderMapLayers = () => {
 		mapFootprintLayer,
 		viewTest.map.layers.length - 1
 	);
-	viewTest.map.layers.reorder(mapHaloGraphicLayer, 0);
+
+	viewTest.map.layers.reorder(
+		basemapTerrainLayer,
+		viewTest.map.layers.length - 1
+	);
+
+	viewTest.map.layers.reorder(basemapSatellite, 0);
+
+	viewTest.map.layers.reorder(basemapLables, 1);
+
+	viewTest.map.layers.reorder(mapHaloGraphicLayer, 2);
 
 	invertHashedMapOrder();
 };
@@ -850,7 +917,6 @@ const reorderMapLayers = () => {
 //Icon events for mapcard
 sideBarElement.addEventListener('click', (event) => {
 	const eventTarget = event.target;
-	console.log(eventTarget.closest('.map-list-item'));
 
 	if (event.target.closest('.pinned-mode-options')) {
 		reorderPinListEvent(event);
@@ -1166,14 +1232,17 @@ const endDrag = (event) => {
 				console.log(movedMap, index);
 				// console.log(viewTest.map.layers);
 
-				viewTest.map.layers.reorder(movedMap, index + 1);
+				viewTest.map.layers.reorder(movedMap, index + 3);
 
 				viewTest.map.layers.reorder(
 					mapFootprintLayer,
 					viewTest.map.layers.length - 1
 				);
 
-				viewTest.map.layers.reorder(mapHaloGraphicLayer, 0);
+				viewTest.map.layers.reorder(
+					basemapTerrainLayer,
+					viewTest.map.layers.length - 1
+				);
 
 				console.log('layers after reorder drag', viewTest.map.layers);
 			});

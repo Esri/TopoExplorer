@@ -192,7 +192,7 @@ const yearsAndMapScales = {
 	//NOTE: for the record, I'm not sure I like this approach and it's inclusion in this file, but...it works for now. I think it'll be a headache later on, though.
 	setZoomDependentScale: function () {
 		//this is the logic to determine what maps scales are available at certain zoom levels (which determines what slider values are available).
-		const zoomLevel = queryConfig.mapView.zoom;
+		const zoomLevel = Math.round(queryConfig.mapView.zoom);
 		const scaleHeaders = document.querySelector('#scales .headers');
 		const minScaleRangeHandle = document.querySelector('#scales .minSlider');
 		const maxScaleRangeHandle = document.querySelector('#scales .maxSlider');
@@ -443,7 +443,7 @@ const queryConfig = {
 		isQueryInProcess = true;
 		extentQuery(this.url, this.mapDataParams())
 			.then((response) => {
-				// console.log(response);
+				console.log(response);
 				this.topoMapsInExtent = response.data.features;
 
 				// console.log('new offset', this.resultOffset);
@@ -451,7 +451,7 @@ const queryConfig = {
 			})
 			.then((listOfTopos) => {
 				//moved this down here to stop it from affecting the amount of maps returned
-				// console.log(this.resultRecordCount);
+				console.log('about to call map card creation');
 				this.resultOffset = this.resultOffset + this.resultRecordCount;
 				return this.processMapData(listOfTopos);
 			})
@@ -459,6 +459,7 @@ const queryConfig = {
 				if (yearsAndMapScales.setZoomDependentScale() === -1) {
 					return;
 				}
+				console.log('creating map card, hiding spinner');
 				createMapSlotItems(mapsList, this.mapView, url);
 				hideSpinnerIcon();
 			})
@@ -481,6 +482,7 @@ const queryConfig = {
 		// 	(this.resultOffset = 0), (this.resultRecordCount = 25);
 		// }
 		this.resultOffset = 0;
+		console.log('this is the offset', this.resultOffset);
 		this.resultRecordCount = 25;
 
 		isQueryInProcess = true;

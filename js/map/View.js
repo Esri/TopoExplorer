@@ -1,5 +1,6 @@
 // import { mapFootprint } from '../UI/MapAndFootprint/MapFootprint';
 import { hashCoordinates, hashLoD } from '../support/HashParams.js?v=0.01';
+import { config } from '../../app-config.js?v=0.01';
 const initView = () => {
 	return new Promise((resolve, reject) => {
 		//creating the view object and incorporating map.
@@ -40,7 +41,8 @@ const initView = () => {
 				portalItem: {
 					id: '710264327ad24ff5ba996e2a7c773b7f',
 				},
-				layers: [haloLayer, footprintLayer],
+				popupEnabled: false,
+				// layers: [],
 			});
 
 			const view = new MapView({
@@ -54,7 +56,10 @@ const initView = () => {
 				},
 			});
 
-			//TODO: Add API Key to this. Then it will work
+			map.layers.add(haloLayer, map.layers, 2);
+			map.layers.add(footprintLayer, map.layers.length - 1);
+			console.log(map.layers.items);
+
 			const searchWidget = new Search({
 				view: view,
 				resultGraphicEnabled: false,
