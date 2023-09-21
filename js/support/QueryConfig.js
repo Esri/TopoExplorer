@@ -2,6 +2,7 @@
 //this is cerainly not an ideal layout, but I want to see what other additions I may have to add before I look at refactoring
 //At the risk of being redundant: I want to know what this file is doing before I try to refactor it.
 //TIP: this file should have as little involvement as possible with the UI.
+import { config } from '../../app-config.js?v=0.01';
 import {
 	findMinYear,
 	findMaxYear,
@@ -34,14 +35,7 @@ import { isMobileFormat } from '../UI/EventsAndSelectors/EventsAndSelectors.js?v
 // import { checkIfQuerying } from './Query.js?v=0.01';
 
 const setURL = () => {
-	console.log('location from query config', window.location);
-	if (window.location.host === 'livingatlas.arcgis.com') {
-		return 'https://utility.arcgis.com/usrsvcs/servers/88d12190e2494ce89374311800af4c4a/rest/services/USGS_Historical_Topographic_Maps/ImageServer';
-	} else if (window.location.host === 'livingatlasstg.arcgis.com') {
-		return 'https://historical1-stg.arcgis.com/arcgis/rest/services/USGS_Historical_Topographic_Maps/ImageServer';
-	} else {
-		return 'https://utility.arcgis.com/usrsvcs/servers/88d12190e2494ce89374311800af4c4a/rest/services/USGS_Historical_Topographic_Maps/ImageServer';
-	}
+	return config.environment.serviceUrls.historicalTopoImageService;
 };
 
 //NOTE: this needs a better variable name. This is the imageServiceURL. There are a lot of 'URLs' in this application.
@@ -241,6 +235,8 @@ const yearsAndMapScales = {
       to find topo maps.
       </div>
       `;
+				CheckandAdjustScaleSliderHeaderStyle(2);
+
 				document.querySelector('.mapCount').innerHTML = 0;
 				document.querySelector('#exploreList').innerHTML = noMapsText;
 				return -1;
@@ -288,6 +284,7 @@ const yearsAndMapScales = {
       to find topo maps.
       </div>
       `;
+				CheckandAdjustScaleSliderHeaderStyle(3);
 				document.querySelector('.mapCount').innerHTML = 0;
 				document.querySelector('#exploreList').innerHTML = noMapsText;
 				return -1;

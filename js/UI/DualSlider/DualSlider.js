@@ -267,6 +267,16 @@ const initDualSlider = (
 			//TODO: I want them to overlap now. how do I do that AND make sure you can access the previously used slider??
 			//TODO: That's done, but now I need the sliders to recognize which handle is getting pulled when they overlap each other
 
+			//note: there is a 'change' event listener that is resetting the values.making this not work
+			// if (maxRange < minRange) {
+			// 	console.log('max lower than min');
+			// 	debounceInput(0, maxRangeHandle.value);
+			// 	debounceInput(1, minRangeHandle.value);
+			// 	udpdateSliderHeading(0, maxRangeHandle.value, true);
+			// 	udpdateSliderHeading(1, minRangeHandle.value, true);
+			// 	return;
+			// }
+
 			if (minRange >= maxRange) {
 				if (e.target.className === 'minSlider') {
 					minRangeHandle.value = maxRange;
@@ -346,7 +356,7 @@ const initDualSlider = (
 			);
 
 			if (minHandleDiffernce === maxHandleDiffernce) {
-				if (currentSelection > maxRangeHandle.value) {
+				if (currentSelection - maxRangeHandle.value > 0) {
 					maxRangeHandle.value = currentSelection;
 					adjustSliderTrackSelection(maxRangeHandle, maxRangeHandle.value);
 
@@ -360,7 +370,7 @@ const initDualSlider = (
 					udpdateSliderHeading(1, maxRangeHandle.value, true);
 				}
 
-				if (currentSelection < minRangeHandle.value) {
+				if (currentSelection - minRangeHandle.value < 0) {
 					minRangeHandle.value = currentSelection;
 					adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
 					if (e.target.closest('#scales')) {
@@ -373,21 +383,19 @@ const initDualSlider = (
 					udpdateSliderHeading(0, minRangeHandle.value, true);
 				}
 
-				if (
-					currentSelection > minRangeHandle.value &&
-					currentSelection < maxRangeHandle.value
-				) {
-					minRangeHandle.value = currentSelection;
-					adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
-					if (e.target.closest('#scales')) {
-						isScaleValueWithinAvailableRange(0, minRangeHandle.value);
-						unavailbleScalesToolTip(minRangeHandle.value);
-						return;
-					}
-
-					debounceInput(0, minRangeHandle.value);
-					udpdateSliderHeading(0, minRangeHandle.value, true);
+				//if these handles are not overlapping move the minimum handle
+				minRangeHandle.value = currentSelection;
+				adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
+				if (e.target.closest('#scales')) {
+					isScaleValueWithinAvailableRange(0, minRangeHandle.value);
+					unavailbleScalesToolTip(minRangeHandle.value);
+					return;
 				}
+
+				debounceInput(0, minRangeHandle.value);
+				udpdateSliderHeading(0, minRangeHandle.value, true);
+
+				return;
 			}
 
 			if (
