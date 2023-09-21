@@ -48,12 +48,15 @@ const initView = () => {
 				container: 'viewDiv',
 				map: map,
 				layerView: [],
-				center: hashCoordinates() || [-98.5357, 40.1549],
-				zoom: hashLoD() || 4,
+				center: hashCoordinates() || config.defaultMapSettings.center,
+				zoom: hashLoD() || config.defaultMapSettings.zoom,
 				constraints: {
-					minZoom: 4,
+					minZoom: config.defaultMapSettings.constraints.minZoom,
 				},
-				popupEnabled: false,
+				popup: {
+					popup: null,
+					autoOpenEnabled: false,
+				},
 			});
 
 			map.layers.add(haloLayer, map.layers, 2);
