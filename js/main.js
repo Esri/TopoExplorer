@@ -50,7 +50,6 @@ const initApp = async () => {
 
 		view
 			.when(() => {
-				// setLayerOrder
 				sliderValues;
 				initialMapQuery();
 			})

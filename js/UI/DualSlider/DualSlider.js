@@ -76,19 +76,19 @@ const initDualSlider = (
 `;
 
 	const zoomDependentSelections = () => {
-		if (view.zoom === 4) {
+		console.log(view.zoom);
+		if (view.zoom == 4) {
 			return values.length - 1;
 		}
-		if (view.zoom === 5 || view.zoom === 6) {
-			console.log('zomm is actaully 5 or 6');
+		if (view.zoom == 5 || view.zoom == 6) {
 			console.log(view.zoom);
 			return values.length - 2;
 		}
-		if (view.zoom === 7 || view.zoom === 8) {
-			console.log('zomm is actaully 7 or 8');
+		if (view.zoom == 7 || view.zoom == 8) {
 			return values.length - 3;
 		}
 		if (view.zoom >= 9) {
+			//because the array is
 			return -1;
 		}
 	};
@@ -97,12 +97,11 @@ const initDualSlider = (
 		const maxScaleChoice = sliderComponents.querySelector('.maxSlider').value;
 		const minScaleChoice = sliderComponents.querySelector('.minSlider').value;
 
-		// console.log(zoomDependentSelections());
-		let isAvailable;
+		let isAvailable = false;
 		if (value < zoomDependentSelections()) {
 			isAvailable = false;
 			udpdateSliderHeading(handle, value, isAvailable);
-			debounceInput(handle, value);
+			// debounceInput(handle, value);
 		} else {
 			isAvailable = true;
 			udpdateSliderHeading(handle, value, isAvailable);
@@ -179,10 +178,8 @@ const initDualSlider = (
 		headerSpan.innerHTML = formatNumbersForSliderHeader(values[value]);
 
 		if (isAvailable) {
-			console.log('is availble for spanning');
 			headerSpan.classList.remove('transparency');
 		} else {
-			console.log('is availble for opacity');
 			headerSpan.classList.add('transparency');
 		}
 	};
