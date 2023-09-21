@@ -253,9 +253,9 @@ const createMapSlotItems = (list, view, url) => {
 			mapCardContainingDiv.querySelector('.mapCard-container');
 		// console.log(containingItem);
 		// addToPinnedArray(list[0].OBJECTID, mapSlot);
-		addTopoToMap(list[0].OBJECTID, url);
 		addHalo(list[0].OBJECTID, JSON.stringify(list[0].mapBoundry));
 		isCurrentMapPinned(containingItem, addToPinnedArray);
+		addPreviouslyPinnedTopoToMap(list[0].OBJECTID, url);
 		return;
 	}
 
@@ -305,9 +305,11 @@ mapModes.addEventListener('click', (event) => {
 
 const setTopoMapPlaceholder = (oid) => {
 	//if mobile is active, do not keep track of the most recently opened topo
+
 	if (isMobileFormat()) {
 		return;
 	}
+
 	if (
 		topoOnMapPlaceholder !== parseInt(oid) &&
 		pinnedCardIDsArray.indexOf(`${topoOnMapPlaceholder}`) === -1
@@ -316,9 +318,14 @@ const setTopoMapPlaceholder = (oid) => {
 		removeTopoFromMap(topoOnMapPlaceholder);
 	}
 
-	topoOnMapPlaceholder == parseInt(oid)
-		? (topoOnMapPlaceholder = 0)
-		: (topoOnMapPlaceholder = parseInt(oid));
+	//if the topo on map and the oid are the same it means the user is closing the most recently opened card. Remove all aspects of the topo fromthe map and it's placeholder is no longer important.
+	if (topoOnMapPlaceholder == parseInt(oid)) {
+		topoOnMapPlaceholder = 0;
+		gettingTopoID = 0;
+		return;
+	}
+
+	topoOnMapPlaceholder = parseInt(oid);
 };
 
 const checkAnyOpenMapCards = (oid) => {
@@ -534,14 +541,18 @@ const findTopoLayer = (oid) => {
 
 const addTopoToMap = (target, url) => {
 	// renderingTopo = true;
+	console.log(target);
 	gettingTopoID = target;
 	getTopoMap(target, url).then((topoImageLayer) => {
 		// console.log(viewTest);
 		console.log('this is the returned image', topoImageLayer);
 		//NOTE: maybe give this it's own function. Just to make things easier to parse
+		console.log(pinnedCardIDsArray);
+		console.log(gettingTopoID);
+		console.log(pinnedCardIDsArray.indexOf(`${topoOnMapPlaceholder}`));
 
-		//If the returned topo does not match the most recently called
 		if (gettingTopoID !== topoImageLayer.id) {
+			//If the returned topo does not match the most recently called topo, then cancel the render and remove the topo's 'halo'
 			console.log('cancelling');
 			topoImageLayer.cancelLoad();
 			removeHalo(topoImageLayer.id);
@@ -563,6 +574,24 @@ const addTopoToMap = (target, url) => {
 			// 	2
 			// );
 			console.log(viewTest.map.layers.items);
+	});
+};
+
+const addPreviouslyPinnedTopoToMap = (target, url) => {
+	getTopoMap(target, url).then((topoImageLayer) => {
+		viewTest.map.add(topoImageLayer);
+
+		viewTest.map.layers.reorder(
+			mapFootprintLayer,
+			viewTest.map.layers.length - 1
+		);
+		viewTest.map.layers.reorder(
+			basemapTerrainLayer,
+			viewTest.map.layers.length - 1
+		);
+		console.log(viewTest.map.layers.items);
+
+		return;
 	});
 };
 
