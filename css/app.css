@@ -123,12 +123,14 @@ button {
 }
 
 .export-prompt label {
+  display: block;
+  margin: 0 0 0 10px;
   font-weight: 700;
   font-size: 18px;
 }
 
 .export-prompt textarea {
-  padding: 8px 0;
+  padding: 10px 0 0 10px;
   background-color: #EAEEF1;
   box-shadow: 
     inset 0px 0px 6px #FFFFFF,
@@ -145,19 +147,19 @@ button {
   font-size: 14px;
 }
 
+.export-prompt .prompt-box form .form-element {
+padding: 0 0 3rem 0
+}
+
 .export-prompt textarea.summary {
   min-height: 4rem;
-  max-height: 8rem;
-  
+  max-height: 10rem;
 }
 
 .exportBtnContainer {
   justify-content: flex-end;
 }
 
-.export-prompt label {
-  margin: 0 0 0 10px;
-}
 
 .export-prompt .export-response {
   display: flex;

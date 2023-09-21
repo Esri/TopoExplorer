@@ -36,17 +36,17 @@
             </div>
             <div class="prompt-box">
               <form>
-                <div>
+                <div class='form-element'>
                   <label> ArcGIS Online Web Map Name* </label>
                   <br>
                   <textarea class="title" type="text" contenteditable="true"></textarea>
                 </div>
-                <div>
+                <div class='form-element'>
                   <label>Tags</label>
                   <br>
                   <textarea class="tags" type="text" contenteditable="true"></textarea>
                 </div>
-                <div>
+                <div class='form-element'>
                   <label>Summary</label>
                   <br>
                   <textarea class="summary" type="text" contenteditable="true"></textarea>
@@ -61,8 +61,9 @@
             <div class="processing-indicator invisible"> CREATING WEB MAP...</div>
           </div>
       </div>
-			<aside id="sideBarWrapper" class="flex">
-				<div id="sideBar" class="flex">
+			<aside id="sideBarWrapper" class="flex">    
+				<img class="shadow" style="position: absolute; z-index: 1; left: 400px;"src="./public/Shadow.png">
+        <div id="sideBar" class="flex">
 					<div id="header">
 						<div class="heading">
 							HISTORICAL TOPO

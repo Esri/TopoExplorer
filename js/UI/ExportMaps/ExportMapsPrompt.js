@@ -27,6 +27,7 @@ let summaryText;
 
 let viewOperationalLayers;
 let baseMapInfo;
+let userExtent;
 
 const topoLayerInfo = [];
 
@@ -41,18 +42,13 @@ const resumeExportPrompt = (exportTopoDetails) => {
 const setBaseMapInfo = (view) => {
 	baseMapInfo = view.map.basemap.baseLayers;
 	viewOperationalLayers = view.map.layers.items;
+	userExtent = view.extent;
 };
 
 const mapExportProcess = (mapDetails) => {
 	summaryText = '';
 	topoLayerInfo.length = 0;
 	console.log(mapDetails);
-
-	// const mapName = mapDetails.querySelector('.name').innerHTML;
-	// const mapYear = mapDetails.querySelector('.year').innerHTML;
-	// const mapScale = mapDetails.querySelector('.scale').innerHTML;
-
-	// mapTitleField.value = webMapTitle;
 
 	promptBox.querySelector('.prompt-box .tags').value = tags;
 
@@ -119,10 +115,6 @@ const mapExportProcess = (mapDetails) => {
 };
 
 const addAdditionalOperationalLayers = () => {
-	// viewOperationalLayers.map(())
-	// console.log(outdoorBasemapLabels);
-	// console.log(imageryLayer);
-	// console.log(terrainLayer);
 	const outdoorBasemapLabelsData = {
 		id: '18a89a9fd19-layer-52',
 		title: 'Outdoor Labels',
@@ -151,28 +143,6 @@ const createWebMapExportDefinition = () => {
 			operationalLayers: topoLayerInfo,
 			baseMap: {
 				baseMapLayers: baseMapInfo,
-				// [
-				// {
-				// 	id: 'VectorTile_9836',
-				// 	opacity: 1,
-				// 	title: 'Outdoor',
-				// 	visibility: true,
-				// 	itemId: '659e7c1b1e374f6c8a89eefe17b23380',
-				// 	layerType: 'VectorTileLayer',
-				// 	styleUrl:
-				// 		'https://www.arcgis.com/sharing/rest/content/items/659e7c1b1e374f6c8a89eefe17b23380/resources/styles/root.json',
-				// },
-				// {
-				// 	id: 'VectorTile',
-				// 	opacity: 1,
-				// 	title: 'Outdoor VectorTileLayer',
-				// 	visibility: true,
-				// 	itemId: '659e7c1b1e374f6c8a89eefe17b23380',
-				// 	layerType: 'VectorTileLayer',
-				// 	styleUrl:
-				// 		'https://www.arcgis.com/sharing/rest/content/items/659e7c1b1e374f6c8a89eefe17b23380/resources/styles/root.json',
-				// },
-				// ]
 				title: 'Outdoor',
 			},
 			//Adding this initialState value to see
@@ -183,12 +153,10 @@ const createWebMapExportDefinition = () => {
 							latestWkid: 3857,
 							wkid: 102100,
 						},
-						center: [-98.5357, 40.1549],
-						zoom: 4,
-						// xmin: -14106273.484573817,
-						// ymin: -1358432.1785333147,
-						// xmax: -7169460.293639312,
-						// ymax: 10626893.856579196,
+						xmin: userExtent.xmin,
+						ymin: userExtent.ymin,
+						xmax: userExtent.xmax,
+						ymax: userExtent.ymax,
 					},
 				},
 			},

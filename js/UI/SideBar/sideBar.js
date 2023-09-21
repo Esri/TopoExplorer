@@ -27,7 +27,7 @@ const initSideBar = () => {
 	}
 	// if (isMobileFormat()) {
 
-	console.log(document.querySelector('.for-desktop'));
+	sideBar.previousElementSibling.classList.add('invisible');
 	sideBar.querySelector('.for-desktop').classList.remove('display-content');
 	sideBar.querySelector('.for-desktop').classList.add('invisible');
 	sideBar.style.width = '100%';

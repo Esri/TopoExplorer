@@ -39,17 +39,17 @@ const setWebMapURL = (itemID) => {
 
 const exportFields = `
 <form>
-  <div>
+  <div class='form-element'>
     <label> ArcGIS Online Web Map Name* </label>
     <br>
     <textarea class='title' type='text' contenteditable='true'></textarea>
   </div>
-  <div>
+  <div class='form-element'>
     <label>Tags</label>
     <br>
     <textarea class='tags' type='text' contenteditable='true'></textarea>
   </div>
-  <div>
+  <div class='form-element'>
     <label>Summary</label>
     <br>
     <textarea class='summary' type='text' contenteditable='true'></textarea>
