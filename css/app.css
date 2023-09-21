@@ -269,8 +269,8 @@ border-radius: 0;
 }
 
 #viewDiv .esri-ui-bottom-right.esri-ui-corner #layerToggle {
-  height: 2rem;
-  width: 14rem;
+  height: 2.5rem;
+  width: 20rem;
   justify-content: space-evenly;
   transform: translate(15px, 14px);
   /* padding: 0 10px; */
@@ -278,13 +278,19 @@ border-radius: 0;
 }
 
 #layerToggle .mapLayer {
-  /* margin: 0 15px; */
+  margin: 0 5px;
   align-items: center;
 }
 
 #layerToggle span {
   font-size: 1.25rem;
   font-weight: 700;
+}
+
+#layerToggle .checkbox {
+  margin: 0 5px;
+  width: 15px;
+  height: 15px;
 }
 
 .mobile-header {

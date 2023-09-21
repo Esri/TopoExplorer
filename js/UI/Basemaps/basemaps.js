@@ -51,7 +51,7 @@ const addLayerToggleToMap = () => {
     <div id='layerToggle' class='flex'>
       <div class='mapLayer flex satellite'>
         <div class="checkbox">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="1 0 20 20" height="16" width="16">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="1 0 20 20" height="20" width="20">
             <path class="hidden" d="M5.5 12L2 8.689l.637-.636L5.5 10.727l8.022-7.87.637.637z"></path>
           </svg>
         </div>
@@ -61,12 +61,22 @@ const addLayerToggleToMap = () => {
       </div>
       <div class='mapLayer flex terrain'>
         <div class="checkbox">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="1 0 20 20" height="16" width="16">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="1 0 20 20" height="20" width="20">
             <path class="hidden" d="M5.5 12L2 8.689l.637-.636L5.5 10.727l8.022-7.87.637.637z"></path>
           </svg>
         </div>
         <span>
           Terrain
+        </span>
+      </div>
+      <div class='mapLayer flex labels'>
+        <div class="checkbox">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="1 0 20 20" height="20" width="20">
+            <path class="" d="M5.5 12L2 8.689l.637-.636L5.5 10.727l8.022-7.87.637.637z"></path>
+          </svg>
+        </div>
+        <span>
+          Labels
         </span>
       </div>
     </div>
@@ -97,6 +107,11 @@ const toggleMapLayer = (checkmark) => {
 			terrainLayer.visible = false;
 		}
 
+		if (checkmark.closest('.labels')) {
+			console.log(outdoorBasemapLabels);
+			outdoorBasemapLabels.visible = false;
+		}
+
 		return;
 	}
 
@@ -108,6 +123,11 @@ const toggleMapLayer = (checkmark) => {
 	if (checkmark.closest('.terrain')) {
 		console.log(terrainLayer);
 		terrainLayer.visible = true;
+	}
+
+	if (checkmark.closest('.labels')) {
+		console.log(outdoorBasemapLabels);
+		outdoorBasemapLabels.visible = true;
 	}
 };
 
