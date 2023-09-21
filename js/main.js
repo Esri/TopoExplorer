@@ -40,14 +40,20 @@ const initApp = async () => {
 		const view = await initView();
 		const sliderValues = await getYearsAndScales(view);
 		const getPreviousTopos = await isHashedToposForQuery(view);
+		const initialMapQuery = () => {
+			queryConfig.setGeometry(view.extent);
+			queryConfig.mapView = view;
+			queryConfig.extentQueryCall();
+		};
 		// const setLayerOrder = await setDefaultMapLayers(view)
 
 		view
 			.when(() => {
 				// setLayerOrder
+				initialMapQuery();
+				sliderValues;
 			})
 			.then(() => {
-				sliderValues;
 				setBaseMapInfo(view);
 				initLayerToggle(view);
 			})
