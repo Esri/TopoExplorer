@@ -1,8 +1,5 @@
 // import { mapItemListener } from '../../support/eventListeners/MapItemListener.js?v=0.01';
-import {
-	isMobileFormat,
-	maxPinToolTip,
-} from '../EventsAndSelectors/EventsAndSelectors.js?v=0.01';
+import { isMobileFormat } from '../EventsAndSelectors/EventsAndSelectors.js?v=0.01';
 import {
 	updateHashParams,
 	addHashExportPrompt,
@@ -13,7 +10,10 @@ import {
 	mapHalo,
 } from '../../UI/MapAndFootprint/MapFootprint.js?v=0.01';
 import { getTopoMap } from '../../support/ImageExportQuery.js?v=0.01';
-import { mapExportProcess } from '../ExportMaps/ExportMapsPrompt.js?v=0.01';
+import {
+	mapExportProcess,
+	setViewInfo,
+} from '../ExportMaps/ExportMapsPrompt.js?v=0.01';
 import { authorization } from '../../support/OAuth.js?v=0.01';
 const url = new URL(window.location.href);
 
@@ -173,51 +173,67 @@ const createMapSlotItems = (list, view, url) => {
 								: 'invisible'
 						}'>
               <div class='action-area'>
-              <span class='tooltipText hidden'>cannot pin more than 25 topos</span>
-                <div class='icon pushpin ${
-									isMobileFormat() ? 'invisible' : null
-								}'>
-                
-                  <div class="checkmarkBackground ${
-										isCardPinned === true || isCardPinned !== -1 ? '' : 'hidden'
-									}">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M20,0H3.56757A3.56754,3.56754,0,0,0,0,3.56757V20"></path></svg>
-                    <div class="checkmark">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="10" height="12"viewBox="-3 3 32 32"><path fill="#EAEEF1" d="M11.927 22l-6.882-6.883-3 3L11.927 28 31.204 8.728l-3.001-3.001z"/></svg>
+                <div class='iconWrapper'>
+                  <span class='tooltipText hidden' style='top:-60px;'>cannot pin more than 25 topos</span>
+                  <span class='tooltipText pinMap hidden' style='top:-27px;'>Pin this topo map</span>
+                  <span class='tooltipText unpinMap hidden' style='top:-45px;'>Unpin this topo map</span>
+                  <div class='icon pushpin ${
+										isMobileFormat() ? 'invisible' : null
+									}'>
+                  
+                    <div class="checkmarkBackground ${
+											isCardPinned === true || isCardPinned !== -1
+												? ''
+												: 'hidden'
+										}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M20,0H3.56757A3.56754,3.56754,0,0,0,0,3.56757V20"></path></svg>
+                      <div class="checkmark">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="12"viewBox="-3 3 32 32"><path fill="#EAEEF1" d="M11.927 22l-6.882-6.883-3 3L11.927 28 31.204 8.728l-3.001-3.001z"/></svg>
+                      </div>
+                    </div>
+                    <div class="unpinned svgContainer 
+                    ${
+											isCardPinned === true || isCardPinned !== -1
+												? 'pinned'
+												: ''
+										}
+                    ${
+											pinnedCardIDsArray.length === 25 && isCardPinned === -1
+												? 'transparency'
+												: ''
+										}
+                    ">
+                    
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6 28 28"><path d="M5 0h7v1.417l-1 .581v6l1 .502v1.498H9v6l-.5 1-.5-1v-6H5V8.5l1-.502v-6L5 1.5V0z"/></svg>
                     </div>
                   </div>
-                  <div class="unpinned svgContainer 
-                  ${
-										isCardPinned === true || isCardPinned !== -1 ? 'pinned' : ''
-									}
-                  ${
-										pinnedCardIDsArray.length === 25 && isCardPinned === -1
-											? 'transparency'
-											: ''
-									}
-                  ">
-                  
-                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6 28 28"><path d="M5 0h7v1.417l-1 .581v6l1 .502v1.498H9v6l-.5 1-.5-1v-6H5V8.5l1-.502v-6L5 1.5V0z"/></svg>
+                </div>
+                <div class='iconWrapper zoom'>
+                  <span class='tooltipText hidden' style='top:-60px;'>Zoom to the extent of this topo map</span>
+                  <div class='icon' location='${topoMap.mapCenterGeographyX}, ${
+				topoMap.mapCenterGeographyY
+			}'>
+                  <svg class="zoomToExtent" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 16H2v6h6v-1H3zM16 3h5v5h1V2h-6zm5 18h-5v1h6v-6h-1zM8 2H2v6h1V3h5z"/><path fill="none" d="M0 0h24v24H0z"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-9 -8 36 36"><path d="M15.805 13.918l-3.067-3.068a.668.668 0 0 0-.943 0l-.124.124-1.108-1.108A5.279 5.279 0 1 0 6.5 11.8a5.251 5.251 0 0 0 3.373-1.244l1.108 1.108-.13.129a.667.667 0 0 0 0 .943l3.068 3.067a.665.665 0 0 0 .943 0l.943-.942a.666.666 0 0 0 0-.943zM6.5 10.8a4.3 4.3 0 1 1 4.3-4.3 4.304 4.304 0 0 1-4.3 4.3zm7.89 4.06l-2.596-2.595.473-.473 2.595 2.598z"/><path fill="none" d="M0 0h16v16H0z"/></svg>
+                  </svg>
                   </div>
                 </div>
-                <div class='icon zoom' location='${
-									topoMap.mapCenterGeographyX
-								}, ${topoMap.mapCenterGeographyY}'>
-                <svg class="zoomToExtent" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 16H2v6h6v-1H3zM16 3h5v5h1V2h-6zm5 18h-5v1h6v-6h-1zM8 2H2v6h1V3h5z"/><path fill="none" d="M0 0h24v24H0z"/>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="-9 -8 36 36"><path d="M15.805 13.918l-3.067-3.068a.668.668 0 0 0-.943 0l-.124.124-1.108-1.108A5.279 5.279 0 1 0 6.5 11.8a5.251 5.251 0 0 0 3.373-1.244l1.108 1.108-.13.129a.667.667 0 0 0 0 .943l3.068 3.067a.665.665 0 0 0 .943 0l.943-.942a.666.666 0 0 0 0-.943zM6.5 10.8a4.3 4.3 0 1 1 4.3-4.3 4.304 4.304 0 0 1-4.3 4.3zm7.89 4.06l-2.596-2.595.473-.473 2.595 2.598z"/><path fill="none" d="M0 0h16v16H0z"/></svg>
-                </svg>
+                <div class='iconWrapper'>
+                <span class='tooltipText hidden' style='top:-77px;'>Save this topo map to a new ArcGIS Online web map</span>
+                  <div class='icon save'>
+                    <svg class="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2 2h11v1H3v18h18V11h1v11H2zm20 6V2h-6v1h4.3l-8.41 8.403.707.707L21 3.714V8z"/><path fill="none" d="M0 0h24v24H0z"/></svg>
+                  </div>
                 </div>
-                <div class='icon save'>
-                  <svg class="save" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2 2h11v1H3v18h18V11h1v11H2zm20 6V2h-6v1h4.3l-8.41 8.403.707.707L21 3.714V8z"/><path fill="none" d="M0 0h24v24H0z"/></svg>
-                </div>
-                <a class='icon download' href="${
-									topoMap.downloadLink
-								}" download="${topoMap.location}, ${topoMap.date}, ${
+                <div class='iconWrapper'>
+                  <span class='tooltipText hidden' style='top:-60px;'>Download this topo map as a GeoTIFF</span>
+                  <a class='icon download' href="${
+										topoMap.downloadLink
+									}" download="${topoMap.location}, ${topoMap.date}, ${
 				topoMap.mapScale
 			}">
-                  <svg class="download" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 3v12.294l2.647-2.647.707.707-3.853 3.854-3.854-3.854.707-.707L12 15.292V3zM6 21h13v-1H6z"/><path fill="none" d="M0 0h24v24H0z"/></svg>
-                </a>
-                
+                    <svg class="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 3v12.294l2.647-2.647.707.707-3.853 3.854-3.854-3.854.707-.707L12 15.292V3zM6 21h13v-1H6z"/><path fill="none" d="M0 0h24v24H0z"/></svg>
+                  </a>
+                </div>
                 
                 <div class='mapCard-slider'>
                   <div>
@@ -246,7 +262,7 @@ const createMapSlotItems = (list, view, url) => {
 		// pinList.innerHTML = mapSlot;
 		// console.log(list);
 		// console.log(mapSlot);
-		const mapItem = mapSlot;
+		// const mapItem = mapSlot;
 		const mapCardContainingDiv = document.createElement('div');
 		mapCardContainingDiv.innerHTML = mapSlot;
 		const containingItem =
@@ -688,6 +704,13 @@ const pinEvent = (eventTarget, mapCard, targetOID) => {
 		return;
 	}
 
+	//set the tooltip for the pushpin to hidden again
+	if (eventTarget.closest('.iconWrapper')) {
+		eventTarget
+			.closest('.iconWrapper')
+			.querySelector('.tooltipText.pinMap')
+			.classList.remove('visible');
+	}
 	console.log('pushpin');
 	// const targetMapCard = eventTarget.closest('.mapCard-container');
 
@@ -749,7 +772,8 @@ const saveEvent = (eventTarget) => {
 	addHashExportPrompt(mapDetails);
 	console.log('this would save and export');
 	authorization.getCredentials();
-	mapExportProcess(mapDetails, url);
+	setViewInfo(viewTest);
+	mapExportProcess(mapDetails);
 };
 
 const openMapCard = (target) => {
@@ -821,6 +845,9 @@ const closeMapCard = (target) => {
 };
 
 const isMapCardOpen = (target, targetOID) => {
+	if (isMobileFormat) {
+		removeTopoFromMap(targetOID);
+	}
 	const targetTopLevel = target.closest('.map-list-item');
 	const targetGeometry = targetTopLevel.attributes.geometry.value;
 
@@ -900,6 +927,7 @@ const exportAllPinned = (event) => {
 	const mapDetails = Array.from(pinList.querySelectorAll('.map-list-item'));
 	addHashExportPrompt(mapDetails);
 	authorization.getCredentials();
+	setViewInfo(viewTest);
 	mapExportProcess(mapDetails, url);
 };
 
@@ -1074,8 +1102,6 @@ const pinBtnUnavailable = () => {
 		}
 		pinIcon.classList.add('transparency');
 	});
-
-	maxPinToolTip();
 };
 
 const pinBtnAvailable = () => {

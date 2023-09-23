@@ -70,9 +70,12 @@ const headerMapInfo = () => {
 
 const addMapInfoOnMobileHeader = (event) => {
 	topoMap = event.target.closest('.map-list-item');
+	topoMap.querySelector('.slider-range-color').style.width = '100%';
 
 	mapNameAndScale = topoMap.querySelector('.map-list-item-title').innerHTML;
 	mapOpacitySlider = topoMap.querySelector('.mapCard-slider').innerHTML;
+	console.log(topoMap.querySelector('.slider-range-color'));
+
 	mapOID = topoMap.attributes.oid.value;
 	mapGeometry = topoMap.attributes.geometry.value;
 	console.log(topoMap.attributes.oid);

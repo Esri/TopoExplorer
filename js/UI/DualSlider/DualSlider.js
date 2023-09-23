@@ -353,7 +353,10 @@ const initDualSlider = (
 			);
 
 			if (minHandleDiffernce === maxHandleDiffernce) {
+				console.log();
 				if (currentSelection - maxRangeHandle.value > 0) {
+					console.log(currentSelection - maxRangeHandle.value > 0);
+					console.log('max should move');
 					maxRangeHandle.value = currentSelection;
 					adjustSliderTrackSelection(maxRangeHandle, maxRangeHandle.value);
 
@@ -365,9 +368,12 @@ const initDualSlider = (
 
 					debounceInput(1, maxRangeHandle.value);
 					udpdateSliderHeading(1, maxRangeHandle.value, true);
+					return;
 				}
 
 				if (currentSelection - minRangeHandle.value < 0) {
+					console.log(currentSelection - minRangeHandle.value < 0);
+					console.log('min should move');
 					minRangeHandle.value = currentSelection;
 					adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
 					if (e.target.closest('#scales')) {
@@ -378,6 +384,7 @@ const initDualSlider = (
 
 					debounceInput(0, minRangeHandle.value);
 					udpdateSliderHeading(0, minRangeHandle.value, true);
+					return;
 				}
 
 				//if these handles are not overlapping move the minimum handle
@@ -491,7 +498,9 @@ const initDualSlider = (
 	//Listener that will updating the slider's header and the values
 	container.querySelector('.minSlider').addEventListener('change', (event) => {
 		let minVal = event.target.value;
-		let sliderHandle = 0;
+		let sliderHandle;
+
+		sliderHandle = 0;
 
 		if (event.target.closest('#scales')) {
 			isScaleValueWithinAvailableRange(sliderHandle, minVal);

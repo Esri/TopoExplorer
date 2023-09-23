@@ -18,7 +18,10 @@ import { getYearsAndScales } from './support/YearsAndScalesProcessing.js?v=0.01'
 import { authorization } from './support/OAuth.js?v=0.01';
 import { addAccountImage } from './UI/EventsAndSelectors/EventsAndSelectors.js?v=0.01';
 // import { setUserItemPageURL } from './UI/ExportMapsPrompt/exportPromptUI.js?v=0.01';
-import { setBaseMapInfo } from './UI/ExportMaps/ExportMapsPrompt.js?v=0.01';
+import {
+	setBaseMapInfo,
+	setViewInfo,
+} from './UI/ExportMaps/ExportMapsPrompt.js?v=0.01';
 import { initLayerToggle } from './UI/Basemaps/basemaps.js?v=0.01';
 import { setAccountData } from './support/AddItemRequest.js?v=0.01';
 
@@ -56,6 +59,7 @@ const initApp = async () => {
 			.then(() => {
 				initLayerToggle(view);
 				setBaseMapInfo(view);
+				setViewInfo(view);
 			})
 			.then(() => {
 				getPreviousTopos;

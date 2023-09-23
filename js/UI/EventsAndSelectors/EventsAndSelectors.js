@@ -3,36 +3,73 @@ import { authorization, logOutTry } from '../../support/OAuth.js?v=0.01';
 let account = null;
 const userIconHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="1.5 -2 24 24" height="30" width="30"><path d="M19.5 15h-7A6.508 6.508 0 0 0 6 21.5V29h20v-7.5a6.508 6.508 0 0 0-6.5-6.5zM25 28H7v-6.5a5.506 5.506 0 0 1 5.5-5.5h7a5.506 5.506 0 0 1 5.5 5.5zm-9-14.2A5.8 5.8 0 1 0 10.2 8a5.806 5.806 0 0 0 5.8 5.8zm0-10.633A4.833 4.833 0 1 1 11.167 8 4.839 4.839 0 0 1 16 3.167z"></path></svg>`;
 
-const maxPinToolTip = () => {
-	const sideBar = document.querySelector('#sideBar');
+sideBar.addEventListener(
+	'mouseenter',
+	(event) => {
+		//when the mouse enters the iconWrapper, remove the visibility from all tooltips, add visibility to the specific tooltip.
+		if (event.target.closest('.iconWrapper')) {
+			document.querySelectorAll('.tooltipText').forEach((tooltip) => {
+				if (tooltip.classList.contains('visible')) {
+					tooltip.classList.remove('visible');
+				}
+			});
 
-	sideBar.addEventListener(
-		'mouseenter',
-		(event) => {
-			if (!event.target.closest('.svgContainer.transparency')) {
+			if (event.target.closest('.unpinned.svgContainer.pinned')) {
+				event.target
+					.closest('.iconWrapper')
+					.querySelector('.tooltipText.unpinMap')
+					.classList.add('visible');
+				return;
+			}
+
+			if (event.target.closest('.svgContainer.transparency')) {
+				event.target
+					.closest('.iconWrapper')
+					.querySelector('.tooltipText')
+					.classList.add('visible');
+				return;
+			}
+
+			if (event.target.closest('.unpinned.svgContainer')) {
+				event.target
+					.closest('.iconWrapper')
+					.querySelector('.tooltipText.pinMap')
+					.classList.add('visible');
 				return;
 			}
 
 			event.target
-				.closest('.action-area')
+				.closest('.iconWrapper')
 				.querySelector('.tooltipText')
 				.classList.add('visible');
-		},
-		true
-	);
-};
+		}
+
+		//if the mouse enters something other than the iconWrapper, remove visibility on all tooltips
+		if (
+			!event.target.closest('.iconWrapper') ||
+			event.target.classList.contains('tooltipText')
+		) {
+			document.querySelectorAll('.tooltipText').forEach((tooltip) => {
+				if (tooltip.classList.contains('visible')) {
+					tooltip.classList.remove('visible');
+				}
+			});
+		}
+	},
+	true
+);
 
 sideBar.addEventListener(
 	'mouseleave',
 	(event) => {
-		if (!event.target.closest('.svgContainer.transparency')) {
+		if (!event.target.closest('.iconWrapper')) {
+			document.querySelectorAll('.tooltipText').forEach((tooltip) => {
+				if (tooltip.classList.contains('visible')) {
+					tooltip.classList.remove('visible');
+				}
+			});
 			return;
 		}
-
-		event.target
-			.closest('.action-area')
-			.querySelector('.tooltipText')
-			.classList.remove('visible');
 	},
 	true
 );
@@ -70,7 +107,6 @@ const logOutListener = () => {
 	document.querySelector('.logOut-icon').addEventListener('click', (event) => {
 		// event.preventDefault();
 		event.stopImmediatePropagation();
-		console.log('logout');
 		logOutTry();
 		setAnonymousUser();
 	});
@@ -120,4 +156,4 @@ const isMobileFormat = () => {
 // 	headerSearchInfo();
 // };
 
-export { addAccountImage, isMobileFormat, maxPinToolTip };
+export { addAccountImage, isMobileFormat };

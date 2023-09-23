@@ -8,7 +8,8 @@ const exportBtnContainer = document.querySelector('.exportBtnContainer');
 const indicator = document.querySelector('.processing-indicator');
 
 const successMessage = 'Webmap successfully created!';
-const failMessage = 'Failed to export webmap.';
+const failMessage = `Failed to export webmap. 
+Your login session may have expired`;
 
 const webBtnClass = 'goToWebMap-btn';
 const promptBtnsClass = 'prompt-btns';

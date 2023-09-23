@@ -176,7 +176,11 @@ box-shadow:
 border-radius: 6px;
 }
 
- .icon {
+.iconWrapper{
+  position:relative
+}
+
+.icon {
   position: relative;
   overflow: hidden;
   height: 40px;
@@ -189,6 +193,9 @@ border-radius: 6px;
   cursor: pointer;
 }
 
+a.icon{
+  display: block;
+}
 /* .icon.pushpin {
 
 } */
@@ -234,7 +241,7 @@ border-radius: 6px;
 
 .action-area .tooltipText {
   position: absolute;
-  left: 42px;
+  left: 18px;
   width: 100px;
   background-color: #555;
   color: #fff;
@@ -242,22 +249,36 @@ border-radius: 6px;
   border-radius: 6px;
   padding: 5px 0;
   z-index: 1;
-  top: -50px;
+  top: -20px;
   margin-left: -60px;
   /* opacity: 0; */
   transition: opacity 0.3s;
 }
 /* 
-.action-area ~ .tooltipText .icon .transparency:hover  {
-  visibility: visible;
-  opacity: 1;
+.action-area .export .tooltipText{
+  left: 95px;
+  top: -25px;
 } */
+/*  
+.action-area .iconWrapper:hover ~ .tooltipText  {
+ position: absolute;
+    left: 18px;
+    width: 100px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    z-index: 1;
+    top: -20px;
+    margin-left: -60px;
+}  */
 
 .action-area .icon svg{
   fill: #637287;
 }
 
-#exploreList .action-area .zoom{
+#exploreList .action-area .iconWrapper.zoom{
   display: none;
 }
 

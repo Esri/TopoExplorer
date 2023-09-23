@@ -28,6 +28,7 @@ let summaryText;
 let viewOperationalLayers;
 let baseMapInfo;
 let userExtent;
+let userView;
 
 const topoLayerInfo = [];
 
@@ -42,6 +43,10 @@ const resumeExportPrompt = (exportTopoDetails) => {
 const setBaseMapInfo = (view) => {
 	baseMapInfo = view.map.basemap.baseLayers;
 	viewOperationalLayers = view.map.layers.items;
+};
+
+const setViewInfo = (view) => {
+	userView = view;
 	userExtent = view.extent;
 };
 
@@ -148,6 +153,7 @@ const createWebMapExportDefinition = () => {
 			//Adding this initialState value to see
 			initialState: {
 				viewpoint: {
+					scale: userView.scale,
 					targetGeometry: {
 						spatialReference: {
 							latestWkid: 3857,
@@ -191,4 +197,5 @@ export {
 	resumeExportPrompt,
 	createWebMapExportDefinition,
 	setBaseMapInfo,
+	setViewInfo,
 };
