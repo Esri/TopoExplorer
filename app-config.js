@@ -1,9 +1,7 @@
 // const isDevEnvironment = false
 
 const productionEnv = {
-	appId: '',
-	apiKey:
-		'AAPKe259b9f8cc57489cb0533ceb6da4b459DGbL3xnlg-YC7ah0DSbIB_1bJzAnUIegpFFBoigwoOvqAHj4aVreEZWdTaR28PEW',
+	appId: '8dK7qAkws1YRY1Gq',
 	webMap: {
 		webMapItemId: '',
 		webMapLayers: {
@@ -20,8 +18,6 @@ const productionEnv = {
 
 const developmentEnv = {
 	appId: 'KZAK9DITO38X2SXM',
-	apiKey:
-		'AAPKe259b9f8cc57489cb0533ceb6da4b459DGbL3xnlg-YC7ah0DSbIB_1bJzAnUIegpFFBoigwoOvqAHj4aVreEZWdTaR28PEW',
 	webMap: {
 		webMapItemId: '710264327ad24ff5ba996e2a7c773b7f',
 		webMapLayers: {

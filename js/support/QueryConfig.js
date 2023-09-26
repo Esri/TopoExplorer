@@ -63,7 +63,8 @@ const getMaxYear = findMaxYear(`${url}/query`);
 const getMinScale = findMinScale(`${url}/query`);
 const getMaxScale = findMaxScale(`${url}/query`);
 // const getAllScalesAndYears = findAllScalesAndYears(`${url}/query`);
-
+let minScaleRangeHandle;
+let maxScaleRangeHandle;
 //NOTE: I think I can move this OBJ into a different module...remember this when building out the sort Module.
 //Can definitely be moved to a different module. Just like the year & scale
 const sortOptions = {
@@ -82,46 +83,98 @@ const sortOptions = {
 
 const CheckandAdjustScaleSliderHeaderStyle = (availableScaleIndex) => {
 	if (
-		document.querySelector('#scales .minSlider').value < availableScaleIndex
+		parseInt(maxScaleRangeHandle.value) > parseInt(minScaleRangeHandle.value)
 	) {
-		document
-			.querySelectorAll('#scales .sliderBtn span')[0]
-			.classList.add('transparency');
-		document
-			.querySelector('#scales .zoomInHelpText')
-			.classList.remove('hidden');
-	} else {
-		if (
-			document.querySelector('#scales .minSlider').value >= availableScaleIndex
-		) {
+		if (minScaleRangeHandle.value < availableScaleIndex) {
+			document
+				.querySelectorAll('#scales .sliderBtn span')[0]
+				.classList.add('transparency');
+			document
+				.querySelector('#scales .zoomInHelpText')
+				.classList.remove('hidden');
+		} else {
+			if (
+				document.querySelector('#scales .minSlider').value >=
+				availableScaleIndex
+			) {
+				document
+					.querySelectorAll('#scales .sliderBtn span')[0]
+					.classList.remove('transparency');
+				console.log(document.querySelector('#scales .zoomInHelpText'));
+				document
+					.querySelector('#scales .zoomInHelpText')
+					.classList.add('hidden');
+			}
+		}
+
+		if (maxScaleRangeHandle.value < availableScaleIndex) {
+			console.log(document.querySelector('#scales .maxSlider').value);
+			console.log(availableScaleIndex);
+			document
+				.querySelectorAll('#scales .sliderBtn span')[1]
+				.classList.add('transparency');
+			document
+				.querySelector('#scales .zoomInHelpText')
+				.classList.remove('hidden');
+		} else {
+			if (
+				document.querySelector('#scales .maxSlider').value >=
+				availableScaleIndex
+			) {
+				console.log(document.querySelectorAll('#scales .sliderBtn span')[1]);
+				document
+					.querySelectorAll('#scales .sliderBtn span')[1]
+					.classList.remove('transparency');
+				document
+					.querySelector('#scales .zoomInHelpText')
+					.classList.add('hidden');
+			}
+		}
+	}
+	if (
+		parseInt(maxScaleRangeHandle.value) < parseInt(minScaleRangeHandle.value)
+	) {
+		console.log('inverse positoins');
+		if (maxScaleRangeHandle.value >= availableScaleIndex) {
 			document
 				.querySelectorAll('#scales .sliderBtn span')[0]
 				.classList.remove('transparency');
 			console.log(document.querySelector('#scales .zoomInHelpText'));
 			document.querySelector('#scales .zoomInHelpText').classList.add('hidden');
+		} else {
+			if (maxScaleRangeHandle.value < availableScaleIndex) {
+				document
+					.querySelectorAll('#scales .sliderBtn span')[0]
+					.classList.add('transparency');
+				document
+					.querySelector('#scales .zoomInHelpText')
+					.classList.remove('hidden');
+			}
 		}
-	}
 
-	if (
-		document.querySelector('#scales .maxSlider').value < availableScaleIndex
-	) {
-		console.log(document.querySelector('#scales .maxSlider').value);
-		console.log(availableScaleIndex);
-		document
-			.querySelectorAll('#scales .sliderBtn span')[1]
-			.classList.add('transparency');
-		document
-			.querySelector('#scales .zoomInHelpText')
-			.classList.remove('hidden');
-	} else {
-		if (
-			document.querySelector('#scales .maxSlider').value >= availableScaleIndex
-		) {
-			console.log(document.querySelectorAll('#scales .sliderBtn span')[1]);
+		console.log(
+			'is min creater than the zoom',
+			parseInt(minScaleRangeHandle.value) < availableScaleIndex
+		);
+		if (parseInt(minScaleRangeHandle.value) < availableScaleIndex) {
+			console.log(document.querySelector('#scales .maxSlider').value);
+			console.log(availableScaleIndex);
 			document
 				.querySelectorAll('#scales .sliderBtn span')[1]
-				.classList.remove('transparency');
-			document.querySelector('#scales .zoomInHelpText').classList.add('hidden');
+				.classList.add('transparency');
+			document
+				.querySelector('#scales .zoomInHelpText')
+				.classList.remove('hidden');
+		} else {
+			if (minScaleRangeHandle.value >= availableScaleIndex) {
+				console.log(document.querySelectorAll('#scales .sliderBtn span')[1]);
+				document
+					.querySelectorAll('#scales .sliderBtn span')[1]
+					.classList.remove('transparency');
+				document
+					.querySelector('#scales .zoomInHelpText')
+					.classList.add('hidden');
+			}
 		}
 	}
 };
@@ -188,10 +241,13 @@ const yearsAndMapScales = {
 		//this is the logic to determine what maps scales are available at certain zoom levels (which determines what slider values are available).
 		const zoomLevel = Math.round(queryConfig.mapView.zoom);
 		const scaleHeaders = document.querySelector('#scales .headers');
-		const minScaleRangeHandle = document.querySelector('#scales .minSlider');
-		const maxScaleRangeHandle = document.querySelector('#scales .maxSlider');
+		minScaleRangeHandle = document.querySelector('#scales .minSlider');
+		maxScaleRangeHandle = document.querySelector('#scales .maxSlider');
 		const scaleTicks = document.querySelectorAll('#scales .tick');
 		const scaleNumber = document.querySelector('#scales .minSliderValue');
+
+		console.log(maxScaleRangeHandle.value);
+		console.log(minScaleRangeHandle.value);
 
 		//no restrictions on zoom level -- all scales (and all slider choices are available)
 		if (zoomLevel >= 9) {
@@ -200,8 +256,22 @@ const yearsAndMapScales = {
 				tickMark.classList.remove('transparency')
 			);
 
-			this.scales.maxScale = this.scales.allScales[maxScaleRangeHandle.value];
-			this.scales.minScale = this.scales.allScales[minScaleRangeHandle.value];
+			if (
+				parseInt(maxScaleRangeHandle.value) <
+				parseInt(minScaleRangeHandle.value)
+			) {
+				this.scales.maxScale = this.scales.allScales[minScaleRangeHandle.value];
+				this.scales.minScale = this.scales.allScales[maxScaleRangeHandle.value];
+			}
+
+			if (
+				parseInt(maxScaleRangeHandle.value) >
+				parseInt(minScaleRangeHandle.value)
+			) {
+				this.scales.maxScale = this.scales.allScales[maxScaleRangeHandle.value];
+				this.scales.minScale = this.scales.allScales[minScaleRangeHandle.value];
+			}
+
 			CheckandAdjustScaleSliderHeaderStyle(0);
 			updateWhereStatement();
 		}
@@ -219,13 +289,26 @@ const yearsAndMapScales = {
 				}
 			});
 
-			this.scales.maxScale = this.scales.allScales[maxScaleRangeHandle.value];
-			this.scales.minScale = this.scales.allScales[minScaleRangeHandle.value];
+			if (
+				parseInt(maxScaleRangeHandle.value) <
+				parseInt(minScaleRangeHandle.value)
+			) {
+				this.scales.maxScale = this.scales.allScales[minScaleRangeHandle.value];
+				this.scales.minScale = this.scales.allScales[maxScaleRangeHandle.value];
+			}
+
+			if (
+				parseInt(maxScaleRangeHandle.value) >
+				parseInt(minScaleRangeHandle.value)
+			) {
+				this.scales.maxScale = this.scales.allScales[maxScaleRangeHandle.value];
+				this.scales.minScale = this.scales.allScales[minScaleRangeHandle.value];
+			}
 
 			if (
 				this.scales.allScales[maxScaleRangeHandle.value] <
 					this.scales.allScales[2] &&
-				this.scales.allScales[maxScaleRangeHandle.value] <
+				this.scales.allScales[minScaleRangeHandle.value] <
 					this.scales.allScales[2]
 			) {
 				updateWhereStatement();
@@ -245,13 +328,13 @@ const yearsAndMapScales = {
 			//this ternary is checking to see if the min/max values of the scale slider's selections fall within the appropriate range
 			//if the values of the selected scales don't pass the threshold, the minimum threshold will be used instead.
 			this.scales.maxScale =
-				this.scales.maxScaleSliderPositionValue < this.scales.allScales[2]
+				this.scales.maxScale < this.scales.allScales[2]
 					? this.scales.allScales[2]
-					: this.scales.maxScaleSliderPositionValue;
+					: this.scales.maxScale;
 			this.scales.minScale =
-				this.scales.minScaleSliderPositionValue < this.scales.allScales[2]
+				this.scales.minScale < this.scales.allScales[2]
 					? this.scales.allScales[2]
-					: this.scales.minScaleSliderPositionValue;
+					: this.scales.minScale;
 			CheckandAdjustScaleSliderHeaderStyle(2);
 			updateWhereStatement();
 		}
@@ -268,13 +351,28 @@ const yearsAndMapScales = {
 				}
 			});
 
-			this.scales.maxScale = this.scales.allScales[maxScaleRangeHandle.value];
-			this.scales.minScale = this.scales.allScales[minScaleRangeHandle.value];
+			if (
+				parseInt(maxScaleRangeHandle.value) <
+				parseInt(minScaleRangeHandle.value)
+			) {
+				this.scales.maxScale = this.scales.allScales[minScaleRangeHandle.value];
+				this.scales.minScale = this.scales.allScales[maxScaleRangeHandle.value];
+				console.log(this.scales.maxScale);
+				console.log(this.scales.minScale);
+			}
+
+			if (
+				parseInt(maxScaleRangeHandle.value) >
+				parseInt(minScaleRangeHandle.value)
+			) {
+				this.scales.maxScale = this.scales.allScales[maxScaleRangeHandle.value];
+				this.scales.minScale = this.scales.allScales[minScaleRangeHandle.value];
+			}
 
 			if (
 				this.scales.allScales[maxScaleRangeHandle.value] <
 					this.scales.allScales[3] &&
-				this.scales.allScales[maxScaleRangeHandle.value] <
+				this.scales.allScales[minScaleRangeHandle.value] <
 					this.scales.allScales[3]
 			) {
 				updateWhereStatement();
@@ -293,13 +391,13 @@ const yearsAndMapScales = {
 			//this ternary is checking to see if the min/max values of the scale slider's selections fall within the appropriate range
 			//if the values of the selected scales don't pass the threshold, the minimum threshold will be used instead.
 			this.scales.maxScale =
-				this.scales.maxScaleSliderPositionValue < this.scales.allScales[3]
+				this.scales.maxScale < this.scales.allScales[3]
 					? this.scales.allScales[3]
-					: this.scales.maxScaleSliderPositionValue;
+					: this.scales.maxScale;
 			this.scales.minScale =
-				this.scales.minScaleSliderPositionValue < this.scales.allScales[3]
+				this.scales.minScale < this.scales.allScales[3]
 					? this.scales.allScales[3]
-					: this.scales.minScaleSliderPositionValue;
+					: this.scales.minScale;
 			//this is INCREDIBLY UGLY. I don't like this.
 			CheckandAdjustScaleSliderHeaderStyle(3);
 			updateWhereStatement();
@@ -331,14 +429,26 @@ const yearsAndMapScales = {
 			// 	console.log('we got a hit');
 			// 	return -1;
 			// }
+			if (
+				parseInt(maxScaleRangeHandle.value) <
+				parseInt(minScaleRangeHandle.value)
+			) {
+				this.scales.maxScale = this.scales.allScales[minScaleRangeHandle.value];
+				this.scales.minScale = this.scales.allScales[maxScaleRangeHandle.value];
+			}
 
-			this.scales.maxScale = this.scales.allScales[maxScaleRangeHandle.value];
-			this.scales.minScale = this.scales.allScales[minScaleRangeHandle.value];
+			if (
+				parseInt(maxScaleRangeHandle.value) >
+				parseInt(minScaleRangeHandle.value)
+			) {
+				this.scales.maxScale = this.scales.allScales[maxScaleRangeHandle.value];
+				this.scales.minScale = this.scales.allScales[minScaleRangeHandle.value];
+			}
 
 			if (
 				this.scales.allScales[maxScaleRangeHandle.value] <
 					this.scales.allScales[this.scales.allScales.length - 1] &&
-				this.scales.allScales[maxScaleRangeHandle.value] <
+				this.scales.allScales[minScaleRangeHandle.value] <
 					this.scales.allScales[this.scales.allScales.length - 1]
 			) {
 				// document.querySelectorAll('#scales .headerSpan').forEach((header) => {

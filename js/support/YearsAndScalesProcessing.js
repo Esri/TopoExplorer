@@ -51,26 +51,61 @@ const minMaxYears = getMinMaxyears;
 const minMaxScales = getMinMaxScales;
 
 const getTheYear = (index, value) => {
-	// console.log(yearsAndMapScales);
-	index === 0
-		? yearsAndMapScales.updateMinYear(value)
-		: yearsAndMapScales.updateMaxYear(value);
-	// console.log(scalesAndYears);
-	queryConfig.extentQueryCall();
+	const minYearSlider = document.querySelector('#years .minSlider');
+	const maxYearSlider = document.querySelector('#years .maxSlider');
+
+	if (parseInt(minYearSlider.value) > parseInt(maxYearSlider.value)) {
+		console.log('setting years based on inverted slider position');
+		yearsAndMapScales.updateMinYear(maxYearSlider.value);
+		yearsAndMapScales.updateMaxYear(minYearSlider.value);
+		queryConfig.extentQueryCall();
+		return;
+	}
+
+	if (parseInt(minYearSlider.value) < parseInt(maxYearSlider.value)) {
+		console.log('setting years based on initial slider position');
+		yearsAndMapScales.updateMaxYear(maxYearSlider.value);
+		yearsAndMapScales.updateMinYear(minYearSlider.value);
+		queryConfig.extentQueryCall();
+		return;
+	}
+
+	// console.log('only the max needs to be updated')
+	// // console.log(yearsAndMapScales);
+	// index === 0
+	// 	? yearsAndMapScales.updateMinYear(value)
+	// 	: yearsAndMapScales.updateMaxYear(value);
+	// queryConfig.extentQueryCall();
 };
 
 const getTheScale = (index, value) => {
-	// console.log(value);
-	index === 0
-		? yearsAndMapScales.updateMinScale(value)
-		: yearsAndMapScales.updateMaxScale(value);
+	const minScaleSlider = document.querySelector('#scales .minSlider');
+	const maxScaleSlider = document.querySelector('#scales .maxSlider');
 
-	// console.log(yearsAndMapScales);
-	queryConfig.extentQueryCall();
+	if (parseInt(minScaleSlider.value) > parseInt(maxScaleSlider.value)) {
+		console.log('setting scales based on inverted slider position');
+		yearsAndMapScales.updateMinScale(maxScaleSlider.value);
+		yearsAndMapScales.updateMaxScale(minScaleSlider.value);
+		queryConfig.extentQueryCall();
+		return;
+	}
+
+	if (parseInt(minScaleSlider.value) < parseInt(maxScaleSlider.value)) {
+		console.log('setting scales based on initial slider position');
+		yearsAndMapScales.updateMaxScale(maxScaleSlider.value);
+		yearsAndMapScales.updateMinScale(minScaleSlider.value);
+		queryConfig.extentQueryCall();
+		return;
+	}
+
+	// index === 0
+	// 	? yearsAndMapScales.updateMinScale(value)
+	// 	: yearsAndMapScales.updateMaxScale(value);
+
+	// queryConfig.extentQueryCall();
 };
 
 const setSortOptions = (choiceValue) => {
-	console.log('check the query Config', queryConfig);
 	queryConfig.setSortChoice(choiceValue);
 	queryConfig.extentQueryCall();
 };

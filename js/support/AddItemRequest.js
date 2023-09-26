@@ -1,13 +1,17 @@
 import { setUserContentURL } from '../UI/ExportMapsPrompt/exportPromptUI.js?v=0.01';
 
 let accountData;
+let userToken;
 
-const setAccountData = (authorizationResponse) => {
+const setAccountData = async (authorizationResponse) => {
 	console.log(authorizationResponse);
 	accountData = authorizationResponse;
 	setUserContentURL(accountData.urlKey, accountData.customUrl, accountData.url);
 };
 
+const setUserToken = (credentials) => {
+	userToken = credentials.token;
+};
 // const addTokenAndSendRequest = (webMapDef) => {
 // 	webMapDef.token = accountData.token;
 // 	addWebMapToUserPortal(webMapDef);
@@ -15,12 +19,8 @@ const setAccountData = (authorizationResponse) => {
 
 const addWebMapToUserPortal = (webMapDef) => {
 	return new Promise((resolve, reject) => {
-		webMapDef.token = accountData.token;
+		webMapDef.token = userToken;
 
-		console.log(webMapDef);
-		console.log(
-			`${accountData.restUrl}/content/users/${accountData.userName}/addItem?`
-		);
 		axios
 			.post(
 				`${accountData.restUrl}/content/users/${accountData.userName}/addItem?`,
@@ -42,4 +42,4 @@ const addWebMapToUserPortal = (webMapDef) => {
 	});
 };
 
-export { addWebMapToUserPortal, setAccountData };
+export { addWebMapToUserPortal, setAccountData, setUserToken };

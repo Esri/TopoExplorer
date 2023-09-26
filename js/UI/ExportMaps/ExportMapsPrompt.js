@@ -18,7 +18,11 @@ import {
 	addExportBtn,
 	openExportPrompt,
 } from '../ExportMapsPrompt/exportPromptUI.js?v=0.01';
-import { addWebMapToUserPortal } from '../../support/AddItemRequest.js?v=0.01';
+import {
+	setUserToken,
+	addWebMapToUserPortal,
+} from '../../support/AddItemRequest.js?v=0.01';
+import { authorization } from '../../support/OAuth.js?v=0.01';
 
 const promptBox = document.querySelector('.prompt-box');
 
@@ -29,6 +33,7 @@ let viewOperationalLayers;
 let baseMapInfo;
 let userExtent;
 let userView;
+let webMapDef;
 
 const topoLayerInfo = [];
 
@@ -137,7 +142,7 @@ const addAdditionalOperationalLayers = () => {
 const createWebMapExportDefinition = () => {
 	topoLayerInfo.reverse();
 
-	const webMapDef = {
+	webMapDef = {
 		description: `${promptBox.querySelector('.summary').value}`,
 		tags: `${promptBox.querySelector('.tags').value}`,
 		title: `${promptBox.querySelector('.title').value}`,
@@ -180,15 +185,19 @@ const createWebMapExportDefinition = () => {
 };
 
 const sendExportRequestAndClose = (webMapDef) => {
-	addWebMapToUserPortal(webMapDef).then((response) => {
-		if (response.data.success === true) {
-			exportOver();
-			successMessagePrompt();
-			setWebMapURL(response.data.id);
-		} else {
-			exportOver();
-			failureMessagePrompt();
-		}
+	authorization.getCredentials().then((credentials) => {
+		webMapDef.token = credentials.token;
+		setUserToken(credentials);
+		addWebMapToUserPortal(webMapDef).then((response) => {
+			if (response.data.success === true) {
+				exportOver();
+				successMessagePrompt();
+				setWebMapURL(response.data.id);
+			} else {
+				exportOver();
+				failureMessagePrompt();
+			}
+		});
 	});
 };
 

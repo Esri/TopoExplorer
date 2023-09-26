@@ -336,7 +336,7 @@ main .map-list-item.mobile{
   position: relative;
   height: 100%;
   width: 400px;
-  max-width: 550px;
+  max-width: 500px;
   padding: 0 10px;
   background-color: #e7ebee;
 }

@@ -72,8 +72,6 @@ const initView = () => {
 				sources: [
 					{
 						url: 'https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer',
-						apiKey:
-							'AAPKe259b9f8cc57489cb0533ceb6da4b459DGbL3xnlg-YC7ah0DSbIB_1bJzAnUIegpFFBoigwoOvqAHj4aVreEZWdTaR28PEW',
 						singleLineFieldName: 'SingleLine',
 						outFields: ['Addr_type'],
 						name: 'ArcGIS World Geocoding Service',

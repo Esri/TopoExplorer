@@ -21,6 +21,7 @@ let accountURL;
 
 const setUserContentURL = (urlKey, urlBase, url) => {
 	//NOTE: this conditional is set to determine if the user has logged in, and if a url for an exported webmap needs to be parsed. I think I could come up with a different answer other than using this conditional?
+	console.log(urlKey, urlBase, url);
 	if (!urlBase) {
 		return;
 	}

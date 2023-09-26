@@ -76,7 +76,7 @@ const initDualSlider = (
 `;
 
 	const zoomDependentSelections = () => {
-		console.log(view.zoom);
+		// console.log(view.zoom);
 		if (view.zoom == 4) {
 			return values.length - 1;
 		}
@@ -101,7 +101,7 @@ const initDualSlider = (
 		if (value < zoomDependentSelections()) {
 			isAvailable = false;
 			udpdateSliderHeading(handle, value, isAvailable);
-			// debounceInput(handle, value);
+			debounceInput(handle, value);
 		} else {
 			isAvailable = true;
 			udpdateSliderHeading(handle, value, isAvailable);
@@ -172,15 +172,75 @@ const initDualSlider = (
 			.classList.add('transparency');
 	}
 
-	const udpdateSliderHeading = (child, value, isAvailable) => {
-		const headerSpan = container.querySelectorAll(`.sliderBtn span`)[child];
-		const headerSpanWithOpacity = headerSpan.classList.contains('transparency');
-		headerSpan.innerHTML = formatNumbersForSliderHeader(values[value]);
+	const udpdateSliderHeading = (handle, value, isAvailable) => {
+		console.log(handle, value, isAvailable);
+		let headerSpan;
+		let minHeaderSpan = container.querySelectorAll(`.sliderBtn span`)[0];
+		let minHeaderSpanWithOpacity;
+		let maxHeaderSpan = container.querySelectorAll(`.sliderBtn span`)[1];
+		let maxHeaderSpanWithOpacity;
 
-		if (isAvailable) {
-			headerSpan.classList.remove('transparency');
-		} else {
-			headerSpan.classList.add('transparency');
+		console.log(parseInt(value) < parseInt(minRangeHandle.value));
+
+		if (parseInt(maxRangeHandle.value) < parseInt(minRangeHandle.value)) {
+			minHeaderSpan.innerHTML = formatNumbersForSliderHeader(
+				values[maxRangeHandle.value]
+			);
+			maxHeaderSpan.innerHTML = formatNumbersForSliderHeader(
+				values[minRangeHandle.value]
+			);
+
+			// minHeaderSpanWithOpacity =
+			// 	minHeaderSpan.classList.contains('transparency');
+			// maxHeaderSpanWithOpacity =
+			// 	maxHeaderSpan.classList.contains('transparency');
+			if (container.id === 'scales') {
+				if (parseInt(minRangeHandle.value) < zoomDependentSelections()) {
+					maxHeaderSpan.classList.add('transparency');
+				} else {
+					maxHeaderSpan.classList.remove('transparency');
+				}
+
+				if (parseInt(maxRangeHandle.value) < zoomDependentSelections()) {
+					minHeaderSpan.classList.add('transparency');
+				} else {
+					console.log('not transparent for some reason');
+					minHeaderSpan.classList.remove('transparency');
+				}
+				console.log(parseInt(minRangeHandle.value) < zoomDependentSelections);
+				console.log(parseInt(maxRangeHandle.value) < zoomDependentSelections);
+			}
+			return;
+		}
+
+		if (parseInt(minRangeHandle.value) <= parseInt(maxRangeHandle.value)) {
+			console.log('this is normal');
+			maxHeaderSpan.innerHTML = formatNumbersForSliderHeader(
+				values[maxRangeHandle.value]
+			);
+			minHeaderSpan.innerHTML = formatNumbersForSliderHeader(
+				values[minRangeHandle.value]
+			);
+			// minHeaderSpanWithOpacity =
+			// 	minHeaderSpan.classList.contains('transparency');
+			// maxHeaderSpanWithOpacity =
+			// 	maxHeaderSpan.classList.contains('transparency');
+
+			console.log(minRangeHandle.value < zoomDependentSelections());
+			console.log(maxRangeHandle.value < zoomDependentSelections());
+			if (container.id === 'scales') {
+				if (parseInt(minRangeHandle.value) < zoomDependentSelections()) {
+					minHeaderSpan.classList.add('transparency');
+				} else {
+					minHeaderSpan.classList.remove('transparency');
+				}
+
+				if (parseInt(maxRangeHandle.value) < zoomDependentSelections()) {
+					maxHeaderSpan.classList.add('transparency');
+				} else {
+					maxHeaderSpan.classList.remove('transparency');
+				}
+			}
 		}
 	};
 
@@ -201,6 +261,23 @@ const initDualSlider = (
 	};
 
 	const adjustSliderTrackSelection = () => {
+		if (parseInt(minRangeHandle.value) > parseInt(maxRangeHandle.value)) {
+			container.querySelectorAll('.slider-area').forEach((section, index) => {
+				if (
+					index >= parseInt(minRangeHandle.value) ||
+					index < parseInt(maxRangeHandle.value)
+				) {
+					console.log('inverse');
+					section.classList.add('slider-transparent');
+					section.classList.remove('slider-color');
+				} else {
+					section.classList.remove('slider-transparent');
+					section.classList.add('slider-color');
+				}
+			});
+			return;
+		}
+
 		container.querySelectorAll('.slider-area').forEach((section, index) => {
 			if (index < minRangeHandle.value || index >= maxRangeHandle.value) {
 				section.classList.add('slider-transparent');
@@ -211,6 +288,19 @@ const initDualSlider = (
 			}
 		});
 	};
+
+	// const inverseSelection = () => {
+	// 	console.log('inverse');
+	// 	container.querySelectorAll('.slider-area').forEach((section, index) => {
+	// 		if (index >= minRangeHandle.value || index < maxRangeHandle.value) {
+	// 			section.classList.add('slider-transparent');
+	// 			section.classList.remove('slider-color');
+	// 		} else {
+	// 			section.classList.remove('slider-transparent');
+	// 			section.classList.add('slider-color');
+	// 		}
+	// 	});
+	// };
 
 	const unavailbleScalesToolTip = (value) => {
 		const zoomInHelpTextElement = document.querySelector(
@@ -239,7 +329,7 @@ const initDualSlider = (
 	//The time for the debounce
 	const debounceInput = debounce(
 		(index, value) => onChangeHandler(index, value),
-		1100
+		1000
 	);
 
 	//ADDING EVENT LISTENERS
@@ -274,13 +364,13 @@ const initDualSlider = (
 			// 	return;
 			// }
 
-			if (minRange >= maxRange) {
-				if (e.target.className === 'minSlider') {
-					minRangeHandle.value = maxRange;
-				} else {
-					maxRangeHandle.value = minRange;
-				}
-			}
+			// if (minRange >= maxRange) {
+			// 	if (e.target.className === 'minSlider') {
+			// 		minRangeHandle.value = maxRange;
+			// 	} else {
+			// 		maxRangeHandle.value = minRange;
+			// 	}
+			// }
 
 			// if (maxRange < minRange) {
 			// 	console.log('max lower than min');
@@ -313,7 +403,12 @@ const initDualSlider = (
 
 			// else {
 			//NOTE: needs a better name
+
 			adjustSliderTrackSelection(e.target, e.target.valueAsNumber);
+
+			// if (minRange > maxRange) {
+			// 	inverseSelection();
+			// }
 			// }
 		});
 
@@ -352,11 +447,68 @@ const initDualSlider = (
 				currentSelection - maxRangeHandle.value
 			);
 
+			if (parseInt(maxRangeHandle.value) < parseInt(minRangeHandle.value)) {
+				if (minHandleDiffernce < maxHandleDiffernce) {
+					minRangeHandle.value = currentSelection;
+					adjustSliderTrackSelection();
+					if (e.target.closest('#scales')) {
+						isScaleValueWithinAvailableRange(0, minRangeHandle.value);
+						unavailbleScalesToolTip(minRangeHandle.value);
+						return;
+					}
+
+					debounceInput(0, minRangeHandle.value);
+					udpdateSliderHeading(0, minRangeHandle.value, true);
+					return;
+				}
+
+				if (maxHandleDiffernce < minHandleDiffernce) {
+					maxRangeHandle.value = currentSelection;
+					adjustSliderTrackSelection();
+
+					if (e.target.closest('#scales')) {
+						isScaleValueWithinAvailableRange(1, maxRangeHandle.value);
+						unavailbleScalesToolTip(minRangeHandle.value);
+						return;
+					}
+
+					debounceInput(1, maxRangeHandle.value);
+					udpdateSliderHeading(1, maxRangeHandle.value, true);
+					return;
+				}
+
+				if (currentSelection > parseInt(maxRangeHandle.value)) {
+					maxRangeHandle.value = currentSelection;
+					adjustSliderTrackSelection();
+
+					if (e.target.closest('#scales')) {
+						isScaleValueWithinAvailableRange(1, maxRangeHandle.value);
+						unavailbleScalesToolTip(minRangeHandle.value);
+						return;
+					}
+
+					debounceInput(1, maxRangeHandle.value);
+					udpdateSliderHeading(1, maxRangeHandle.value, true);
+					return;
+				}
+
+				if (currentSelection < parseInt(minRangeHandle.value)) {
+					minRangeHandle.value = currentSelection;
+					adjustSliderTrackSelection();
+					if (e.target.closest('#scales')) {
+						isScaleValueWithinAvailableRange(0, minRangeHandle.value);
+						unavailbleScalesToolTip(minRangeHandle.value);
+						return;
+					}
+
+					debounceInput(0, minRangeHandle.value);
+					udpdateSliderHeading(0, minRangeHandle.value, true);
+					return;
+				}
+			}
+
 			if (minHandleDiffernce === maxHandleDiffernce) {
-				console.log();
 				if (currentSelection - maxRangeHandle.value > 0) {
-					console.log(currentSelection - maxRangeHandle.value > 0);
-					console.log('max should move');
 					maxRangeHandle.value = currentSelection;
 					adjustSliderTrackSelection(maxRangeHandle, maxRangeHandle.value);
 
@@ -372,8 +524,6 @@ const initDualSlider = (
 				}
 
 				if (currentSelection - minRangeHandle.value < 0) {
-					console.log(currentSelection - minRangeHandle.value < 0);
-					console.log('min should move');
 					minRangeHandle.value = currentSelection;
 					adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
 					if (e.target.closest('#scales')) {
@@ -390,10 +540,10 @@ const initDualSlider = (
 				//if these handles are not overlapping move the minimum handle
 				minRangeHandle.value = currentSelection;
 				adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
+
 				if (e.target.closest('#scales')) {
 					isScaleValueWithinAvailableRange(0, minRangeHandle.value);
 					unavailbleScalesToolTip(minRangeHandle.value);
-					return;
 				}
 
 				debounceInput(0, minRangeHandle.value);

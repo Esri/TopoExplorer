@@ -15,6 +15,8 @@ import {
 	setViewInfo,
 } from '../ExportMaps/ExportMapsPrompt.js?v=0.01';
 import { authorization } from '../../support/OAuth.js?v=0.01';
+import { setUserToken } from '../../support/AddItemRequest.js?v=0.01';
+
 const url = new URL(window.location.href);
 
 const sideBarElement = document.querySelector('#sideBar');
@@ -306,6 +308,9 @@ const toggleListVisibility = () => {
 
 mapModes.addEventListener('click', (event) => {
 	//the user should not explore and pin
+	if (isMobileFormat()) {
+		return;
+	}
 	const toplevel = event.target.closest('.mode');
 
 	if (toplevel.querySelector('.btn-text').classList.contains('underline')) {
@@ -771,7 +776,9 @@ const saveEvent = (eventTarget) => {
 
 	addHashExportPrompt(mapDetails);
 	console.log('this would save and export');
-	authorization.getCredentials();
+	authorization.getCredentials().then((credentials) => {
+		setUserToken(credentials);
+	});
 	setViewInfo(viewTest);
 	mapExportProcess(mapDetails);
 };
@@ -926,7 +933,9 @@ const exportAllPinned = (event) => {
 	// const mapContainer = pinList
 	const mapDetails = Array.from(pinList.querySelectorAll('.map-list-item'));
 	addHashExportPrompt(mapDetails);
-	authorization.getCredentials();
+	authorization.getCredentials().then((credentials) => {
+		setUserToken(credentials);
+	});
 	setViewInfo(viewTest);
 	mapExportProcess(mapDetails, url);
 };
