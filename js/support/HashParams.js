@@ -1,22 +1,11 @@
-// const parseHashParams = urlHash
-// 	.substring(1)
-// 	.split('&')
-// 	.reduce((res, item) => {
-// 		const paramElement = item.split('=');
-// 		res[paramElement[0]] = paramElement[1];
-// 		return res;
-// 	}, {});
-
 let parsedHashParams = null;
 
 const parseHashParams = () => {
 	if (parsedHashParams) {
-		console.log('cancelling hash params');
 		return;
 	}
 
 	const urlHash = window.location.hash;
-	console.log('asking hash update', urlHash);
 	parsedHashParams = urlHash
 		.substring(1)
 		.split('&')
@@ -28,15 +17,7 @@ const parseHashParams = () => {
 };
 
 const updateHashParams = (data) => {
-	//NOTE: I'm not sure if using one function to update the hashParams string is the best idea,
-	//I'm worried that it could clutter the goal of the function,
-	//but I thought this apporach might be a simple way to track and implement the changes to the hash params
-	// console.log(data);
-	// console.log(typeof data);
-
 	if (Array.isArray(data)) {
-		// console.log(data)
-		// data.reverse();
 		parsedHashParams.maps = data.join(',');
 	} else {
 		parsedHashParams.loc = `${data.center.longitude.toFixed(
@@ -44,8 +25,6 @@ const updateHashParams = (data) => {
 		)},${data.center.latitude.toFixed(2)}`;
 		parsedHashParams.LoD = data.zoom;
 	}
-
-	// console.log(parsedHashParams);
 
 	const exportParams = parsedHashParams.export
 		? `&export=${parsedHashParams.export}`
@@ -59,21 +38,16 @@ const updateHashParams = (data) => {
 };
 
 const invertHashedMapOrder = () => {
-	console.log(parsedHashParams.maps);
-
 	const invertedMapOrder = parsedHashParams.maps.split(',').reverse();
 
 	updateHashParams(invertedMapOrder);
 };
 const addHashExportPrompt = (mapDetails) => {
-	console.log(mapDetails);
 	const mapIDs = mapDetails
 		.map((mapDetail) => {
-			console.log(mapDetail.attributes.oid.value);
 			return mapDetail.attributes.oid.value;
 		})
 		.join(',');
-	console.log('adding export info');
 	window.location.hash += `&export=${mapIDs}`;
 };
 

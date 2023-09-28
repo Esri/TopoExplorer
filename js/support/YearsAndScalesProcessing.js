@@ -16,11 +16,9 @@ const allYearChoices = (minMaxYears) => {
 		while (startYear <= minMaxYears[1]) {
 			decadesArr.push(startYear);
 			startYear = startYear + 10;
-			// console.log(decades);
 		}
 		decadesArr.push(startYear);
 
-		// console.log(decades);
 		resolve(decadesArr);
 	});
 };
@@ -37,7 +35,6 @@ const allScaleChoices = (minMaxScales) => {
 			}
 			scalesArr.unshift(startScale);
 			startScale = startScale / 2;
-			// console.log(scalesArr);
 		}
 		resolve(scalesArr);
 	});
@@ -45,32 +42,49 @@ const allScaleChoices = (minMaxScales) => {
 
 const getMinMaxyears = Promise.all([getMinYear, getMaxYear]);
 const getMinMaxScales = Promise.all([getMinScale, getMaxScale]);
-// getAllScalesAndYears;
 
 const minMaxYears = getMinMaxyears;
 const minMaxScales = getMinMaxScales;
 
 const getTheYear = (index, value) => {
-	// console.log(yearsAndMapScales);
-	index === 0
-		? yearsAndMapScales.updateMinYear(value)
-		: yearsAndMapScales.updateMaxYear(value);
-	// console.log(scalesAndYears);
-	queryConfig.extentQueryCall();
+	const minYearSlider = document.querySelector('#years .minSlider');
+	const maxYearSlider = document.querySelector('#years .maxSlider');
+
+	if (parseInt(minYearSlider.value) > parseInt(maxYearSlider.value)) {
+		yearsAndMapScales.updateMinYear(maxYearSlider.value);
+		yearsAndMapScales.updateMaxYear(minYearSlider.value);
+		queryConfig.extentQueryCall();
+		return;
+	}
+
+	if (parseInt(minYearSlider.value) < parseInt(maxYearSlider.value)) {
+		yearsAndMapScales.updateMaxYear(maxYearSlider.value);
+		yearsAndMapScales.updateMinYear(minYearSlider.value);
+		queryConfig.extentQueryCall();
+		return;
+	}
 };
 
 const getTheScale = (index, value) => {
-	// console.log(value);
-	index === 0
-		? yearsAndMapScales.updateMinScale(value)
-		: yearsAndMapScales.updateMaxScale(value);
+	const minScaleSlider = document.querySelector('#scales .minSlider');
+	const maxScaleSlider = document.querySelector('#scales .maxSlider');
 
-	// console.log(yearsAndMapScales);
-	queryConfig.extentQueryCall();
+	if (parseInt(minScaleSlider.value) > parseInt(maxScaleSlider.value)) {
+		yearsAndMapScales.updateMinScale(maxScaleSlider.value);
+		yearsAndMapScales.updateMaxScale(minScaleSlider.value);
+		queryConfig.extentQueryCall();
+		return;
+	}
+
+	if (parseInt(minScaleSlider.value) < parseInt(maxScaleSlider.value)) {
+		yearsAndMapScales.updateMaxScale(maxScaleSlider.value);
+		yearsAndMapScales.updateMinScale(minScaleSlider.value);
+		queryConfig.extentQueryCall();
+		return;
+	}
 };
 
 const setSortOptions = (choiceValue) => {
-	console.log('check the query Config', queryConfig);
 	queryConfig.setSortChoice(choiceValue);
 	queryConfig.extentQueryCall();
 };

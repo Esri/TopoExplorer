@@ -63,23 +63,15 @@ const headerMapInfo = () => {
 	document.querySelector('.mobile-header').innerHTML = mapInfo;
 };
 
-{
-	/* <div class='mapInfo'>${mapNameAndScale}</div>
-      <div class='mapCard-slider'>${mapOpacitySlider}</div> */
-}
-
 const addMapInfoOnMobileHeader = (event) => {
 	topoMap = event.target.closest('.map-list-item');
 	topoMap.querySelector('.slider-range-color').style.width = '100%';
 
 	mapNameAndScale = topoMap.querySelector('.map-list-item-title').innerHTML;
 	mapOpacitySlider = topoMap.querySelector('.mapCard-slider').innerHTML;
-	console.log(topoMap.querySelector('.slider-range-color'));
 
 	mapOID = topoMap.attributes.oid.value;
 	mapGeometry = topoMap.attributes.geometry.value;
-	console.log(topoMap.attributes.oid);
-	console.log(topoMap.attributes.geometry);
 };
 
 const initMobileHeader = () => {
@@ -96,16 +88,12 @@ const initMobileHeader = () => {
 
 		addMapInfoOnMobileHeader(event);
 		headerMapInfo();
-		// mapSliderOnMobile(event);
-		// initMobileHeader();
 	});
 
 	document.addEventListener('input', (event) => {
 		if (!event.target.closest('.mobile-header')) {
 			return;
 		}
-
-		// console.log(event.target);
 
 		opacitySliderEvent(event.target, mapOID);
 	});
@@ -115,8 +103,6 @@ const initMobileHeader = () => {
 		.addEventListener('click', (event) => {
 			if (event.target.closest('.mapInfo')) {
 				event.stopImmediatePropagation();
-				console.log(event.target);
-				console.log(mapOID, mapGeometry);
 
 				zoomEvent(event.target, mapOID);
 			}

@@ -20,7 +20,6 @@ const initDualSlider = (
 	view
 ) => {
 	const container = document.getElementById(`${containerId}`);
-	//NOTE: I'm using an 'ondragstart' attribute to stop any drag events on that element. I'm using it to try and solve a bug. if this DOES work, I should implement this attribute more responsibly.
 	container.innerHTML = `
     <div class="sliderHeader">
       <button class="sliderBtn">
@@ -76,19 +75,16 @@ const initDualSlider = (
 `;
 
 	const zoomDependentSelections = () => {
-		console.log(view.zoom);
 		if (view.zoom == 4) {
 			return values.length - 1;
 		}
 		if (view.zoom == 5 || view.zoom == 6) {
-			console.log(view.zoom);
 			return values.length - 2;
 		}
 		if (view.zoom == 7 || view.zoom == 8) {
 			return values.length - 3;
 		}
 		if (view.zoom >= 9) {
-			//because the array is
 			return -1;
 		}
 	};
@@ -101,7 +97,7 @@ const initDualSlider = (
 		if (value < zoomDependentSelections()) {
 			isAvailable = false;
 			udpdateSliderHeading(handle, value, isAvailable);
-			// debounceInput(handle, value);
+			debounceInput(handle, value);
 		} else {
 			isAvailable = true;
 			udpdateSliderHeading(handle, value, isAvailable);
@@ -165,22 +161,62 @@ const initDualSlider = (
 		sliderOptionsHTMLStr;
 
 	//This querySelector finds the minValue for the Scale slider's header and adds a transparency effect to it. Because the initial value is outside the available range.
-	//I'm not a big fan of implementing this kind of solution, but I needed something quick at the moment.
 	if (container.querySelectorAll('#scales .sliderBtn span')[0]) {
 		container
 			.querySelectorAll('#scales .sliderBtn span')[0]
 			.classList.add('transparency');
 	}
 
-	const udpdateSliderHeading = (child, value, isAvailable) => {
-		const headerSpan = container.querySelectorAll(`.sliderBtn span`)[child];
-		const headerSpanWithOpacity = headerSpan.classList.contains('transparency');
-		headerSpan.innerHTML = formatNumbersForSliderHeader(values[value]);
+	const udpdateSliderHeading = (handle, value, isAvailable) => {
+		let minHeaderSpan = container.querySelectorAll(`.sliderBtn span`)[0];
 
-		if (isAvailable) {
-			headerSpan.classList.remove('transparency');
-		} else {
-			headerSpan.classList.add('transparency');
+		let maxHeaderSpan = container.querySelectorAll(`.sliderBtn span`)[1];
+
+		if (parseInt(maxRangeHandle.value) < parseInt(minRangeHandle.value)) {
+			minHeaderSpan.innerHTML = formatNumbersForSliderHeader(
+				values[maxRangeHandle.value]
+			);
+			maxHeaderSpan.innerHTML = formatNumbersForSliderHeader(
+				values[minRangeHandle.value]
+			);
+
+			if (container.id === 'scales') {
+				if (parseInt(minRangeHandle.value) < zoomDependentSelections()) {
+					maxHeaderSpan.classList.add('transparency');
+				} else {
+					maxHeaderSpan.classList.remove('transparency');
+				}
+
+				if (parseInt(maxRangeHandle.value) < zoomDependentSelections()) {
+					minHeaderSpan.classList.add('transparency');
+				} else {
+					minHeaderSpan.classList.remove('transparency');
+				}
+			}
+			return;
+		}
+
+		if (parseInt(minRangeHandle.value) <= parseInt(maxRangeHandle.value)) {
+			maxHeaderSpan.innerHTML = formatNumbersForSliderHeader(
+				values[maxRangeHandle.value]
+			);
+			minHeaderSpan.innerHTML = formatNumbersForSliderHeader(
+				values[minRangeHandle.value]
+			);
+
+			if (container.id === 'scales') {
+				if (parseInt(minRangeHandle.value) < zoomDependentSelections()) {
+					minHeaderSpan.classList.add('transparency');
+				} else {
+					minHeaderSpan.classList.remove('transparency');
+				}
+
+				if (parseInt(maxRangeHandle.value) < zoomDependentSelections()) {
+					maxHeaderSpan.classList.add('transparency');
+				} else {
+					maxHeaderSpan.classList.remove('transparency');
+				}
+			}
 		}
 	};
 
@@ -193,7 +229,6 @@ const initDualSlider = (
 
 	const removeSliderToolTipVisibility = () => {
 		container.querySelectorAll('.tooltip').forEach((tooltip) => {
-			// console.log(tooltip);
 			if (!tooltip.classList.contains('invisible')) {
 				tooltip.classList.add('invisible');
 			}
@@ -201,6 +236,22 @@ const initDualSlider = (
 	};
 
 	const adjustSliderTrackSelection = () => {
+		if (parseInt(minRangeHandle.value) > parseInt(maxRangeHandle.value)) {
+			container.querySelectorAll('.slider-area').forEach((section, index) => {
+				if (
+					index >= parseInt(minRangeHandle.value) ||
+					index < parseInt(maxRangeHandle.value)
+				) {
+					section.classList.add('slider-transparent');
+					section.classList.remove('slider-color');
+				} else {
+					section.classList.remove('slider-transparent');
+					section.classList.add('slider-color');
+				}
+			});
+			return;
+		}
+
 		container.querySelectorAll('.slider-area').forEach((section, index) => {
 			if (index < minRangeHandle.value || index >= maxRangeHandle.value) {
 				section.classList.add('slider-transparent');
@@ -223,7 +274,6 @@ const initDualSlider = (
 		}
 	};
 
-	//Debounce
 	const debounce = (func, wait) => {
 		let timer;
 
@@ -236,10 +286,9 @@ const initDualSlider = (
 		};
 	};
 
-	//The time for the debounce
 	const debounceInput = debounce(
 		(index, value) => onChangeHandler(index, value),
-		1100
+		1000
 	);
 
 	//ADDING EVENT LISTENERS
@@ -258,87 +307,20 @@ const initDualSlider = (
 		//updating the color of the selected range AND controling the interaction between the min & max slider handles
 
 		input.addEventListener('input', (e) => {
-			let minRange = parseInt(minRangeHandle.value);
-			let maxRange = parseInt(maxRangeHandle.value);
-
-			//TODO: I want them to overlap now. how do I do that AND make sure you can access the previously used slider??
-			//TODO: That's done, but now I need the sliders to recognize which handle is getting pulled when they overlap each other
-
-			//note: there is a 'change' event listener that is resetting the values.making this not work
-			// if (maxRange < minRange) {
-			// 	console.log('max lower than min');
-			// 	debounceInput(0, maxRangeHandle.value);
-			// 	debounceInput(1, minRangeHandle.value);
-			// 	udpdateSliderHeading(0, maxRangeHandle.value, true);
-			// 	udpdateSliderHeading(1, minRangeHandle.value, true);
-			// 	return;
-			// }
-
-			if (minRange >= maxRange) {
-				if (e.target.className === 'minSlider') {
-					minRangeHandle.value = maxRange;
-				} else {
-					maxRangeHandle.value = minRange;
-				}
-			}
-
-			// if (maxRange < minRange) {
-			// 	console.log('max lower than min');
-			// 	console.log(e.target.value);
-			// 	minRangeHandle.value = maxRange;
-			// 	console.log(maxRange);
-			// 	console.log(minRangeHandle);
-			// }
-
-			// if (minRange >= maxRange && e.target.classList.contains('maxSlider')) {
-			// 	console.log('testing slider overlap');
-			// 	console.log(e.target);
-			// 	console.log('minRange', minRange);
-			// 	console.log('minRangeHandle', minRangeHandle);
-			// 	// maxRangeHandle.value = placeholder;
-			// 	if (e.target.valueAsNumber < minRange) {
-			// 		console.log('moving the min away on overlap');
-			// 		minRangeHandle.value = e.target.valueAsNumber;
-			// 		maxRangeHandle.value = placeholder;
-			// 	}
-			// else if (e.target.value > maxRange) {
-			// 	console.log('moving the MAX on overlap');
-			// 	maxRangeHandle.value = e.target.value;
-			// }
-			// }
-
 			if (e.target.closest('#scales')) {
 				unavailbleScalesToolTip(e.target.valueAsNumber);
 			}
 
-			// else {
-			//NOTE: needs a better name
 			adjustSliderTrackSelection(e.target, e.target.valueAsNumber);
-			// }
 		});
 
-		//adding a 'change' event listener for ONLY the '#scales' slider
-		// if (input.closest('#scales')) {
-		// 	input.addEventListener('change', (e) => {
-		// 		console.log('scale slider changin');
-		// 		console.log('this is a scales handle');
-		// 		zoomDependentSelections(view);
-		// 	});
-		// }
 		input.addEventListener('input', (e) => {
-			// console.log(e);
 			addSliderTooltipVisibility(e.target.value);
 		});
 
 		input.addEventListener('mouseup', (e) => {
 			removeSliderToolTipVisibility();
 		});
-
-		// input.addEventListener('mousedown', (e) => {
-		// 	console.log('click', e);
-		// 	console.log(e.target.attributes.value.nodeType);
-		// 	minRangeHandle.value = e.target.attributes.value.value;
-		// });
 	});
 
 	sliderComponents.querySelectorAll('.clickable').forEach((area) => {
@@ -352,11 +334,68 @@ const initDualSlider = (
 				currentSelection - maxRangeHandle.value
 			);
 
+			if (parseInt(maxRangeHandle.value) < parseInt(minRangeHandle.value)) {
+				if (minHandleDiffernce < maxHandleDiffernce) {
+					minRangeHandle.value = currentSelection;
+					adjustSliderTrackSelection();
+					if (e.target.closest('#scales')) {
+						isScaleValueWithinAvailableRange(0, minRangeHandle.value);
+						unavailbleScalesToolTip(minRangeHandle.value);
+						return;
+					}
+
+					debounceInput(0, minRangeHandle.value);
+					udpdateSliderHeading(0, minRangeHandle.value, true);
+					return;
+				}
+
+				if (maxHandleDiffernce < minHandleDiffernce) {
+					maxRangeHandle.value = currentSelection;
+					adjustSliderTrackSelection();
+
+					if (e.target.closest('#scales')) {
+						isScaleValueWithinAvailableRange(1, maxRangeHandle.value);
+						unavailbleScalesToolTip(minRangeHandle.value);
+						return;
+					}
+
+					debounceInput(1, maxRangeHandle.value);
+					udpdateSliderHeading(1, maxRangeHandle.value, true);
+					return;
+				}
+
+				if (currentSelection > parseInt(maxRangeHandle.value)) {
+					maxRangeHandle.value = currentSelection;
+					adjustSliderTrackSelection();
+
+					if (e.target.closest('#scales')) {
+						isScaleValueWithinAvailableRange(1, maxRangeHandle.value);
+						unavailbleScalesToolTip(minRangeHandle.value);
+						return;
+					}
+
+					debounceInput(1, maxRangeHandle.value);
+					udpdateSliderHeading(1, maxRangeHandle.value, true);
+					return;
+				}
+
+				if (currentSelection < parseInt(minRangeHandle.value)) {
+					minRangeHandle.value = currentSelection;
+					adjustSliderTrackSelection();
+					if (e.target.closest('#scales')) {
+						isScaleValueWithinAvailableRange(0, minRangeHandle.value);
+						unavailbleScalesToolTip(minRangeHandle.value);
+						return;
+					}
+
+					debounceInput(0, minRangeHandle.value);
+					udpdateSliderHeading(0, minRangeHandle.value, true);
+					return;
+				}
+			}
+
 			if (minHandleDiffernce === maxHandleDiffernce) {
-				console.log();
 				if (currentSelection - maxRangeHandle.value > 0) {
-					console.log(currentSelection - maxRangeHandle.value > 0);
-					console.log('max should move');
 					maxRangeHandle.value = currentSelection;
 					adjustSliderTrackSelection(maxRangeHandle, maxRangeHandle.value);
 
@@ -372,8 +411,6 @@ const initDualSlider = (
 				}
 
 				if (currentSelection - minRangeHandle.value < 0) {
-					console.log(currentSelection - minRangeHandle.value < 0);
-					console.log('min should move');
 					minRangeHandle.value = currentSelection;
 					adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
 					if (e.target.closest('#scales')) {
@@ -390,10 +427,10 @@ const initDualSlider = (
 				//if these handles are not overlapping move the minimum handle
 				minRangeHandle.value = currentSelection;
 				adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
+
 				if (e.target.closest('#scales')) {
 					isScaleValueWithinAvailableRange(0, minRangeHandle.value);
 					unavailbleScalesToolTip(minRangeHandle.value);
-					return;
 				}
 
 				debounceInput(0, minRangeHandle.value);
@@ -465,33 +502,6 @@ const initDualSlider = (
 				debounceInput(1, maxRangeHandle.value);
 				udpdateSliderHeading(1, maxRangeHandle.value, true);
 			}
-
-			// if (minHandleDiffernce <= maxHandleDiffernce) {
-			// 	minRangeHandle.value = currentSelection;
-			// 	adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
-
-			// 	if (e.target.closest('#scales')) {
-			// 		isScaleValueWithinAvailableRange(0, minRangeHandle.value);
-			// 		unavailbleScalesToolTip(minRangeHandle.value);
-			// 		return;
-			// 	}
-
-			// 	debounceInput(0, minRangeHandle.value);
-			// 	udpdateSliderHeading(0, minRangeHandle.value, true);
-			// } else {
-			// 	maxRangeHandle.value = currentSelection;
-			// 	adjustSliderTrackSelection(maxRangeHandle, maxRangeHandle.value);
-
-			// 	if (e.target.closest('#scales')) {
-			// 		console.log('clickable for scales only');
-			// 		isScaleValueWithinAvailableRange(1, maxRangeHandle.value);
-			// 		unavailbleScalesToolTip(minRangeHandle.value);
-			// 		return;
-			// 	}
-
-			// 	debounceInput(1, maxRangeHandle.value);
-			// 	udpdateSliderHeading(1, maxRangeHandle.value, true);
-			// }
 		});
 	});
 

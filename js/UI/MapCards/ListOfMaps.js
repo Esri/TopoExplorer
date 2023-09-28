@@ -14,8 +14,9 @@ import {
 	mapExportProcess,
 	setViewInfo,
 } from '../ExportMaps/ExportMapsPrompt.js?v=0.01';
-import { authorization } from '../../support/OAuth.js?v=0.01';
-const url = new URL(window.location.href);
+import { getCredentials } from '../../support/OAuth.js?v=0.01';
+import { setUserToken } from '../../support/AddItemRequest.js?v=0.01';
+import { config } from '../../../app-config.js?v=0.01';
 
 const sideBarElement = document.querySelector('#sideBar');
 const mapsList = document.querySelector('#exploreList');
@@ -39,31 +40,25 @@ to find topo maps.
 </div>
 `;
 
-let urlTest;
-let viewTest;
+const serviceURL = config.environment.serviceUrls.historicalTopoImageService;
+
+let currentView;
 let mapFootprintLayer;
 let mapHaloGraphicLayer;
 let basemapTerrainLayer;
 let basemapSatellite;
 let basemapLables;
 let mapListItems;
-// let currentMapCard;
+
 let mapGeometry;
 let topoOnMapPlaceholder;
 let arrayFromPinListHTML;
 let gettingTopoID;
 
-const createMapSlotItems = (list, view, url) => {
-	if (!urlTest) {
-		urlTest = url;
+const createMapSlotItems = (list, view) => {
+	if (!currentView) {
+		currentView = view;
 	}
-
-	if (!viewTest) {
-		viewTest = view;
-	}
-
-	// console.log(pinnedCardIDsArray);
-	// console.log(topoOnMapPlaceholder);
 
 	if (!mapFootprintLayer && view) {
 		mapFootprintLayer = view.map.layers.find((layer) => {
@@ -112,15 +107,9 @@ const createMapSlotItems = (list, view, url) => {
 
 	const mapSlot = list
 		.map((topoMap) => {
-			// mapListDetails.push(topoMap);
-
-			// console.log(topoMap.previousPinnedMap);
-
 			const isCardPinned =
 				topoMap.previousPinnedMap || getPinnedTopoIndex(`${topoMap.OBJECTID}`);
-			// console.log(isCardPinned);
 
-			//NOTE: I'm calling the same function for the same purpose (but a different class result) twice. There has to be a better way than what I have.
 			return ` 
         <div class='mapCard-container'>
           <div class ='map-list-item' oid='${
@@ -174,7 +163,7 @@ const createMapSlotItems = (list, view, url) => {
 						}'>
               <div class='action-area'>
                 <div class='iconWrapper'>
-                  <span class='tooltipText hidden' style='top:-60px;'>cannot pin more than 25 topos</span>
+                  <span class='tooltipText hidden' style='top:-60px;'>Cannot pin more than 25 topos</span>
                   <span class='tooltipText pinMap hidden' style='top:-27px;'>Pin this topo map</span>
                   <span class='tooltipText unpinMap hidden' style='top:-45px;'>Unpin this topo map</span>
                   <div class='icon pushpin ${
@@ -259,19 +248,14 @@ const createMapSlotItems = (list, view, url) => {
 		.join(' ');
 
 	if (list[0].previousPinnedMap) {
-		// pinList.innerHTML = mapSlot;
-		// console.log(list);
-		// console.log(mapSlot);
-		// const mapItem = mapSlot;
 		const mapCardContainingDiv = document.createElement('div');
 		mapCardContainingDiv.innerHTML = mapSlot;
 		const containingItem =
 			mapCardContainingDiv.querySelector('.mapCard-container');
-		// console.log(containingItem);
-		// addToPinnedArray(list[0].OBJECTID, mapSlot);
+
 		addHalo(list[0].OBJECTID, JSON.stringify(list[0].mapBoundry));
 		isCurrentMapPinned(containingItem, addToPinnedArray);
-		addPreviouslyPinnedTopoToMap(list[0].OBJECTID, url);
+		addPreviouslyPinnedTopoToMap(list[0].OBJECTID, serviceURL);
 		return;
 	}
 
@@ -282,12 +266,10 @@ const createMapSlotItems = (list, view, url) => {
 
 //We can move this inside the creatator module (just remember how to access different functions withing a function...obj notation)
 const clearMapsList = () => {
-	// mapListDetails.length = 0;
 	mapsList.innerHTML = '';
 };
 
 //toggling between the map modes.
-//I think I should more this to another module/file. I want to add the pinned mode buttons
 const toggleListVisibility = () => {
 	explorerList.classList.toggle('invisible');
 	document.querySelector('#filtersAndSorting').classList.toggle('flex');
@@ -305,7 +287,9 @@ const toggleListVisibility = () => {
 };
 
 mapModes.addEventListener('click', (event) => {
-	//the user should not explore and pin
+	if (isMobileFormat()) {
+		return;
+	}
 	const toplevel = event.target.closest('.mode');
 
 	if (toplevel.querySelector('.btn-text').classList.contains('underline')) {
@@ -330,7 +314,6 @@ const setTopoMapPlaceholder = (oid) => {
 		topoOnMapPlaceholder !== parseInt(oid) &&
 		pinnedCardIDsArray.indexOf(`${topoOnMapPlaceholder}`) === -1
 	) {
-		//NOTE: this used to remove the 'topoOnMapPlaceHolder'. I recently set it to 'oid'?
 		removeTopoFromMap(topoOnMapPlaceholder);
 	}
 
@@ -362,25 +345,6 @@ const checkAnyOpenMapCards = (oid) => {
 	});
 };
 
-//NOTE: look at this for setting & parsing hash https://stackoverflow.com/questions/23699666/javascript-get-and-set-url-hash-parameters
-// const updateHashParams = () => {
-// 	const topoIDsString = pinnedCardIDsArray.join();
-
-// 	url.hash = `maps=${topoIDsString}&loc=${viewTest.center.x}, ${viewTest.center.y}&LoD=${viewTest.zoom}`;
-
-// 	const parseHashParams = url.hash
-// 		.substring(1)
-// 		.split('&')
-// 		.reduce((res, item) => {
-// 			const paramElement = item.split('=');
-// 			res[paramElement[0]] = paramElement[1];
-// 			return res;
-// 		}, {});
-
-// 	console.log(parseHashParams);
-// 	window.location.hash = url.hash;
-// };
-
 const updatePinnedNumberHeader = () => {
 	const pinnedNumber = pinnedCardIDsArray.length || '';
 	const pinnedTextUpdate = 'Pinned Topo Map';
@@ -393,18 +357,6 @@ const updatePinnedNumberHeader = () => {
 };
 
 const updatePinnedListHTML = (mapObj) => {
-	// console.log(pinnedCardHTMLArray);
-	// pinList.innerHTML =
-	// const pinnedMapSlot = pinnedCardHTMLArray
-	// 	.map((pinnedMap) => {
-
-	// 		return `
-	//           <div class='mapCard-container' draggable=false>
-	//             ${pinnedMap.html}
-	//           </div>`;
-	// 	})
-	// 	.join(' ');
-	// pinList.innerHTML = pinnedMapSlot;
 	const pinnedCardContainer = document.createElement('div');
 	pinnedCardContainer.classList.add('mapCard-container');
 	pinnedCardContainer.setAttribute('draggable', false);
@@ -419,26 +371,24 @@ const formatPinnedListMapCard = (targetOID, targetMapCard) => {
 		id: targetOID,
 		html: targetMapCard,
 	};
-	// console.log(mapObj);
+
 	pinnedCardHTMLArray.unshift(mapObj);
 	updatePinnedListHTML(mapObj);
 };
 
 const addToPinnedArray = (oid, targetMapCard) => {
 	pinnedCardIDsArray.push(`${oid}`);
-	// console.log(pinnedCardIDsArray);
+
 	formatPinnedListMapCard(oid, targetMapCard);
 	updatePinnedNumberHeader();
 	updateHashParams(pinnedCardIDsArray);
 	updatePinHeaderButtonStyle();
 	if (pinnedCardIDsArray.length === 25) {
-		console.log("we're at max");
 		pinBtnUnavailable();
 	}
 };
 
 const removePinnedCardFromHTML = (oid) => {
-	// console.log(pinList.querySelector(`.map-list-item[oid="${oid}"]`));
 	pinList
 		.querySelector(`.map-list-item[oid="${oid}"]`)
 		.closest('.mapCard-container')
@@ -450,39 +400,29 @@ const removePinnedTopo = (index, oid) => {
 	pinnedCardIDsArray.splice(index, 1);
 	pinnedCardHTMLArray.splice(index, 1);
 	mapFootprintLayer.graphics.removeAll();
-	// console.log(pinnedCardHTMLArray);
-	// updatePinnedListHTML();
+
 	updatePinnedNumberHeader();
 	updateHashParams(pinnedCardIDsArray);
 	updatePinHeaderButtonStyle();
 	if (pinnedCardIDsArray.length < 25) {
-		console.log('less than max pinned');
 		pinBtnAvailable();
 	}
 };
 
 const getPinnedTopoIndex = (oid) => {
-	// console.log(pinnedCardHTMLArray, oid);
-
 	return pinnedCardIDsArray.map((topoID) => topoID).indexOf(oid);
 };
 
 const isCurrentMapPinned = (targetMapCard, callback) => {
 	const oid =
 		targetMapCard.querySelector('.map-list-item').attributes.oid.value;
-	// console.log(oid);
-	// const searchPinnedArray = pinnedCardIDsArray.indexOf(oid);
-	// console.log(getPinnedTopoIndex(oid));
-	//if the targetMapCard is not in the array, it has just been pinned. Add the mapCard to the pinnedArray, render the topo on the map.
-	//otherwise the mapCard must already be pinned, remove it (and it's topo).
+
 	if (getPinnedTopoIndex(oid) === -1) {
-		console.log('adding topo to pin list');
 		targetMapCard.querySelector('input').attributes.value.value =
 			targetMapCard.querySelector('input').value;
 
 		const cardHTML = targetMapCard.innerHTML;
-		// console.log(targetMapCard);
-		// console.log(cardHTML);
+
 		callback(oid, cardHTML);
 		return;
 	} else {
@@ -494,10 +434,8 @@ const isCurrentMapPinned = (targetMapCard, callback) => {
 			setTopoMapPlaceholder(oid);
 		}
 
-		console.log(targetMapCard.closest('#pinnedList'));
 		if (targetMapCard.closest('#pinnedList')) {
-			console.log('these are pinned');
-			callback(oid); //This callback should always remove the specific topo layer from the map.
+			callback(oid);
 			relatedMapCard ? closeMapCard(relatedMapCard) : null;
 			removePinnedTopo(pinnedCardIDsArray.indexOf(oid), oid);
 			return;
@@ -505,9 +443,6 @@ const isCurrentMapPinned = (targetMapCard, callback) => {
 
 		//remove the mapCard from the 'pinnedIDsArray' to reflect it's unpinning.
 		removePinnedTopo(pinnedCardIDsArray.indexOf(oid), oid);
-
-		//checking if the unpinned mapCard is the most-recently-opened mapCard.
-		//if yes, the holder variable will be set to '0'.
 
 		//checking to see if there are any other topos pinned and if an unpinned map has been opened.If yes, stop the process.
 		if (
@@ -523,28 +458,21 @@ const isCurrentMapPinned = (targetMapCard, callback) => {
 };
 
 const mapPinningAction = (pinIcon, pinCheckmarkIcon, targetMapCard) => {
-	console.log('pinning is', targetMapCard);
-
-	console.log(pinnedCardIDsArray);
-
 	pinIcon.classList.toggle('pinned');
 	pinCheckmarkIcon.classList.toggle('hidden');
 
 	if (pinIcon.classList.contains('pinned')) {
 		isCurrentMapPinned(targetMapCard, addToPinnedArray);
 	} else {
-		console.log('checking the placeholder', topoOnMapPlaceholder);
 		isCurrentMapPinned(targetMapCard, removeTopoFromMap);
 	}
-
-	console.log(pinnedCardIDsArray);
 };
 
 const findTopoLayer = (oid) => {
-	if (!viewTest) {
+	if (!currentView) {
 		return;
 	}
-	const addedLayers = viewTest.map.layers.items;
+	const addedLayers = currentView.map.layers.items;
 
 	return new Promise((resolve, reject) => {
 		addedLayers.find((imageTopo) => {
@@ -556,82 +484,43 @@ const findTopoLayer = (oid) => {
 };
 
 const addTopoToMap = (target, url) => {
-	// renderingTopo = true;
-	console.log(target);
 	gettingTopoID = target;
 	getTopoMap(target, url).then((topoImageLayer) => {
-		// console.log(viewTest);
-		console.log('this is the returned image', topoImageLayer);
-		//NOTE: maybe give this it's own function. Just to make things easier to parse
-		console.log(pinnedCardIDsArray);
-		console.log(gettingTopoID);
-		console.log(pinnedCardIDsArray.indexOf(`${topoOnMapPlaceholder}`));
-
 		if (gettingTopoID !== topoImageLayer.id) {
-			//If the returned topo does not match the most recently called topo, then cancel the render and remove the topo's 'halo'
-			console.log('cancelling');
 			topoImageLayer.cancelLoad();
 			removeHalo(topoImageLayer.id);
 			return;
 		}
 
-		viewTest.map.add(topoImageLayer);
+		currentView.map.add(topoImageLayer);
 
-		viewTest.map.layers.reorder(
+		currentView.map.layers.reorder(
 			mapFootprintLayer,
-			viewTest.map.layers.length - 1
+			currentView.map.layers.length - 1
 		);
-		viewTest.map.layers.reorder(
+		currentView.map.layers.reorder(
 			basemapTerrainLayer,
-			viewTest.map.layers.length - 1
-		),
-			// viewTest.map.layers.reorder(
-			// 	mapHaloGraphicLayer,
-			// 	2
-			// );
-			console.log(viewTest.map.layers.items);
+			currentView.map.layers.length - 1
+		);
 	});
 };
 
-const addPreviouslyPinnedTopoToMap = (target, url) => {
-	getTopoMap(target, url).then((topoImageLayer) => {
-		viewTest.map.add(topoImageLayer);
+const addPreviouslyPinnedTopoToMap = (target, serviceURL) => {
+	getTopoMap(target, serviceURL).then((topoImageLayer) => {
+		currentView.map.add(topoImageLayer);
 
-		viewTest.map.layers.reorder(
+		currentView.map.layers.reorder(
 			mapFootprintLayer,
-			viewTest.map.layers.length - 1
+			currentView.map.layers.length - 1
 		);
-		viewTest.map.layers.reorder(
+		currentView.map.layers.reorder(
 			basemapTerrainLayer,
-			viewTest.map.layers.length - 1
+			currentView.map.layers.length - 1
 		);
-		console.log(viewTest.map.layers.items);
 
 		return;
 	});
 };
-
-// const getTopoMap = (oid, url) => {
-// 	return new Promise((resolve, reject) => {
-// 		require(['esri/layers/ImageryLayer'], (
-// 			ImageryLayer
-// 			// MosaicRule
-// 		) => {
-// 			topoMapLayer = new ImageryLayer({
-// 				id: oid,
-// 				url: url,
-
-// 				mosaicRule: {
-// 					mosaicMethod: 'LockRaster',
-// 					lockRasterIds: [oid],
-// 					where: `OBJECTID = ${oid}`,
-// 				},
-// 			});
-
-// 			resolve(topoMapLayer);
-// 		});
-// 	});
-// };
 
 const setTopoOpacity = (oid) => {
 	if (!document.querySelector(`.map-list-item[oid="${oid}"]`)) {
@@ -661,11 +550,9 @@ const setTopoOpacity = (oid) => {
 };
 
 const removeTopoFromMap = (oid) => {
-	// console.log('closing map and card', pinnedCardIDsArray, topoOnMapPlaceholder);
-
 	findTopoLayer(oid)
 		.then((specificTopo) => {
-			viewTest.map.remove(specificTopo);
+			currentView.map.remove(specificTopo);
 		})
 		.then(() => {
 			removeHalo(oid);
@@ -711,14 +598,12 @@ const pinEvent = (eventTarget, mapCard, targetOID) => {
 			.querySelector('.tooltipText.pinMap')
 			.classList.remove('visible');
 	}
-	console.log('pushpin');
-	// const targetMapCard = eventTarget.closest('.mapCard-container');
 
 	const mapCardInExploreModeList = explorerList.querySelector(
 		`.map-list-item[oid="${targetOID}"]`
 	);
 
-	//NOTE: if the card is in 'pinned list' AND the mapCard exists in the 'explore list' set css to unpin.
+	//if the card is in 'pinned list' AND the mapCard exists in the 'explore list' set the icon to the unpinned status.
 	if (mapCard.closest('#pinnedList') && mapCardInExploreModeList) {
 		mapCardInExploreModeList
 			.querySelector('.unpinned')
@@ -726,22 +611,16 @@ const pinEvent = (eventTarget, mapCard, targetOID) => {
 		mapCardInExploreModeList
 			.querySelector('.checkmarkBackground')
 			.classList.toggle('hidden');
-
-		// console.log(mapCard);
-		// console.log(mapCardInExploreModeList);
 	}
-	// console.log(specificCard);
 
 	const pinIcon = mapCard.querySelector('.unpinned');
-	//NOTE: this is the old way to select/find a mapCard, but it calls the specific mapCard that was clicked on.
-	// mapCard.querySelector('.unpinned');
 	const pinCheckmarkIcon = mapCard.querySelector('.checkmarkBackground');
 
 	mapPinningAction(pinIcon, pinCheckmarkIcon, mapCard);
 };
 
 const zoomToTopo = (geography) => {
-	viewTest.goTo({
+	currentView.goTo({
 		target: geography,
 	});
 };
@@ -750,12 +629,10 @@ const zoomEvent = (eventTarget, oid) => {
 	if (!eventTarget.closest('.zoom')) {
 		return;
 	}
-	console.log(eventTarget, oid);
 	const targetGeometry =
 		eventTarget.closest('.map-list-item').attributes.geometry.value;
 
 	mapFootprint(oid, targetGeometry).then((specificTopo) => {
-		console.log('the topo', specificTopo);
 		zoomToTopo(specificTopo.geometry);
 	});
 };
@@ -770,9 +647,10 @@ const saveEvent = (eventTarget) => {
 	);
 
 	addHashExportPrompt(mapDetails);
-	console.log('this would save and export');
-	authorization.getCredentials();
-	setViewInfo(viewTest);
+	getCredentials().then((credentials) => {
+		setUserToken(credentials);
+	});
+	setViewInfo(currentView);
 	mapExportProcess(mapDetails);
 };
 
@@ -793,8 +671,6 @@ const openMapCard = (target) => {
 };
 
 const handleOpacityChange = (targetOID, sliderValue) => {
-	//NOTE: I have a global var for the mapGeometry....why not a global var for the mapCard the mouse hovers over?
-
 	findTopoLayer(targetOID).then((specificTopo) => {
 		specificTopo.opacity = 0 + sliderValue / 100;
 	});
@@ -805,7 +681,6 @@ const opacitySliderEvent = (eventTarget, targetOID) => {
 		return;
 	}
 
-	// console.log('slider?');
 	const sliderValue = eventTarget.value;
 
 	handleOpacityChange(targetOID, sliderValue);
@@ -813,8 +688,6 @@ const opacitySliderEvent = (eventTarget, targetOID) => {
 };
 
 const sliderColorPosition = (value, targetOID) => {
-	//NOTE: this isn't handling any opacity element. It needs to access the layer with the corresponding id.
-
 	document
 		.querySelectorAll(`.map-list-item[oid="${targetOID}"] .mapCard-slider`)
 		.forEach((sliderBar) => {
@@ -836,12 +709,6 @@ const closeMapCard = (target) => {
 		.closest('.map-list-item')
 		.querySelector('.action-container')
 		.classList.add('invisible');
-
-	// target
-	// 	.closest('.map-list-item')
-	// 	.querySelector('.slider-range-color').style.width = `${0}%`;
-
-	// target.closest('.map-list-item').querySelector('.opacity-slider').value = 0;
 };
 
 const isMapCardOpen = (target, targetOID) => {
@@ -864,7 +731,7 @@ const isMapCardOpen = (target, targetOID) => {
 
 	if (targetInvisability) {
 		checkAnyOpenMapCards(targetOID);
-		addTopoToMap(targetOID, urlTest);
+		addTopoToMap(targetOID, serviceURL);
 		addHalo(targetOID, targetGeometry);
 		openMapCard(target);
 		setTopoMapPlaceholder(targetOID);
@@ -892,16 +759,7 @@ const unpinAll = (event) => {
 		return;
 	}
 
-	console.log('unpin all');
-
 	document.querySelector('.unpin-action-warning').classList.toggle('invisible');
-
-	// const currentStateOfPinnedList =
-	// 	pinList.querySelectorAll('.mapCard-container');
-
-	// currentStateOfPinnedList.forEach((mapCard) => {
-	// 	isCurrentMapPinned(mapCard, removeTopoFromMap);
-	// });
 };
 
 document.addEventListener('click', (event) => {
@@ -922,51 +780,43 @@ const exportAllPinned = (event) => {
 		return;
 	}
 
-	// const pinMapsToExport = currentStateOfPinnedList();
-	// const mapContainer = pinList
 	const mapDetails = Array.from(pinList.querySelectorAll('.map-list-item'));
 	addHashExportPrompt(mapDetails);
-	authorization.getCredentials();
-	setViewInfo(viewTest);
-	mapExportProcess(mapDetails, url);
+	getCredentials().then((credentials) => {
+		setUserToken(credentials);
+	});
+	setViewInfo(currentView);
+	mapExportProcess(mapDetails);
 };
 
 const reorderPinnedListHTML = () => {
-	// const currentStateOfPinnedList =
-	// 	pinList.querySelectorAll('.mapCard-container');
-
 	arrayFromPinListHTML = currentStateOfPinnedList();
-
-	console.log(arrayFromPinListHTML);
 
 	pinList.innerHTML = '';
 
 	for (let i = arrayFromPinListHTML.length - 1; i > -1; i--) {
-		console.log(arrayFromPinListHTML[i]);
 		pinList.append(arrayFromPinListHTML[i]);
 	}
 };
 
 const reorderMapLayers = () => {
-	console.log(viewTest.map.layers);
+	currentView.map.layers.reverse();
 
-	viewTest.map.layers.reverse();
-
-	viewTest.map.layers.reorder(
+	currentView.map.layers.reorder(
 		mapFootprintLayer,
-		viewTest.map.layers.length - 1
+		currentView.map.layers.length - 1
 	);
 
-	viewTest.map.layers.reorder(
+	currentView.map.layers.reorder(
 		basemapTerrainLayer,
-		viewTest.map.layers.length - 1
+		currentView.map.layers.length - 1
 	);
 
-	viewTest.map.layers.reorder(basemapSatellite, 0);
+	currentView.map.layers.reorder(basemapSatellite, 0);
 
-	viewTest.map.layers.reorder(basemapLables, 1);
+	currentView.map.layers.reorder(basemapLables, 1);
 
-	viewTest.map.layers.reorder(mapHaloGraphicLayer, 2);
+	currentView.map.layers.reorder(mapHaloGraphicLayer, 2);
 
 	invertHashedMapOrder();
 };
@@ -998,7 +848,6 @@ sideBarElement.addEventListener('click', (event) => {
 	}
 
 	if (eventTarget.closest('.animate.checkbox')) {
-		console.log('is this working?');
 		toggleAnimateCheckbox(eventTarget);
 	}
 
@@ -1078,7 +927,6 @@ const updatePinHeaderButtonStyle = () => {
 		if (
 			mapModes.querySelector('.pinned-mode').classList.contains('underline')
 		) {
-			console.log('no more');
 			toggleListVisibility();
 		}
 	}
@@ -1089,7 +937,6 @@ const updatePinHeaderButtonStyle = () => {
 };
 
 const pinBtnUnavailable = () => {
-	console.log('adding a bunch a transparency');
 	const unpinnedIcons = explorerList.querySelectorAll(
 		'.pushpin .unpinned.svgContainer'
 	);
@@ -1117,19 +964,12 @@ const pinBtnAvailable = () => {
 document.querySelectorAll('.warning-btns').forEach((warningBtn) => {
 	warningBtn.addEventListener('click', (event) => {
 		if (!event.target.innerHTML.includes('CANCEL')) {
-			// console.log('remove');
 			updatePinHeaderButtonStyle();
-			// toggleListVisibility();
 			const arrayFromPinList = currentStateOfPinnedList();
 
-			console.log(arrayFromPinList);
 			arrayFromPinList.forEach((mapCard) => {
-				console.log(mapCard);
-				// isCurrentMapPinned(mapCard, removeTopoFromMap);
 				const mapCardOID =
 					mapCard.querySelector('.map-list-item').attributes.oid.value;
-				console.log(mapCardOID);
-				// console.log(event.target.closest('.unpin-action-warning'));
 				pinEvent(event.target, mapCard, mapCardOID);
 			});
 		}
@@ -1141,183 +981,76 @@ document.querySelectorAll('.warning-btns').forEach((warningBtn) => {
 let movingCard;
 let movingCardItem;
 const handleDragStart = (event) => {
-	// event.preventDefault();
-
 	if (!event.target.closest('.drag-grip')) {
 		return;
 	}
 
-	console.log(event.target, 'is draggable');
-	//NOTE: trying something new...here's the example https://www.codehim.com/vanilla-javascript/javascript-drag-and-drop-reorder-list/
-	//still need to add the classes.
-
 	movingCard = event.target.closest('.mapCard-container');
 	movingCardItem = event.target.closest('.map-list-item');
-
-	const movingCardData = {
-		htmlElement: movingCard.innerHTML,
-	};
 
 	const dragImage = document.querySelector('.grabbedItemImage');
 	dragImage.innerHTML = movingCard.innerHTML;
 
-	console.log('container card', movingCard);
-
 	movingCardItem.classList.add('drag-sort-active');
 	movingCard.classList.add('drag-sort-background');
 
-	// event.dataTransfer.effectAllowed = 'move';
-
-	// event.dataTransfer.setData('text/plain', JSON.stringify(movingCardData));
 	event.dataTransfer.setDragImage(dragImage, 0, 0);
-};
-
-// const handleDrop = (event) => {
-// 	event.preventDefault();
-// 	console.log('drop called', event);
-
-// 	if (!pinList) {
-// 		return;
-// 	}
-// 	// const draggedData = event.dataTransfer.getData('text/plain');
-// 	// const droppedCard = JSON.parse(draggedData);
-
-// 	// const droppedCardHTML = droppedCard.htmlElement;
-// 	//NOTE: what you're doing here is very VERY wrong, this is NOT how you should amend the list
-// 	// pinList.innerHTML = pinList.innerHTML + droppedCardHTML;
-// 	movingCard.classList.remove('drag-sort-active');
-
-// };
-
-const moveWithAnimation = (moveTarget, dropTarget) => {
-	const moveDirection =
-		!dropTarget ||
-		dropTarget.previousElementSibling === moveTarget.nextElementSibling ||
-		moveTarget === dropTarget;
-
-	const animationTarget = moveDirection
-		? dropTarget
-			? dropTarget.previousElementSibling
-			: moveTarget.nextElementSibling
-		: moveTarget.previousElementSibling;
-
-	console.log('target', moveTarget);
-	console.log('dropTarget', dropTarget);
-	console.log('moveDirection', moveDirection);
-	console.log('animationTarget', animationTarget);
-
-	// animation
-	//NOTE: I'm calling a function that affects the style of the card. It's not an ideal solution for it to be here. It's here currently to see if this is a viable solution and worth refactoring.
-	//also using this as a resource: https://stackoverflow.com/questions/75935047/how-to-add-sliding-animation-on-elements-reordered-using-element-insertbefore
-	animationTarget.style.transform = `translateY(${
-		moveDirection ? '-100%' : '100%'
-	})`;
-	animationTarget.style.transition = 'transform 0.5s ease 0.3s';
-	moveTarget.style.transform = `translateY(${
-		moveDirection ? '100%' : '-100%'
-	})`;
-	moveTarget.style.transition = 'transform 0.5s ease 0.3s';
-	//removes the applied styles and places the movingCard to
-	animationTarget.ontransitionend = () => {
-		animationTarget.style.transition = '';
-		animationTarget.style.transform = '';
-
-		moveTarget.parentNode.insertBefore(moveTarget, dropTarget);
-		moveTarget.style.transition = '';
-		moveTarget.style.transform = '';
-	};
 };
 
 const handleDragging = (event) => {
 	event.preventDefault();
-	// event.target.classList.add('grabbing');
-	// event.dataTransfer.dropEffect = 'move';
 
 	const x = event.clientX;
 	const y = event.clientY;
-	// console.log(x, y);
 
 	let dropTargetSlot =
 		document.elementFromPoint(x, y).closest('.mapCard-container') === null
 			? movingCard
 			: document.elementFromPoint(x, y).closest('.mapCard-container');
 
-	// console.log('first dropTargetSlot', dropTargetSlot);
-
 	if (movingCard.parentNode === dropTargetSlot.parentNode) {
-		// console.log('this firing?');
 		dropTargetSlot =
 			dropTargetSlot !== movingCard.nextElementSibling
 				? dropTargetSlot
 				: dropTargetSlot.nextElementSibling;
 		movingCard.parentNode.insertBefore(movingCard, dropTargetSlot);
-
-		//NOTE: below is the additional logic used to established the direction of animation, but it's not working.
-		// movingCard.parentNode.insertBefore(movingCard, swapItem);
-		// if (movingCard !== dropTargetSlot) {
-
-		// 	moveWithAnimation(movingCard, dropTargetSlot);
-		// }
 	}
 };
 
 const endDrag = (event) => {
 	event.preventDefault();
-	console.log('ending drag?');
 	movingCard.classList.remove('drag-sort-background');
 	movingCardItem.classList.remove('drag-sort-active');
-	// const listOfPinnedIDs = pinList.querySelectorAll('.map-list-item');
 	const listOfPinnedCards = Array.prototype.slice
 		.call(pinList.querySelectorAll('.map-list-item'))
 		.reverse();
-	console.log(listOfPinnedCards);
-	console.log(movingCardItem.attributes.oid.value);
-	console.log(getPinnedTopoIndex(movingCardItem.attributes.oid.value));
 
 	const listOfPinnedIDs = listOfPinnedCards.map((mapHTML) => {
-		console.log(mapHTML.attributes.oid.value);
 		return mapHTML.attributes.oid.value;
 	});
 
 	listOfPinnedIDs.forEach((pinCard, index) => {
-		console.log(pinCard);
 		if (pinCard === movingCardItem.attributes.oid.value) {
-			console.log('this was moved recently', index);
 			findTopoLayer(movingCardItem.attributes.oid.value).then((movedMap) => {
-				console.log(movedMap, index);
-				// console.log(viewTest.map.layers);
+				currentView.map.layers.reorder(movedMap, index + 3);
 
-				viewTest.map.layers.reorder(movedMap, index + 3);
-
-				viewTest.map.layers.reorder(
+				currentView.map.layers.reorder(
 					mapFootprintLayer,
-					viewTest.map.layers.length - 1
+					currentView.map.layers.length - 1
 				);
 
-				viewTest.map.layers.reorder(
+				currentView.map.layers.reorder(
 					basemapTerrainLayer,
-					viewTest.map.layers.length - 1
+					currentView.map.layers.length - 1
 				);
-
-				console.log('layers after reorder drag', viewTest.map.layers);
 			});
 		}
 	});
 	updateHashParams(listOfPinnedIDs);
 };
 
-const dragEnter = (event) => {
-	event.preventDefault();
-	console.log('entered');
-	console.log(event);
-	if (event.target.classList.contains('.mapCard-container')) {
-		console.log('this a mapCard');
-	}
-};
-
 pinList.addEventListener('dragstart', handleDragStart), { passive: true };
 
-// pinList.addEventListener('drop', handleDrop);
 pinList.addEventListener('dragend', endDrag);
 pinList.addEventListener('dragover', handleDragging), false;
 
@@ -1329,16 +1062,4 @@ const addDragEventListener = () => {
 	});
 };
 
-// document.addEventListener('click', (event) => {
-// 	if (
-// 		!event.target.closest(
-// 			'.unpin-action-warning' || event.target.closest('.unpin')
-// 		)
-// 	) {
-// 		console.log(event.target);
-// 		console.log(event.target.closest('.unpin'));
-
-// 		document.querySelector('.unpin-action-warning').classList.add('invisible');
-// 	}
-// });
 export { clearMapsList, createMapSlotItems, opacitySliderEvent, zoomEvent };

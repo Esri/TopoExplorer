@@ -1,9 +1,6 @@
 const getTopoMap = (oid, url) => {
 	return new Promise((resolve, reject) => {
-		require(['esri/layers/ImageryLayer'], (
-			ImageryLayer
-			// MosaicRule
-		) => {
+		require(['esri/layers/ImageryLayer'], (ImageryLayer) => {
 			const topoMapLayer = new ImageryLayer({
 				id: oid,
 				url: url,

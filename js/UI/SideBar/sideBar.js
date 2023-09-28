@@ -30,6 +30,7 @@ const initSideBar = () => {
 	sideBar.previousElementSibling.classList.add('invisible');
 	sideBar.querySelector('.for-desktop').classList.remove('display-content');
 	sideBar.querySelector('.for-desktop').classList.add('invisible');
+	//move this 100% value to a media query in the app.css
 	sideBar.style.width = '100%';
 	document.querySelector('aside').classList.add('fixed-position');
 	// sideBar.querySelector('.map-mode-container').classList.remove('flex');
@@ -37,6 +38,18 @@ const initSideBar = () => {
 
 	//handling the mobile eventListeners
 	//When a map is 'tapped' in mobile, close the sideBar to reveal the map.
+	document.addEventListener('click', (event) => {
+		if (!isMobileFormat) {
+			return;
+		}
+		if (
+			!event.target.closest('aside') &&
+			!document.querySelector('aside').classList.contains('slide-x')
+		) {
+			toggleSideBar();
+		}
+	});
+
 	exploreList.addEventListener('click', (event) => {
 		if (!isMobileFormat()) {
 			return;

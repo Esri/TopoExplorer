@@ -1,12 +1,14 @@
-import { authorization, logOutTry } from '../../support/OAuth.js?v=0.01';
+import { getCredentials, logOutTry } from '../../support/OAuth.js?v=0.01';
 
 let account = null;
 const userIconHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="1.5 -2 24 24" height="30" width="30"><path d="M19.5 15h-7A6.508 6.508 0 0 0 6 21.5V29h20v-7.5a6.508 6.508 0 0 0-6.5-6.5zM25 28H7v-6.5a5.506 5.506 0 0 1 5.5-5.5h7a5.506 5.506 0 0 1 5.5 5.5zm-9-14.2A5.8 5.8 0 1 0 10.2 8a5.806 5.806 0 0 0 5.8 5.8zm0-10.633A4.833 4.833 0 1 1 11.167 8 4.839 4.839 0 0 1 16 3.167z"></path></svg>`;
 
+const sideBar = document.querySelector('#sideBar');
+const exploreList = document.querySelector('#exploreList');
+
 sideBar.addEventListener(
 	'mouseenter',
 	(event) => {
-		//when the mouse enters the iconWrapper, remove the visibility from all tooltips, add visibility to the specific tooltip.
 		if (event.target.closest('.iconWrapper')) {
 			document.querySelectorAll('.tooltipText').forEach((tooltip) => {
 				if (tooltip.classList.contains('visible')) {
@@ -44,7 +46,6 @@ sideBar.addEventListener(
 				.classList.add('visible');
 		}
 
-		//if the mouse enters something other than the iconWrapper, remove visibility on all tooltips
 		if (
 			!event.target.closest('.iconWrapper') ||
 			event.target.classList.contains('tooltipText')
@@ -58,6 +59,20 @@ sideBar.addEventListener(
 	},
 	true
 );
+
+exploreList.addEventListener('scroll', () => {
+	const sortWindow = document.querySelector('.sortOptions');
+
+	document.querySelectorAll(`.sliderElement`).forEach((slideContainer) => {
+		!slideContainer.classList.contains('invisible')
+			? slideContainer.classList.add('invisible')
+			: null;
+	});
+
+	if (!sortWindow.classList.contains('invisible')) {
+		sortWindow.classList.add('invisible');
+	}
+});
 
 sideBar.addEventListener(
 	'mouseleave',
@@ -100,12 +115,11 @@ const addLogOutElement = () => {
 };
 
 document.querySelector('#user-icon').addEventListener('click', () => {
-	authorization.getCredentials();
+	getCredentials();
 });
 
 const logOutListener = () => {
 	document.querySelector('.logOut-icon').addEventListener('click', (event) => {
-		// event.preventDefault();
 		event.stopImmediatePropagation();
 		logOutTry();
 		setAnonymousUser();
@@ -127,12 +141,8 @@ const isMobileFormat = () => {
 		istouchEnabled = true;
 	}
 
-	// if (window.innerWidth <= 654) {
-	// 	isMobileScreenWidth = true;
-	// }
-
 	if (
-		/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|mobile/i.test(
+		/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
 			navigator.userAgent
 		)
 	) {
@@ -145,15 +155,5 @@ const isMobileFormat = () => {
 
 	return isReadyForMobileFormat;
 };
-
-// const setMobileFormat = async () => {
-// 	if (!isMobileFormat) {
-// 		return;
-// 	}
-
-// 	initSideBar();
-// 	initMobileHeader();
-// 	headerSearchInfo();
-// };
 
 export { addAccountImage, isMobileFormat };

@@ -1,9 +1,7 @@
-// import { mapFootprint } from '../UI/MapAndFootprint/MapFootprint';
 import { hashCoordinates, hashLoD } from '../support/HashParams.js?v=0.01';
 import { config } from '../../app-config.js?v=0.01';
 const initView = () => {
 	return new Promise((resolve, reject) => {
-		//creating the view object and incorporating map.
 		require([
 			'esri/WebMap',
 			'esri/views/MapView',
@@ -25,7 +23,7 @@ const initView = () => {
 				graphics: [],
 				effect: 'drop-shadow(0px, 0px, 8px, black)',
 				blendMode: 'hard-light',
-				spatialReference: new SpatialReference({ wkid: 3857 }),
+				spatialReference: new SpatialReference(config.spatialReference),
 			});
 
 			const haloLayer = new GraphicsLayer({
@@ -34,14 +32,13 @@ const initView = () => {
 				graphics: [],
 				effect: 'drop-shadow(0px, 0px, 8px, black) contrast(2)',
 				blendMode: 'hard-light',
-				spatialReference: new SpatialReference({ wkid: 3857 }),
+				spatialReference: new SpatialReference(config.spatialReference),
 			});
 
 			const map = new WebMap({
 				portalItem: {
-					id: '710264327ad24ff5ba996e2a7c773b7f',
+					id: config.environment.webMap.webMapItemId,
 				},
-				// layers: [],
 			});
 
 			const view = new MapView({
@@ -61,7 +58,6 @@ const initView = () => {
 
 			map.layers.add(haloLayer, map.layers, 2);
 			map.layers.add(footprintLayer, map.layers.length - 1);
-			console.log(map.layers.items);
 
 			const searchWidget = new Search({
 				view: view,
@@ -72,8 +68,6 @@ const initView = () => {
 				sources: [
 					{
 						url: 'https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer',
-						apiKey:
-							'AAPKe259b9f8cc57489cb0533ceb6da4b459DGbL3xnlg-YC7ah0DSbIB_1bJzAnUIegpFFBoigwoOvqAHj4aVreEZWdTaR28PEW',
 						singleLineFieldName: 'SingleLine',
 						outFields: ['Addr_type'],
 						name: 'ArcGIS World Geocoding Service',

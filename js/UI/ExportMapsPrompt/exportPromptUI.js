@@ -35,7 +35,6 @@ const setUserContentURL = (urlKey, urlBase, url) => {
 
 const setWebMapURL = (itemID) => {
 	webMapURL = `${accountURL}/home/item.html?id=${itemID}`;
-	console.log(webMapURL);
 };
 
 const exportFields = `
@@ -129,13 +128,6 @@ const addPrmoptBoxTransparency = () => {
 	promptBox.classList.add('transparency');
 };
 
-// const removeProcessingIndicator = () => {
-// 	indicator.classList.add('invisible');
-// };
-// const removePrmoptBoxTransparency = () => {
-// 	promptBox.classList.remove('transparency');
-// };
-
 const removeExportBtn = () => {
 	exportBtnContainer.classList.add('invisible');
 	exportBtnContainer.classList.remove('flex');
@@ -185,7 +177,6 @@ const exportTitleQC = () => {
 	promptBox
 		.querySelector('.export-prompt textarea')
 		.addEventListener('input', (event) => {
-			// console.log('changing');
 			event.preventDefault();
 			if (
 				promptBox.querySelector('.export-prompt textarea').value.trim() === ''

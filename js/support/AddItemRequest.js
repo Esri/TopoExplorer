@@ -1,26 +1,28 @@
 import { setUserContentURL } from '../UI/ExportMapsPrompt/exportPromptUI.js?v=0.01';
 
-let accountData;
+let accountData = {
+	urlKey: '',
+	customUrl: '',
+	url: '',
+};
+let userToken;
 
-const setAccountData = (authorizationResponse) => {
-	console.log(authorizationResponse);
+const setAccountData = async (authorizationResponse) => {
 	accountData = authorizationResponse;
 	setUserContentURL(accountData.urlKey, accountData.customUrl, accountData.url);
 };
 
-// const addTokenAndSendRequest = (webMapDef) => {
-// 	webMapDef.token = accountData.token;
-// 	addWebMapToUserPortal(webMapDef);
-// };
+const setUserToken = (credentials) => {
+	if (!credentials) {
+		return;
+	}
+	userToken = credentials.token;
+};
 
 const addWebMapToUserPortal = (webMapDef) => {
 	return new Promise((resolve, reject) => {
-		webMapDef.token = accountData.token;
+		webMapDef.token = userToken;
 
-		console.log(webMapDef);
-		console.log(
-			`${accountData.restUrl}/content/users/${accountData.userName}/addItem?`
-		);
 		axios
 			.post(
 				`${accountData.restUrl}/content/users/${accountData.userName}/addItem?`,
@@ -32,14 +34,12 @@ const addWebMapToUserPortal = (webMapDef) => {
 				}
 			)
 			.then((response) => {
-				console.log('response from POST request', response);
 				resolve(response);
-				resolve('error');
 			})
 			.catch((error) => {
-				console.log('request denied', error);
+				resolve(error);
 			});
 	});
 };
 
-export { addWebMapToUserPortal, setAccountData };
+export { addWebMapToUserPortal, setAccountData, setUserToken };
