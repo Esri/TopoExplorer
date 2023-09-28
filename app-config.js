@@ -34,6 +34,7 @@ const developmentEnv = {
 
 const config = {
 	environment: '',
+	portalUrl: 'https://www.arcgis.com',
 	defaultMapSettings: {
 		center: [-98.5357, 40.1549],
 		zoom: 4,

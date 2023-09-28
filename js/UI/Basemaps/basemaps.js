@@ -1,6 +1,5 @@
 import { config } from '../../../app-config.js?v=0.01';
 
-console.log(config);
 let mapView;
 let terrainLayer;
 let imageryLayer;
@@ -9,7 +8,6 @@ let outdoorBasemapLabels;
 const setLayers = async (view) => {
 	mapView = view;
 
-	console.log('basemap toggle', view.map.layers.items);
 	return new Promise((resolve, reject) => {
 		terrainLayer = view.map.layers.items.find((layer) => {
 			if (layer.portalItem) {
@@ -98,17 +96,14 @@ const toggleMapLayerCheckbox = (eventTarget) => {
 const toggleMapLayer = (checkmark) => {
 	if (checkmark.classList.contains('hidden')) {
 		if (checkmark.closest('.satellite')) {
-			console.log(imageryLayer);
 			imageryLayer.visible = false;
 		}
 
 		if (checkmark.closest('.terrain')) {
-			console.log(terrainLayer);
 			terrainLayer.visible = false;
 		}
 
 		if (checkmark.closest('.labels')) {
-			console.log(outdoorBasemapLabels);
 			outdoorBasemapLabels.visible = false;
 		}
 
@@ -116,17 +111,14 @@ const toggleMapLayer = (checkmark) => {
 	}
 
 	if (checkmark.closest('.satellite')) {
-		console.log(imageryLayer);
 		imageryLayer.visible = true;
 	}
 
 	if (checkmark.closest('.terrain')) {
-		console.log(terrainLayer);
 		terrainLayer.visible = true;
 	}
 
 	if (checkmark.closest('.labels')) {
-		console.log(outdoorBasemapLabels);
 		outdoorBasemapLabels.visible = true;
 	}
 };

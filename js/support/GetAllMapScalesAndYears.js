@@ -51,7 +51,6 @@ const allScaleAndYears = JSON.stringify([
 ]);
 
 const findMinYear = (url) => {
-	// const outStatsParams
 	return new Promise((resolve, reject) => {
 		const params = new URLSearchParams({
 			where: '',
@@ -61,7 +60,6 @@ const findMinYear = (url) => {
 			returnCountOnly: false,
 			returnextentOnly: false,
 			returnDistinctValues: false,
-			// outFields: 'Map_Scale, Date_On_Map',
 			outStatistics: minYearOutStats,
 			f: 'pjson',
 		});
@@ -71,17 +69,13 @@ const findMinYear = (url) => {
 				params,
 			})
 			.then((response) => {
-				//NOTE: checking the years and scales of all the returned maps
-				// console.log(response);
 				const minYear = response.data.features[0].attributes.MinMapYear;
-				// console.log(minYear);
 				resolve(minYear);
 			});
 	});
 };
 
 const findMaxYear = (url) => {
-	// const outStatsParams
 	return new Promise((resolve, reject) => {
 		const params = new URLSearchParams({
 			where: '',
@@ -101,16 +95,13 @@ const findMaxYear = (url) => {
 				params,
 			})
 			.then((response) => {
-				// console.log(response);
 				const maxYear = response.data.features[0].attributes.MaxMapYear;
-				// console.log(maxYear);
 				resolve(maxYear);
 			});
 	});
 };
 
 const findMinScale = (url) => {
-	// const outStatsParams
 	return new Promise((resolve, reject) => {
 		const params = new URLSearchParams({
 			where: '',
@@ -130,16 +121,13 @@ const findMinScale = (url) => {
 				params,
 			})
 			.then((response) => {
-				// console.log(response);
 				const minScale = response.data.features[0].attributes.MinMapScale;
-				// console.log(minScale);
 				resolve(minScale);
 			});
 	});
 };
 
 const findMaxScale = (url) => {
-	// const outStatsParams
 	return new Promise((resolve, reject) => {
 		const params = new URLSearchParams({
 			where: '',
@@ -158,18 +146,10 @@ const findMaxScale = (url) => {
 				params,
 			})
 			.then((response) => {
-				// console.log(response);
 				const maxScale = response.data.features[0].attributes.MaxMapScale;
-				// console.log(maxScale);
 				resolve(maxScale);
 			});
 	});
 };
 
-export {
-	findMinYear,
-	findMaxYear,
-	findMinScale,
-	findMaxScale,
-	// findAllScalesAndYears,
-};
+export { findMinYear, findMaxYear, findMinScale, findMaxScale };

@@ -4,7 +4,6 @@ import { initSideBar } from './UI/SideBar/sideBar.js?v=0.01';
 import { initMobileHeader } from './UI/MobileMapHeader/mobileMapHeader.js?v=0.01';
 import './UI/MobileMapHeader/mobileMapHeader.js?v=0.01';
 import { initView } from './map/View.js?v=0.01';
-//NOTE: you are importing two elements from this module. Is that necessary?
 import {
 	queryConfig,
 	isHashedToposForQuery,
@@ -17,7 +16,6 @@ import { getYearsAndScales } from './support/YearsAndScalesProcessing.js?v=0.01'
 
 import { authorization } from './support/OAuth.js?v=0.01';
 import { addAccountImage } from './UI/EventsAndSelectors/EventsAndSelectors.js?v=0.01';
-// import { setUserItemPageURL } from './UI/ExportMapsPrompt/exportPromptUI.js?v=0.01';
 import {
 	setBaseMapInfo,
 	setViewInfo,
@@ -25,34 +23,25 @@ import {
 import { initLayerToggle } from './UI/Basemaps/basemaps.js?v=0.01';
 import { setAccountData } from './support/AddItemRequest.js?v=0.01';
 
-// console.log('set to mobile format?', isMobileFormat());
-// if(isMobileFormat()){
-
-// }
-
 const initApp = async () => {
 	try {
-		const oauthRespose = await authorization().then((results) => {
-			if (!results) {
-				return;
-			}
-			console.log('authorization results', results);
-			addAccountImage(results);
-			setAccountData(results);
-		});
+		const oauthRespose = await authorization();
 		const view = await initView();
 		const sliderValues = await getYearsAndScales(view);
-		// const layerToggleUI = await initLayerToggle(view);
 		const getPreviousTopos = await isHashedToposForQuery(view);
 		const initialMapQuery = () => {
 			queryConfig.setGeometry(view.extent);
 			queryConfig.mapView = view;
 			queryConfig.extentQueryCall();
 		};
-		// const setLayerOrder = await setDefaultMapLayers(view)
 
 		view
 			.when(() => {
+				if (oauthRespose) {
+					addAccountImage(oauthRespose);
+					setAccountData(oauthRespose);
+				}
+
 				sliderValues;
 				initialMapQuery();
 			})
@@ -72,15 +61,8 @@ const initApp = async () => {
 					reactiveUtils.when(
 						() => view?.stationary === true,
 						async () => {
-							console.log('view info', view);
-							// console.log('view info', view.extent.xmax);
-
-							// console.log('new layer count', view.map.layers.length);
 							if (prevCenter) {
 								if (prevCenter.x === view.center.x) {
-									// console.log('previous center', prevCenter.x);
-									// console.log('new center', view.center.x);
-
 									return;
 								}
 							}
@@ -113,22 +95,12 @@ const initApp = async () => {
 			value ? queryConfig.checkAvailableNumberOfMaps() : null;
 
 		isScrollAtPageEnd(isReadyForMoreMaps);
-		// });
 	} catch (error) {
 		//error handeling for any intialization issues
 		console.error('problem initalizing app', error);
 	}
 };
 
-// await authorization()
-// 	.then((hash) => {
-// 		console.log('hashparams before main.js calls initView()', hash);
-// 		return hash;
-// 	})
-// 	.then((hash) => {
-// 		console.log('the hash value right before initapp is called', hash);
-// 		initApp();
-// 	});
 if (isMobileFormat()) {
 	initSideBar();
 	initMobileHeader();

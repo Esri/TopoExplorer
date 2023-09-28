@@ -8,7 +8,6 @@ import {
 	findMaxYear,
 	findMinScale,
 	findMaxScale,
-	// findAllScalesAndYears,
 } from './GetAllMapScalesAndYears.js?v=0.01';
 import {
 	numberOfMapsinView,
@@ -31,8 +30,6 @@ import {
 } from '../support/HashParams.js?v=0.01';
 import { resumeExportPrompt } from '../UI/ExportMaps/ExportMapsPrompt.js?v=0.01';
 import { isMobileFormat } from '../UI/EventsAndSelectors/EventsAndSelectors.js?v=0.01';
-// import { addTopoMap } from './ImageExportQuery';
-// import { checkIfQuerying } from './Query.js?v=0.01';
 
 const setURL = () => {
 	return config.environment.serviceUrls.historicalTopoImageService;
@@ -41,10 +38,6 @@ const setURL = () => {
 //NOTE: this needs a better variable name. This is the imageServiceURL. There are a lot of 'URLs' in this application.
 const url = setURL();
 let isQueryInProcess = false;
-
-// const isExploreModeActive = document
-// 	.querySelector('.explorer-mode.btn-text')
-// 	.classList.contains('underline');
 
 let whereStatement = 'year >= 1878';
 
@@ -62,11 +55,9 @@ const getMinYear = findMinYear(`${url}/query`);
 const getMaxYear = findMaxYear(`${url}/query`);
 const getMinScale = findMinScale(`${url}/query`);
 const getMaxScale = findMaxScale(`${url}/query`);
-// const getAllScalesAndYears = findAllScalesAndYears(`${url}/query`);
 let minScaleRangeHandle;
 let maxScaleRangeHandle;
-//NOTE: I think I can move this OBJ into a different module...remember this when building out the sort Module.
-//Can definitely be moved to a different module. Just like the year & scale
+
 const sortOptions = {
 	onlyYear: `${mapYear} ASC`,
 	oldestToNewest: `${mapYear} ASC, ${mapName} ASC, ${mapScale} ASC`,
@@ -77,10 +68,8 @@ const sortOptions = {
 	ZA: `${mapName} DESC, ${mapYear} ASC, ${mapScale} ASC`,
 };
 
-//NOTE: this could be moved to a different module.
-//this SHOULD be in it's own module. It's getting too large and specialized to be here.
+//this SHOULD be in it's own module. It's getting too large and generalized to be here.
 //also we're messing with some of the UI elements (which you already know), and that's really cluttering this file/module
-
 const CheckandAdjustScaleSliderHeaderStyle = (availableScaleIndex) => {
 	if (
 		parseInt(maxScaleRangeHandle.value) > parseInt(minScaleRangeHandle.value)
@@ -100,7 +89,7 @@ const CheckandAdjustScaleSliderHeaderStyle = (availableScaleIndex) => {
 				document
 					.querySelectorAll('#scales .sliderBtn span')[0]
 					.classList.remove('transparency');
-				console.log(document.querySelector('#scales .zoomInHelpText'));
+
 				document
 					.querySelector('#scales .zoomInHelpText')
 					.classList.add('hidden');
@@ -108,8 +97,6 @@ const CheckandAdjustScaleSliderHeaderStyle = (availableScaleIndex) => {
 		}
 
 		if (maxScaleRangeHandle.value < availableScaleIndex) {
-			console.log(document.querySelector('#scales .maxSlider').value);
-			console.log(availableScaleIndex);
 			document
 				.querySelectorAll('#scales .sliderBtn span')[1]
 				.classList.add('transparency');
@@ -121,7 +108,6 @@ const CheckandAdjustScaleSliderHeaderStyle = (availableScaleIndex) => {
 				document.querySelector('#scales .maxSlider').value >=
 				availableScaleIndex
 			) {
-				console.log(document.querySelectorAll('#scales .sliderBtn span')[1]);
 				document
 					.querySelectorAll('#scales .sliderBtn span')[1]
 					.classList.remove('transparency');
@@ -134,12 +120,10 @@ const CheckandAdjustScaleSliderHeaderStyle = (availableScaleIndex) => {
 	if (
 		parseInt(maxScaleRangeHandle.value) < parseInt(minScaleRangeHandle.value)
 	) {
-		console.log('inverse positoins');
 		if (maxScaleRangeHandle.value >= availableScaleIndex) {
 			document
 				.querySelectorAll('#scales .sliderBtn span')[0]
 				.classList.remove('transparency');
-			console.log(document.querySelector('#scales .zoomInHelpText'));
 			document.querySelector('#scales .zoomInHelpText').classList.add('hidden');
 		} else {
 			if (maxScaleRangeHandle.value < availableScaleIndex) {
@@ -152,13 +136,7 @@ const CheckandAdjustScaleSliderHeaderStyle = (availableScaleIndex) => {
 			}
 		}
 
-		console.log(
-			'is min creater than the zoom',
-			parseInt(minScaleRangeHandle.value) < availableScaleIndex
-		);
 		if (parseInt(minScaleRangeHandle.value) < availableScaleIndex) {
-			console.log(document.querySelector('#scales .maxSlider').value);
-			console.log(availableScaleIndex);
 			document
 				.querySelectorAll('#scales .sliderBtn span')[1]
 				.classList.add('transparency');
@@ -167,7 +145,6 @@ const CheckandAdjustScaleSliderHeaderStyle = (availableScaleIndex) => {
 				.classList.remove('hidden');
 		} else {
 			if (minScaleRangeHandle.value >= availableScaleIndex) {
-				console.log(document.querySelectorAll('#scales .sliderBtn span')[1]);
 				document
 					.querySelectorAll('#scales .sliderBtn span')[1]
 					.classList.remove('transparency');
@@ -200,19 +177,16 @@ const yearsAndMapScales = {
 		);
 	},
 	updateMinYear: function (sliderPosition) {
-		// console.log(sliderPosition);
-		// console.log(this);
 		this.years.minYear = this.years.allYears[sliderPosition];
 		updateWhereStatement();
 		resetQueryOffsetNumber();
 	},
 	updateMaxYear: function (sliderPosition) {
-		// console.log(sliderPosition);
 		this.years.maxYear = this.years.allYears[sliderPosition];
 		updateWhereStatement();
 		resetQueryOffsetNumber();
 	},
-	//setting values
+
 	setMinMaxMapScales: function (mapScales) {
 		return (
 			(this.scales.allScales = mapScales),
@@ -226,7 +200,6 @@ const yearsAndMapScales = {
 		this.scales.minScale = this.scales.allScales[sliderPosition];
 		this.scales.minScaleSliderPositionValue =
 			this.scales.allScales[sliderPosition];
-		// updateWhereStatement();
 		resetQueryOffsetNumber();
 	},
 	updateMaxScale: function (sliderPosition) {
@@ -234,9 +207,8 @@ const yearsAndMapScales = {
 		this.scales.maxScaleSliderPositionValue =
 			this.scales.allScales[sliderPosition];
 		resetQueryOffsetNumber();
-		// updateWhereStatement();
 	},
-	//NOTE: for the record, I'm not sure I like this approach and it's inclusion in this file, but...it works for now. I think it'll be a headache later on, though.
+
 	setZoomDependentScale: function () {
 		//this is the logic to determine what maps scales are available at certain zoom levels (which determines what slider values are available).
 		const zoomLevel = Math.round(queryConfig.mapView.zoom);
@@ -245,9 +217,6 @@ const yearsAndMapScales = {
 		maxScaleRangeHandle = document.querySelector('#scales .maxSlider');
 		const scaleTicks = document.querySelectorAll('#scales .tick');
 		const scaleNumber = document.querySelector('#scales .minSliderValue');
-
-		console.log(maxScaleRangeHandle.value);
-		console.log(minScaleRangeHandle.value);
 
 		//no restrictions on zoom level -- all scales (and all slider choices are available)
 		if (zoomLevel >= 9) {
@@ -278,8 +247,7 @@ const yearsAndMapScales = {
 		//if zoom-level is between 7 & 8, map scales from 1:65k-1:250k are available
 		if (zoomLevel === 7 || zoomLevel === 8) {
 			//sets the transparency style for the tick marks, tooltip and numbers
-			//if the index of the tick mark is less than the index of the perscribed mapScale, add the transparency.
-			//NOTE: stlye adjustments shouldn't be here.
+
 			scaleNumber.classList.add('transparency');
 			scaleTicks.forEach((tickMark, index) => {
 				if (index < scaleTicks.length - 3) {
@@ -339,9 +307,6 @@ const yearsAndMapScales = {
 			updateWhereStatement();
 		}
 		if (zoomLevel === 5 || zoomLevel === 6) {
-			//sets the transparency style for the tick marks, tooltip and numbers
-			//if the index of the tick mark is less than the index of the perscribed mapScale, add the transparency.
-			//NOTE: stlye adjustments shouldn't be here.
 			scaleNumber.classList.add('transparency');
 			scaleTicks.forEach((tickMark, index) => {
 				if (index < scaleTicks.length - 2) {
@@ -357,8 +322,6 @@ const yearsAndMapScales = {
 			) {
 				this.scales.maxScale = this.scales.allScales[minScaleRangeHandle.value];
 				this.scales.minScale = this.scales.allScales[maxScaleRangeHandle.value];
-				console.log(this.scales.maxScale);
-				console.log(this.scales.minScale);
 			}
 
 			if (
@@ -388,8 +351,6 @@ const yearsAndMapScales = {
 				return -1;
 			}
 
-			//this ternary is checking to see if the min/max values of the scale slider's selections fall within the appropriate range
-			//if the values of the selected scales don't pass the threshold, the minimum threshold will be used instead.
 			this.scales.maxScale =
 				this.scales.maxScale < this.scales.allScales[3]
 					? this.scales.allScales[3]
@@ -398,37 +359,21 @@ const yearsAndMapScales = {
 				this.scales.minScale < this.scales.allScales[3]
 					? this.scales.allScales[3]
 					: this.scales.minScale;
-			//this is INCREDIBLY UGLY. I don't like this.
+
 			CheckandAdjustScaleSliderHeaderStyle(3);
 			updateWhereStatement();
 		}
 		if (zoomLevel === 4) {
 			scaleTicks.forEach((tickMark, index) => {
-				// console.log(index, scaleTicks.length - 1);
 				if (index < scaleTicks.length - 1) {
 					tickMark.classList.add('transparency');
 				} else {
 					tickMark.classList.remove('transparency');
 				}
 			});
-			//This transparency added to the minimum scale value seems to be causing a problem occasionally during initialization.
-			//I think it's getting an error because it's possible that the min slider value doesn't exist yet.
-			//I'm going to comment it out. I'm not sure I need it at this level of detail(map-zoom).
-			// console.log(scaleNumber);
+
 			scaleNumber.classList.add('transparency');
 
-			// console.log(this.scales.maxScaleSliderPositionValue);
-			// console.log(this.scales.allScales[maxScaleRangeHandle.value]);
-			// console.log(maxScaleRangeHandle.value);
-			// if (
-			// 	this.scales.allScales[maxScaleRangeHandle.value] <
-			// 		this.scales.allScales[this.scales.allScales.length - 1] &&
-			// 	this.scales.allScales[maxScaleRangeHandle.value] <
-			// 		this.scales.allScales[this.scales.allScales.length - 1]
-			// ) {
-			// 	console.log('we got a hit');
-			// 	return -1;
-			// }
 			if (
 				parseInt(maxScaleRangeHandle.value) <
 				parseInt(minScaleRangeHandle.value)
@@ -451,10 +396,6 @@ const yearsAndMapScales = {
 				this.scales.allScales[minScaleRangeHandle.value] <
 					this.scales.allScales[this.scales.allScales.length - 1]
 			) {
-				// document.querySelectorAll('#scales .headerSpan').forEach((header) => {
-				// 	header.classList.add('transparency');
-				// });
-
 				const noMapsText = `<div class='helpText'>
       Change your map extent,
       or adjust filter selections,
@@ -488,10 +429,6 @@ const yearsAndMapScales = {
 
 const updateWhereStatement = () => {
 	queryConfig.where = `${mapYear} >= ${yearsAndMapScales.years.minYear} AND ${mapYear} <= ${yearsAndMapScales.years.maxYear} AND map_scale >= ${yearsAndMapScales.scales.minScale} AND map_scale <= ${yearsAndMapScales.scales.maxScale}`;
-	// console.log(queryConfig.where);
-	// console.log('from the whereClause update', queryConfig.resultOffset);
-	//NOTE: I shouldn't put this statement here, it should go in it's own function, but at the moment I'm testing to see if this resolves a bug
-	// queryConfig.resultOffset = 0;
 };
 
 const queryConfig = {
@@ -533,32 +470,25 @@ const queryConfig = {
 			spatialRel: this.spatialRelation,
 			returnGeometry: true,
 			inSR: 4326,
-			// returnQueryGeometry: true,
 			outFields: this.queryOutfields,
 			resultOffset: this.resultOffset,
 			resultRecordCount: this.resultRecordCount,
-			// NOTE: for the time-being we will not be using 'orderByFields'. This is to see how including 'OrderBy' can effect query-time.
 			orderByFields: this.sortChoice,
 			f: 'json',
 		});
 	},
 	queryMapData: function () {
 		if (isQueryInProcess) {
-			console.log('query already in progress');
 			return;
 		}
 		isQueryInProcess = true;
 		extentQuery(this.url, this.mapDataParams())
 			.then((response) => {
-				console.log(response);
 				this.topoMapsInExtent = response.data.features;
 
-				// console.log('new offset', this.resultOffset);
 				return this.topoMapsInExtent;
 			})
 			.then((listOfTopos) => {
-				//moved this down here to stop it from affecting the amount of maps returned
-				console.log('about to call map card creation');
 				this.resultOffset = this.resultOffset + this.resultRecordCount;
 				return this.processMapData(listOfTopos);
 			})
@@ -566,30 +496,16 @@ const queryConfig = {
 				if (yearsAndMapScales.setZoomDependentScale() === -1) {
 					return;
 				}
-				console.log('creating map card, hiding spinner');
-				createMapSlotItems(mapsList, this.mapView, url);
+				createMapSlotItems(mapsList, this.mapView);
 				hideSpinnerIcon();
 			})
 			.then(() => {
-				// this.resultOffset = this.resultOffset + this.resultRecordCount;
-				// console.log(this.resultOffset);
-				// if (this.resultRecordCount !== 25) {
-				// this.resultOffset = this.resultRecordCount;
-				// this.resultOffset = this.resultOffset + this.resultRecordCount;
-				// }
-				console.log('resetting query status to false');
 				isQueryInProcess = false;
 				return;
 			});
 	},
 	getNewMaps: function () {
-		//TODO: these two 'result' changes should be put together in a seperate function
-		// if (this.resultOffset !== 0) {
-		// 	console.log('resetting');
-		// 	(this.resultOffset = 0), (this.resultRecordCount = 25);
-		// }
 		this.resultOffset = 0;
-		console.log('this is the offset', this.resultOffset);
 		this.resultRecordCount = 25;
 
 		isQueryInProcess = true;
@@ -598,9 +514,7 @@ const queryConfig = {
 			hideMapCount(),
 			numberOfMapsinView(this.url, this.totalMapsInExtentParams())
 				.then((response) => {
-					// console.log(response);
 					this.totalMaps = response.data.count;
-					// console.log(this.totalMaps);
 				})
 				.then(() => {
 					updateMapcount(this.totalMaps);
@@ -615,20 +529,13 @@ const queryConfig = {
 						hideSpinnerIcon();
 						return;
 					}
-					// isQueryInProcess = false;
 					this.queryMapData();
 					return;
 				});
 		return;
 	},
 	checkAvailableNumberOfMaps: function () {
-		console.log('checking the this.resultOffset', this.resultOffset);
 		if (this.resultOffset === 0) {
-			// console.log(
-			// 	'this.resultOffset is 0',
-			// 	'this is the resultRecordCount',
-			// 	this.resultRecordCount
-			// );
 			this.resultOffset = this.resultRecordCount;
 		}
 
@@ -636,32 +543,20 @@ const queryConfig = {
 			this.resultOffset === this.totalMaps ||
 			this.resultOffset > this.totalMaps
 		) {
-			console.log('no query should be running');
 			return;
 		} else if (this.resultOffset + this.resultRecordCount >= this.totalMaps) {
 			showSpinnerIcon();
-			console.log('equal to');
+
 			this.resultRecordCount = this.totalMaps - this.resultOffset;
-			// console.log('the total offset is', this.resultOffset);
-			// console.log('the total result RecordCount is', this.resultRecordCount);
 
 			this.queryMapData();
 		} else if (this.resultOffset + this.resultRecordCount <= this.totalMaps) {
 			showSpinnerIcon();
-			// this.resultOffset = this.resultOffset + this.resultRecordCount;
-			// console.log(isQueryInProcess);
 			this.queryMapData();
 		}
-
-		// console.log('checking resultOffset', this.resultOffset);
-		// console.log(
-		// 	'checking resultRecords to be returned',
-		// 	this.resultRecordCount
-		// );
 	},
 	topoMapsInExtent: [],
 	processMapData: function (topos) {
-		// console.log(topos);
 		return topos.map((topo) => ({
 			topo,
 			OBJECTID: topo.attributes.OBJECTID,
@@ -729,20 +624,13 @@ const queryConfig = {
 		});
 	},
 	setSortChoice: function (choiceValue) {
-		// console.log('this is the choice for sorting', this.sortChoice);
 		return (this.sortChoice = sortOptions[choiceValue]);
 	},
 	extentQueryCall: function () {
-		// console.log('zoom-level for query:', this.mapView.zoom);
-		// console.log(yearsAndMapScales.setZoomDependentScale());
-		// console.log('running a test');
 		if (yearsAndMapScales.setZoomDependentScale() === -1) {
-			console.log('bad choices finally');
-			// console.log(this.where);
 			hideSpinnerIcon();
 			return;
 		}
-		// console.log(this.totalMapsInExtentParams);
 		extentQueryCall(this.url, this.totalMapsInExtentParams());
 	},
 };
@@ -756,27 +644,22 @@ const debounce = (func, wait) => {
 		clearTimeout(timer);
 
 		timer = setTimeout(() => func(...args), wait);
-		// console.log(wait);
-		// console.log(args);
 	};
 };
 
 const extentQueryCall = debounce((url, totalMapsInExtentParams) => {
-	// console.log('setting up query debounce. one second (literally).');
 	queryConfig.getNewMaps(url, totalMapsInExtentParams), 1000;
 });
 
 const setHashedTopoQueryParams = (oid) => {
 	const params = new URLSearchParams({
 		where: `${objectId} IN (${oid})`,
-		// where: `OBJECTID = ${oid}`,
 		returnGeometry: true,
 		outFields: queryConfig.queryOutfields,
 		f: 'json',
 	});
 
 	return params;
-	// console.log(params);
 };
 
 const isHashedToposForQuery = async (view) => {
@@ -798,7 +681,6 @@ const dataForTopoExports = async () => {
 		return;
 	}
 	const hashedToposForExport = activeExport();
-	// console.log(hashedToposForExport);
 	const paramsForExportTopos = setHashedTopoQueryParams(hashedToposForExport);
 
 	queryForHashedTopos(queryConfig.url, paramsForExportTopos)
@@ -812,10 +694,6 @@ const dataForTopoExports = async () => {
 };
 
 const getDataForHashedTopos = async (view) => {
-	// const arrayOfHashedMaps = window.location.hash.substring(1).split(',');
-
-	// console.log(response);
-
 	if (!checkForPreviousTopos()) {
 		return;
 	}
@@ -827,31 +705,20 @@ const getDataForHashedTopos = async (view) => {
 
 	queryForHashedTopos(queryConfig.url, paramsForHashedTopos)
 		.then((hashedTopoData) => {
-			// console.log(hashedTopoData);
 			const hashDataArray = hashedTopoData.data.features;
-			// console.log(hashDataArray);
 			return queryConfig.processMapData(hashDataArray);
 		})
 		.then((topoMapData) => {
-			// topoMapData[topoMapData.length - 1].previousPinnedMap = true;
-			// console.log(topoMapData);
-			// console.log(queryConfig.mapView);
-
-			// console.log(originalOrderHashedTopos);
-
 			topoMapData.map((mapData) => {
 				const properIndex = originalOrderHashedTopos.indexOf(
 					`${mapData.OBJECTID}`
 				);
-				// console.log(properIndex);
 				originalOrderHashedTopos.splice(properIndex, 1, mapData);
 			});
 
-			// console.log(originalOrderHashedTopos);
 			originalOrderHashedTopos.map((singleMap) => {
 				singleMap.previousPinnedMap = true;
-				// console.log(singleMap);
-				createMapSlotItems([singleMap], view, url);
+				createMapSlotItems([singleMap], view);
 			});
 			return originalOrderHashedTopos;
 		});
@@ -881,7 +748,4 @@ export {
 	getMinScale,
 	getMaxScale,
 	isHashedToposForQuery,
-	// getAllScalesAndYears,
-	// renderTopoMap,
-	// removeTopoMap,
 };

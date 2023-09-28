@@ -22,7 +22,7 @@ import {
 	setUserToken,
 	addWebMapToUserPortal,
 } from '../../support/AddItemRequest.js?v=0.01';
-import { authorization } from '../../support/OAuth.js?v=0.01';
+import { getCredentials } from '../../support/OAuth.js?v=0.01';
 
 const promptBox = document.querySelector('.prompt-box');
 
@@ -58,14 +58,11 @@ const setViewInfo = (view) => {
 const mapExportProcess = (mapDetails) => {
 	summaryText = '';
 	topoLayerInfo.length = 0;
-	console.log(mapDetails);
 
 	promptBox.querySelector('.prompt-box .tags').value = tags;
 
-	//NOTE: this still needs to get cleaned up and move elsewhere
 	const mapDetailSummary = mapDetails
 		.map((mapDetail) => {
-			// console.log(mapDetail);
 			const mapName =
 				mapDetail.mapName || mapDetail.querySelector('.name').innerHTML;
 			const mapYear =
@@ -76,9 +73,6 @@ const mapExportProcess = (mapDetails) => {
 			const mapInfo = `${mapYear} ${mapName} ${mapScale}`;
 
 			const oid = mapDetail.OBJECTID || mapDetail.attributes.oid.value;
-
-			// mapDetail.querySelector('.map-list-item').attributes.oid.value.value;
-			console.log(url);
 
 			const layerData = {
 				title: mapInfo,
@@ -114,14 +108,10 @@ const mapExportProcess = (mapDetails) => {
 	exportText.summary = summaryText;
 
 	fillTextFields(exportText);
-	//NOTE: you're going to have to put these layers in an array an map over them
-	//use ago assist to figure out how to set up these layers.
-	// addAdditionalOperationalLayers();
+
 	openExportPrompt();
 	addExportBtn();
 	exportTitleQC();
-
-	//after setting up object set up if(title === 'terrain'){topoLayerInfo.push(layer)}else{topoLayerInfo.unshift(layer);}
 };
 
 const addAdditionalOperationalLayers = () => {
@@ -155,7 +145,6 @@ const createWebMapExportDefinition = () => {
 				baseMapLayers: baseMapInfo,
 				title: 'Outdoor',
 			},
-			//Adding this initialState value to see
 			initialState: {
 				viewpoint: {
 					scale: userView.scale,
@@ -185,10 +174,18 @@ const createWebMapExportDefinition = () => {
 };
 
 const sendExportRequestAndClose = (webMapDef) => {
-	authorization.getCredentials().then((credentials) => {
-		webMapDef.token = credentials.token;
-		setUserToken(credentials);
+	getCredentials().then((credentials) => {
+		if (credentials) {
+			webMapDef.token = credentials.token;
+			setUserToken(credentials);
+		}
 		addWebMapToUserPortal(webMapDef).then((response) => {
+			if (response.status !== 200) {
+				exportOver();
+				failureMessagePrompt();
+				return;
+			}
+
 			if (response.data.success === true) {
 				exportOver();
 				successMessagePrompt();

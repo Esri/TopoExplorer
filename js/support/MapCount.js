@@ -10,7 +10,6 @@ queryNotificationMessage.innerHTML = 'gathering topographic maps...';
 
 const hideMapCount = () => {
 	if (isMobileFormat() && document.querySelector('.mobile-header .mapCount')) {
-		// document.querySelector('.mobile-header .mapCount');
 		document.querySelector('.mobile-header .mapCount').classList.add('hidden');
 	}
 
@@ -28,8 +27,6 @@ const updateMapcount = (number) => {
 			.querySelector('.mobile-header .mapCount')
 			.classList.remove('hidden');
 	}
-
-	console.log(number);
 
 	mapCount.innerHTML = number.toLocaleString();
 	mapCount.classList.remove('hidden');

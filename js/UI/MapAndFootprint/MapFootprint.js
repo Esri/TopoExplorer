@@ -6,17 +6,7 @@ const mapFootprint = (mapCardID, geometry) => {
 			GraphicsLayer,
 			Graphic
 		) {
-			// console.log(geometry);
-			// console.log(JSON.parse(geometry));
-			// const mapObj = JSON.parse(geometry);
-			// console.log(mapObj.mapBoundry);
 			const mapOutline = JSON.parse(geometry);
-			// console.log(mapOutline);
-			// // console.log(geometry.rings);
-			// console.log(JSON.parse(geometry));
-			// console.log(mapOutline.rings);
-
-			// console.log(JSON.stringify(geometry[0]));
 
 			const footprintPolygon = {
 				type: 'polygon',
@@ -71,15 +61,6 @@ const mapFootprint = (mapCardID, geometry) => {
 				},
 			};
 
-			// {
-			// 	type: 'simple-fill',
-			// 	color: '#7f7f7f',
-			// 	outline: {
-			// 		color: '#FFFFFF',
-			// 		width: mapFootprintOutline,
-			// 	},
-			// };
-
 			const mapFootprintGraphic = new Graphic({
 				geometry: footprintPolygon,
 				symbol: footprintFill,
@@ -87,10 +68,6 @@ const mapFootprint = (mapCardID, geometry) => {
 					id: mapCardID,
 				},
 			});
-
-			// const mapFootprintLayer = new GraphicsLayer({
-			// 	graphics: [mapFootprintGraphic],
-			// });
 
 			resolve(mapFootprintGraphic);
 		});

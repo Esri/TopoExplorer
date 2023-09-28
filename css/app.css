@@ -33,6 +33,37 @@ main {
   width: 100%;
 }
 
+::-webkit-scrollbar {
+  width: 8px; 
+  -webkit-border-radius: 1ex;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--thumbBG);
+  -webkit-border-radius: 1ex;
+  width: 8px;
+}
+
+
+::-webkit-scrollbar-corner {
+  background: none;
+}
+
+::-webkit-scrollbar {
+  width: 8px; 
+  -webkit-border-radius: 1ex;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--thumbBG);
+  -webkit-border-radius: 1ex;
+  width: 8px;
+}
+
+::-webkit-scrollbar-corner {
+  background: none;
+}
+
 
 button {
   display: flex;
@@ -48,12 +79,7 @@ button {
   transition: background 250ms ease-in-out, 
               transform 150ms ease;
   appearance: none;
-  /* -moz-appearance: none; */
 }
-
-/* button:hover {
-  background-color: #58677a
-} */
 
 .bold {
   font-weight: bold;
@@ -114,10 +140,6 @@ button {
   align-items: center;
 }
 
-/* .export-prompt div{
-  font-size: 16px;
-} */
-
 .close-btn {
   text-align: right;
 }
@@ -138,7 +160,6 @@ button {
   border: 0;
   border-radius: 3px;
   height: 2.5rem;
-  /* min-height: 2.5rem; */
   max-height: 4rem;
   min-width: 100%;
   max-width: 100%;
@@ -201,14 +222,12 @@ padding: 0 0 3rem 0
 
 #viewDiv .esri-ui-corner #user-icon.esri-component .profile {
   border-radius: 50%;
-  /* border: 2px solid #F1F4F5; */
   height: 36px;
   width: 36px;
   position: relative;
 }
 
 #viewDiv .esri-ui-corner #user-icon.esri-component .profile img {
-  /* border-radius: 50%; */
   border-radius: 50%;
   border: 2px solid #F1F4F5;
   height: 36px;
@@ -277,7 +296,6 @@ border-radius: 0;
   width: 20rem;
   justify-content: space-evenly;
   transform: translate(15px, 14px);
-  /* padding: 0 10px; */
   background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%);
 }
 
@@ -326,7 +344,6 @@ main .map-list-item.mobile{
 
 #sideBarWrapper {
   height: 100%;
-  /* height: calc(100vh - 1rem); */
   background-color: #e7ebee;
   transition: 0.5s ease;
 }
@@ -342,8 +359,6 @@ main .map-list-item.mobile{
 }
 
 .map-mode-container {
-  /* display: flex; */
-  /* padding: 0 1rem; */
   margin: 1rem auto ;
   width: 100%;
 }
@@ -367,14 +382,6 @@ background: none;
 .total-maps{
   display: flex;
 }
-
-/* .iconWrapper:hover ~ .tooltipText{
-  visibility: visible;
-  opacity: 1;
-} */
-/* .mapCount {
- padding: 0 0.25rem 0 0;
-} */
 
 .map-mode-container .action-area .explorer-mode-btn{
   width: 50%;
@@ -411,28 +418,15 @@ background: none;
 .mapsFooter .effect-two {
   background: linear-gradient(90deg, rgba(231,235,238,1) 0%, rgba(231,235,238,0) 50%, rgba(231,235,238,1) 100%);
 }
-/* 
-.mapsFooter .map-count-container {
-  display: flex;
-  align-items:center;
-} */
+
 
 .queryIndicator {
-   /* margin: 0 0.25rem; */
   animation: spinner 1s infinite;
 }
 
 @keyframes spinner {
   to {transform: rotate(360deg);}
 }
-
-
-/*
-.mapsFooter .map-count-container .mapCount {
-  
-  text-align: center;
-  margin: 0 10px;
-} */
 
 #header{
   display: flex; 
@@ -445,7 +439,6 @@ background: none;
 
 .heading{
   width: 50%;
-  /* font-size: 20px; */
   font-size: 1.4rem;
   line-height: 1;
   padding: 0 10px;
@@ -469,9 +462,6 @@ background: none;
   filter: invert(1);
 }
 
-/* .mode-options {
-  height:40px;
-} */
 
  #filtersAndSorting{
   padding: 10px 0 10px 0;
@@ -483,12 +473,8 @@ background: none;
 }
 .pinned-mode-options {
 flex: auto;
-/* adjusting justify-content to flex-start for now*/
 justify-content: space-around;
-/* justify-content: flex-start; */
-/* width: 100%; */
 margin: 0px 20px 0 5px;
-/* NOTE: using the transform-translate to shift the options to the right until other modes are added */
 transform: translate(24px, 0px);
 }
 
@@ -520,7 +506,6 @@ transform: translate(24px, 0px);
   border-left: 1px solid #ffffff;
   padding: 1.5rem 0;
   margin: 0 -0.7rem;
-  /* height: 100%; */
 }
 
 .animation-slider-container{
@@ -546,12 +531,9 @@ display: flex;}
 }
 
 .animation-second-row input[type="range"] {
-  /* position: relative; */
-  /* z-index: 1; */
   appearance: none; 
   background: transparent;
   background-repeat: no-repeat;
-  /* pointer-events: all; */
   border-radius: 3px;
   width: 100%;
 }
@@ -645,7 +627,6 @@ display: flex;}
   justify-content: space-around;
 }
 .prompt-btns{
-  /* display: inline; */
   margin: 10px 0;
   padding: 10px;
   border-radius: 4px;
@@ -676,7 +657,6 @@ display: flex;}
 .sortOrder{
   width: 10%; 
   margin: auto;
-  /* position: relative */
 }
 
 .sortOptions {
@@ -709,12 +689,10 @@ display: flex;}
 }
 
 button .filterAndSortBtn:active {
-  /* background-color: #505d6e; */
   transform: translateY(1px);
   transition: transform 150ms ease;
 }
 
-/* I don't know why  have two different instances of the 'explore' and 'pinned' selectors when they have the same traits*/
 #exploreList{
   scrollbar-width: thin;
   max-height: 100vh;
@@ -735,7 +713,6 @@ button .filterAndSortBtn:active {
 }
 
 #exploreList .notificationMessage{
-/* padding: 0 2rem; */
 text-align: center;
 font-size: 1rem;
 font-style: italic;

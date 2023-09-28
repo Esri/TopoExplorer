@@ -21,7 +21,6 @@ let accountURL;
 
 const setUserContentURL = (urlKey, urlBase, url) => {
 	//NOTE: this conditional is set to determine if the user has logged in, and if a url for an exported webmap needs to be parsed. I think I could come up with a different answer other than using this conditional?
-	console.log(urlKey, urlBase, url);
 	if (!urlBase) {
 		return;
 	}
@@ -36,7 +35,6 @@ const setUserContentURL = (urlKey, urlBase, url) => {
 
 const setWebMapURL = (itemID) => {
 	webMapURL = `${accountURL}/home/item.html?id=${itemID}`;
-	console.log(webMapURL);
 };
 
 const exportFields = `
@@ -130,13 +128,6 @@ const addPrmoptBoxTransparency = () => {
 	promptBox.classList.add('transparency');
 };
 
-// const removeProcessingIndicator = () => {
-// 	indicator.classList.add('invisible');
-// };
-// const removePrmoptBoxTransparency = () => {
-// 	promptBox.classList.remove('transparency');
-// };
-
 const removeExportBtn = () => {
 	exportBtnContainer.classList.add('invisible');
 	exportBtnContainer.classList.remove('flex');
@@ -186,7 +177,6 @@ const exportTitleQC = () => {
 	promptBox
 		.querySelector('.export-prompt textarea')
 		.addEventListener('input', (event) => {
-			// console.log('changing');
 			event.preventDefault();
 			if (
 				promptBox.querySelector('.export-prompt textarea').value.trim() === ''
