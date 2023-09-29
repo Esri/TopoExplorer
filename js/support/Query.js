@@ -24,6 +24,9 @@ const extentQuery = async (url, params) => {
 				!isQuerying ? resolve(response) : (response = []);
 			})
 			.catch((error) => {
+				if (error.message.includes('canceled')) {
+					return;
+				}
 				console.log(error);
 			});
 	});
@@ -46,6 +49,9 @@ const numberOfMapsinView = async (url, params) => {
 				resolve(response);
 			})
 			.catch((error) => {
+				if (error.message.includes('canceled')) {
+					return;
+				}
 				console.log(error);
 			});
 	});

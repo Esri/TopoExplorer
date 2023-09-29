@@ -57,7 +57,7 @@ const getTheYear = (index, value) => {
 		return;
 	}
 
-	if (parseInt(minYearSlider.value) < parseInt(maxYearSlider.value)) {
+	if (parseInt(minYearSlider.value) <= parseInt(maxYearSlider.value)) {
 		yearsAndMapScales.updateMaxYear(maxYearSlider.value);
 		yearsAndMapScales.updateMinYear(minYearSlider.value);
 		queryConfig.extentQueryCall();
@@ -76,7 +76,7 @@ const getTheScale = (index, value) => {
 		return;
 	}
 
-	if (parseInt(minScaleSlider.value) < parseInt(maxScaleSlider.value)) {
+	if (parseInt(minScaleSlider.value) <= parseInt(maxScaleSlider.value)) {
 		yearsAndMapScales.updateMaxScale(maxScaleSlider.value);
 		yearsAndMapScales.updateMinScale(minScaleSlider.value);
 		queryConfig.extentQueryCall();
