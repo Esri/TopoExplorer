@@ -33,6 +33,10 @@ main {
   width: 100%;
 }
 
+.esri-view .esri-view-surface--inset-outline:focus::after {
+  outline: none;
+}‍‍‍
+
 ::-webkit-scrollbar {
   width: 8px; 
   -webkit-border-radius: 1ex;
