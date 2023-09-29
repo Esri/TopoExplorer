@@ -64,10 +64,9 @@ const initView = () => {
 				resultGraphicEnabled: false,
 				popupEnabled: false,
 				includeDefaultSources: false,
-				countryCode: 'US',
 				sources: [
 					{
-						url: 'https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer',
+						url: 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer',
 						singleLineFieldName: 'SingleLine',
 						outFields: ['Addr_type'],
 						name: 'ArcGIS World Geocoding Service',
