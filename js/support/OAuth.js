@@ -39,8 +39,6 @@ const authorization = async () => {
 				appId: appId,
 				preserveUrlHash: true,
 				popup: false,
-				expiration: 20160,
-				portalUrl: config.portalUrl,
 			});
 
 			esriId.registerOAuthInfos([info]);

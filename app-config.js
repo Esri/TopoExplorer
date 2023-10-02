@@ -1,5 +1,3 @@
-// const isDevEnvironment = false
-
 const productionEnv = {
 	appId: '8dK7qAkws1YRY1Gq',
 	webMap: {
@@ -34,7 +32,6 @@ const developmentEnv = {
 
 const config = {
 	environment: '',
-	portalUrl: 'https://www.arcgis.com',
 	defaultMapSettings: {
 		center: [-98.5357, 40.1549],
 		zoom: 4,

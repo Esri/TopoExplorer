@@ -523,13 +523,12 @@ const addPreviouslyPinnedTopoToMap = (target, serviceURL) => {
 };
 
 const setTopoOpacity = (oid) => {
-	if (!document.querySelector(`.map-list-item[oid="${oid}"]`)) {
-		//if an oid is not found in any of mapCards, set the opacity of the slider to it's default
-		return 100;
-	}
+	//sets the slider opacity position of generated map cards using the topo layer's opacity value
+
 	findTopoLayer(oid).then((topoLayer) => {
 		const opacityValue = parseInt(0 + Math.round(topoLayer.opacity * 100));
 
+		//updating the opacity value on the UI of the mapCard in the explore list
 		explorerList
 			.querySelector(`.map-list-item[oid="${oid}"]`)
 			.querySelector('.slider-range-color').style.width = `${opacityValue}%`;

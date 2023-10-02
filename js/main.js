@@ -8,8 +8,8 @@ import {
 	queryConfig,
 	isHashedToposForQuery,
 } from './support/QueryConfig.js?v=0.01';
-//You should remove this import. You probably don't need this here.
-import { isScrollAtPageEnd } from './support/eventListeners/ScrollListener.js?v=0.01';
+
+// import { isScrollAtPageEnd } from './support/eventListeners/ScrollListener.js?v=0.01';
 
 import { updateHashParams } from './support/HashParams.js?v=0.01';
 import { getYearsAndScales } from './support/YearsAndScalesProcessing.js?v=0.01';
@@ -91,10 +91,10 @@ const initApp = async () => {
 				});
 			});
 
-		const isReadyForMoreMaps = (value) =>
-			value ? queryConfig.checkAvailableNumberOfMaps() : null;
+		// const isReadyForMoreMaps = (value) =>
+		// 	value ? queryConfig.checkAvailableNumberOfMaps() : null;
 
-		isScrollAtPageEnd(isReadyForMoreMaps);
+		// isScrollAtPageEnd(isReadyForMoreMaps);
 	} catch (error) {
 		//error handeling for any intialization issues
 		console.error('problem initalizing app', error);
