@@ -1,4 +1,5 @@
 let parsedHashParams = null;
+// let exportParams;
 
 const parseHashParams = () => {
 	if (parsedHashParams) {
@@ -26,6 +27,7 @@ const updateHashParams = (data) => {
 		parsedHashParams.LoD = data.zoom;
 	}
 
+	// console.log(exportParams);
 	const exportParams = parsedHashParams.export
 		? `&export=${parsedHashParams.export}`
 		: '';
@@ -34,6 +36,7 @@ const updateHashParams = (data) => {
 		parsedHashParams.loc
 	}&LoD=${parsedHashParams.LoD}${exportParams}`;
 
+	//replacing the window location with the new information
 	window.location.hash = hashString;
 };
 
@@ -43,12 +46,13 @@ const invertHashedMapOrder = () => {
 	updateHashParams(invertedMapOrder);
 };
 const addHashExportPrompt = (mapDetails) => {
-	const mapIDs = mapDetails
+	const mapsForExport = mapDetails
 		.map((mapDetail) => {
 			return mapDetail.attributes.oid.value;
 		})
 		.join(',');
-	window.location.hash += `&export=${mapIDs}`;
+
+	window.location.hash += `&export=${mapsForExport}`;
 };
 
 const hashCoordinates = () => {
@@ -85,6 +89,8 @@ const activeExport = () => {
 
 const removeExportParam = () => {
 	parseHashParams;
+
+	parsedHashParams.export = null;
 
 	const hashString = `maps=${parsedHashParams.maps || ''}&loc=${
 		parsedHashParams.loc

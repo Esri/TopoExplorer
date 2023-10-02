@@ -118,7 +118,7 @@ const CheckandAdjustScaleSliderHeaderStyle = (availableScaleIndex) => {
 		}
 	}
 	if (
-		parseInt(maxScaleRangeHandle.value) < parseInt(minScaleRangeHandle.value)
+		parseInt(maxScaleRangeHandle.value) <= parseInt(minScaleRangeHandle.value)
 	) {
 		if (maxScaleRangeHandle.value >= availableScaleIndex) {
 			document
