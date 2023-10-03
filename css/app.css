@@ -479,7 +479,7 @@ background: none;
 flex: auto;
 justify-content: space-around;
 margin: 0px 20px 0 5px;
-transform: translate(24px, 0px);
+transform: translate(5px, 0px);
 }
 
 .pinned-mode-sub-section {
