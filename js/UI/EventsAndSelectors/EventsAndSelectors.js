@@ -173,4 +173,18 @@ exploreList.addEventListener('scroll', () => {
 	}
 });
 
+document
+	.querySelector('.icon .play-pause')
+	.addEventListener('click', (event) => {
+		console.log('play click');
+		console.log(document.querySelector('canvas'));
+		event.target
+			.closest('.icon')
+			.querySelector('.play')
+			.classList.toggle('invisible');
+		event.target
+			.closest('.icon')
+			.querySelector('.pause')
+			.classList.toggle('invisible');
+	});
 export { addAccountImage, isMobileFormat };

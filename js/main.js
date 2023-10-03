@@ -37,7 +37,6 @@ const initApp = async () => {
 
 		view
 			.when(() => {
-				console.log(document.querySelector('canvas'));
 				if (oauthRespose) {
 					addAccountImage(oauthRespose);
 					setAccountData(oauthRespose);
