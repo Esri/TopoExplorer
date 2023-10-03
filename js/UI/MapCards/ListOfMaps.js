@@ -1065,4 +1065,18 @@ const addDragEventListener = () => {
 	});
 };
 
-export { clearMapsList, createMapSlotItems, opacitySliderEvent, zoomEvent };
+const mapsCheck = () => {
+	pinnedCardIDsArray.map((topoID) => {
+		findTopoLayer(topoID).then((layer) => {
+			console.log(layer);
+		});
+	});
+};
+
+export {
+	clearMapsList,
+	createMapSlotItems,
+	opacitySliderEvent,
+	zoomEvent,
+	mapsCheck,
+};
