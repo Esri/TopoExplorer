@@ -25,7 +25,7 @@ import { setAccountData } from './support/AddItemRequest.js?v=0.01';
 
 const initApp = async () => {
 	try {
-		console.log('production trouble-shoot brnach');
+		console.log('production trouble-shoot branch');
 		const oauthRespose = await authorization();
 		const view = await initView();
 		const sliderValues = await getYearsAndScales(view);
