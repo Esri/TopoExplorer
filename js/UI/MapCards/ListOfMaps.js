@@ -418,8 +418,6 @@ const isCurrentMapPinned = (targetMapCard, callback) => {
 		targetMapCard.querySelector('.map-list-item').attributes.oid.value;
 
 	if (getPinnedTopoIndex(oid) === -1) {
-		console.log(targetMapCard.querySelector('input'));
-
 		const opacityValueForNewPin = targetMapCard.querySelector('input').value;
 		targetMapCard.querySelector('input').attributes.value.value =
 			opacityValueForNewPin;
