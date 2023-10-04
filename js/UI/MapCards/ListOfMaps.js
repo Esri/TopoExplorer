@@ -1065,10 +1065,20 @@ const addDragEventListener = () => {
 	});
 };
 
-const mapsCheck = () => {
+const animationStart = () => {
 	pinnedCardIDsArray.map((topoID) => {
 		findTopoLayer(topoID).then((layer) => {
 			console.log(layer);
+			layer.visible = false;
+		});
+	});
+};
+
+const animationStop = () => {
+	pinnedCardIDsArray.map((topoID) => {
+		findTopoLayer(topoID).then((layer) => {
+			console.log(layer);
+			layer.visible = true;
 		});
 	});
 };
@@ -1078,5 +1088,6 @@ export {
 	createMapSlotItems,
 	opacitySliderEvent,
 	zoomEvent,
-	mapsCheck,
+	animationStart,
+	animationStop,
 };
