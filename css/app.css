@@ -177,9 +177,9 @@ padding: 0 0 3rem 0
 }
 
 .export-prompt textarea.summary {
-  min-height: 6rem;
+  min-height: 12rem;
   height: auto;
-  max-height: 12rem;
+  max-height: 20rem;
   line-height: 1.5rem;
 }
 
