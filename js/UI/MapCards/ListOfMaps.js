@@ -715,7 +715,7 @@ const closeMapCard = (target) => {
 };
 
 const isMapCardOpen = (target, targetOID) => {
-	if (isMobileFormat) {
+	if (isMobileFormat()) {
 		removeTopoFromMap(targetOID);
 	}
 	const targetTopLevel = target.closest('.map-list-item');
