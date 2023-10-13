@@ -17,12 +17,18 @@ import {
 import { getCredentials } from '../../support/OAuth.js?v=0.01';
 import { setUserToken } from '../../support/AddItemRequest.js?v=0.01';
 import { config } from '../../../app-config.js?v=0.01';
+import {
+	isAnimating,
+	endAnimation,
+	speeds,
+} from '../Animation/animation.js?v=0.01';
 
 const sideBarElement = document.querySelector('#sideBar');
 const mapsList = document.querySelector('#exploreList');
 const mapModes = document.querySelector('.map-mode-container .action-area');
 const explorerList = document.querySelector('#exploreList');
 const pinList = document.querySelector('#pinnedList');
+const animationSpeed = document.querySelector('.animation-speed-value');
 
 const currentStateOfPinnedList = () =>
 	Array.from(pinList.querySelectorAll('.mapCard-container'));
@@ -31,6 +37,8 @@ const currentStateOfPinnedList = () =>
 
 const pinnedCardIDsArray = [];
 const pinnedCardHTMLArray = [];
+let listOfPinnedIDs = pinnedCardIDsArray;
+let listOfPinnedCards = pinnedCardHTMLArray;
 
 //NOTE I think this should be moved to the mapCount file. I have a number of related actions happening there. It's kind of confusing in the DOM if I don't put those things together.
 const noMapsHelpText = `<div class='helpText'>
@@ -121,7 +129,7 @@ const createMapSlotItems = (list, view) => {
 
               <div class="animate checkbox hidden">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="1 0 20 20" height="16" width="16">
-                  <path class="" d="M5.5 12L2 8.689l.637-.636L5.5 10.727l8.022-7.87.637.637z"></path>
+                  <path class="checkmark" d="M5.5 12L2 8.689l.637-.636L5.5 10.727l8.022-7.87.637.637z"></path>
                 </svg>
               </div>
 
@@ -271,6 +279,9 @@ const clearMapsList = () => {
 
 //toggling between the map modes.
 const toggleListVisibility = () => {
+	if (isAnimating) {
+		return;
+	}
 	explorerList.classList.toggle('invisible');
 	document.querySelector('#filtersAndSorting').classList.toggle('flex');
 	document.querySelector('#filtersAndSorting').classList.toggle('invisible');
@@ -828,6 +839,16 @@ const reorderMapLayers = () => {
 sideBarElement.addEventListener('click', (event) => {
 	const eventTarget = event.target;
 
+	if (eventTarget.closest('.animate.checkbox')) {
+		toggleAnimateCheckbox(eventTarget);
+	}
+
+	if (isAnimating) {
+		event.stopPropagation();
+		event.preventDefault();
+		return;
+	}
+
 	if (event.target.closest('.pinned-mode-options')) {
 		reorderPinListEvent(event);
 		unpinAll(event);
@@ -848,10 +869,6 @@ sideBarElement.addEventListener('click', (event) => {
 
 	if (!eventTarget.closest('.action-container')) {
 		isMapCardOpen(eventTarget, targetOID);
-	}
-
-	if (eventTarget.closest('.animate.checkbox')) {
-		toggleAnimateCheckbox(eventTarget);
 	}
 
 	pinEvent(eventTarget, targetMapCard, targetOID);
@@ -896,6 +913,9 @@ sideBarElement.addEventListener(
 	'mouseenter',
 	(event) => {
 		if (isMobileFormat()) {
+			return;
+		}
+		if (isAnimating) {
 			return;
 		}
 
@@ -988,6 +1008,9 @@ const handleDragStart = (event) => {
 		return;
 	}
 
+	if (isAnimating) {
+		endAnimation();
+	}
 	movingCard = event.target.closest('.mapCard-container');
 	movingCardItem = event.target.closest('.map-list-item');
 
@@ -1020,15 +1043,18 @@ const handleDragging = (event) => {
 	}
 };
 
+// let listOfPinnedIDs = pinnedCardIDsArray;
+// let listOfPinnedCards = pinnedCardHTMLArray;
+
 const endDrag = (event) => {
 	event.preventDefault();
 	movingCard.classList.remove('drag-sort-background');
 	movingCardItem.classList.remove('drag-sort-active');
-	const listOfPinnedCards = Array.prototype.slice
+	listOfPinnedCards = Array.prototype.slice
 		.call(pinList.querySelectorAll('.map-list-item'))
 		.reverse();
 
-	const listOfPinnedIDs = listOfPinnedCards.map((mapHTML) => {
+	listOfPinnedIDs = listOfPinnedCards.map((mapHTML) => {
 		return mapHTML.attributes.oid.value;
 	});
 
@@ -1065,29 +1091,12 @@ const addDragEventListener = () => {
 	});
 };
 
-const animationStart = () => {
-	pinnedCardIDsArray.map((topoID) => {
-		findTopoLayer(topoID).then((layer) => {
-			console.log(layer);
-			layer.visible = false;
-		});
-	});
-};
-
-const animationStop = () => {
-	pinnedCardIDsArray.map((topoID) => {
-		findTopoLayer(topoID).then((layer) => {
-			console.log(layer);
-			layer.visible = true;
-		});
-	});
-};
-
 export {
 	clearMapsList,
 	createMapSlotItems,
 	opacitySliderEvent,
 	zoomEvent,
-	animationStart,
-	animationStop,
+	findTopoLayer,
+	currentStateOfPinnedList,
+	mapHaloGraphicLayer,
 };

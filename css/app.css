@@ -211,6 +211,7 @@ padding: 0 0 3rem 0
 
 #viewDiv{
   width: 100%;
+  position: relative;
 }
 
 #viewDiv .esri-ui-top-right{

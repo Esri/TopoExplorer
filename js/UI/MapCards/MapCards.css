@@ -65,6 +65,16 @@
   6px 6px 8px #B3BED0;
   }
 
+.map-list-item.animating {
+  cursor: pointer;
+  border-radius: 12px;
+  background: #F7F9F9;
+  box-shadow:
+  inset 6px 6px 6px #EAEEF1,
+  -6px -6px 8px #FFFFFF,
+  6px 6px 8px #B3BED0;
+  }
+
 #exploreList .map-list-item:active{
   border-radius: 12px;
   background: #F7F9F9;
