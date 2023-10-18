@@ -75,16 +75,20 @@ const initDualSlider = (
 `;
 
 	const zoomDependentSelections = () => {
-		if (view.zoom == 4) {
+		if (view.zoom >= 4 && view.zoom < 5) {
+			console.log(values.length - 1);
 			return values.length - 1;
 		}
-		if (view.zoom == 5 || view.zoom == 6) {
+		if (view.zoom >= 5 && view.zoom < 7) {
+			console.log(values.length - 2);
 			return values.length - 2;
 		}
-		if (view.zoom == 7 || view.zoom == 8) {
+		if (view.zoom >= 7 && view.zoom < 8) {
+			console.log(values.length - 3);
 			return values.length - 3;
 		}
 		if (view.zoom >= 9) {
+			console.log(values.length);
 			return -1;
 		}
 	};

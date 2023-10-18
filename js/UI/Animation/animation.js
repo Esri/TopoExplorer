@@ -1,37 +1,13 @@
-import // listOfPinnedCards,
-// listOfPinnedIDs,
-// animationStart,
-'../MapCards/ListOfMaps.js?v=0.01';
-
 import {
 	animationStart,
-	setInitialDuration,
+	// setInitialDuration,
 } from '../Animation/AnimatingLayers.js?v=0.01';
-
 import { preventingMapInteractions } from '../EventsAndSelectors/EventsAndSelectors.js?v=0.01';
 
 //this variable is used to determine if the button events are disabled during animation
 let isAnimating = false;
-const speeds = [];
-
-//move thi to animatedlayers
-const animationSpeeds = (() => {
-	const animationFastSpeed = 500;
-	const animationSlowSpeed = 2000;
-	let speedSetting = animationSlowSpeed;
-	speeds.push(animationSlowSpeed);
-	const speedLevelIntervals = (animationSlowSpeed - animationFastSpeed) / 10;
-	while (speedSetting !== animationFastSpeed) {
-		speedSetting = speedSetting - speedLevelIntervals;
-		speeds.push(speedSetting);
-	}
-	setInitialDuration(speeds);
-})();
-console.log(speeds);
 
 const beginAnimation = () => {
-	// console.log(listOfPinnedCards);
-	// console.log(listOfPinnedIDs);
 	isAnimating = true;
 	togglePlayPause();
 	adjustUIForAnimation();
@@ -117,5 +93,5 @@ export {
 	endAnimation,
 	resetUIAfterAnimation,
 	isAnimating,
-	speeds,
+	// speeds,
 };

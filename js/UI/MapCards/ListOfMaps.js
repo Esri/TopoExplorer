@@ -17,18 +17,13 @@ import {
 import { getCredentials } from '../../support/OAuth.js?v=0.01';
 import { setUserToken } from '../../support/AddItemRequest.js?v=0.01';
 import { config } from '../../../app-config.js?v=0.01';
-import {
-	isAnimating,
-	endAnimation,
-	speeds,
-} from '../Animation/animation.js?v=0.01';
+import { isAnimating, endAnimation } from '../Animation/animation.js?v=0.01';
 
 const sideBarElement = document.querySelector('#sideBar');
 const mapsList = document.querySelector('#exploreList');
 const mapModes = document.querySelector('.map-mode-container .action-area');
 const explorerList = document.querySelector('#exploreList');
 const pinList = document.querySelector('#pinnedList');
-const animationSpeed = document.querySelector('.animation-speed-value');
 
 const currentStateOfPinnedList = () =>
 	Array.from(pinList.querySelectorAll('.mapCard-container'));
@@ -1042,9 +1037,6 @@ const handleDragging = (event) => {
 		movingCard.parentNode.insertBefore(movingCard, dropTargetSlot);
 	}
 };
-
-// let listOfPinnedIDs = pinnedCardIDsArray;
-// let listOfPinnedCards = pinnedCardHTMLArray;
 
 const endDrag = (event) => {
 	event.preventDefault();

@@ -4,7 +4,7 @@ import {
 	currentStateOfPinnedList,
 } from '../MapCards/ListOfMaps.js?v=0.01';
 
-import { speeds } from './animation.js?v=0.01';
+// import { speeds } from './animation.js?v=0.01';
 
 const animationSpeed = document.querySelector('.animation-speed-value');
 
@@ -15,9 +15,25 @@ let topoMap = null;
 let highlightingAnimatedMap;
 let pinListCurrentOrder;
 
+const speeds = [];
+
 const setInitialDuration = (speeds) => {
 	duration = speeds[(speeds.length - 1) / 2];
 };
+
+const animationSpeeds = (() => {
+	const animationFastSpeed = 50;
+	const animationSlowSpeed = 2000;
+	let speedSetting = animationSlowSpeed;
+	speeds.push(animationSlowSpeed);
+	const speedLevelIntervals = (animationSlowSpeed - animationFastSpeed) / 10;
+	while (speedSetting !== animationFastSpeed) {
+		speedSetting = speedSetting - speedLevelIntervals;
+		speeds.push(speedSetting);
+	}
+	setInitialDuration(speeds);
+})();
+console.log(speeds);
 
 const hideMapHalos = () => {
 	mapHaloGraphicLayer.visible = false;

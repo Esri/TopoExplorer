@@ -32,9 +32,13 @@ const updateHashParams = (data) => {
 		? `&export=${parsedHashParams.export}`
 		: '';
 
+	const animatingParams = parsedHashParams.isAnimating
+		? `&isAnimating=${parsedHashParams.isAnimating}`
+		: '';
+
 	const hashString = `maps=${parsedHashParams.maps || ''}&loc=${
 		parsedHashParams.loc
-	}&LoD=${parsedHashParams.LoD}${exportParams}`;
+	}&LoD=${parsedHashParams.LoD}${exportParams}${animatingParams}`;
 
 	//replacing the window location with the new information
 	window.location.hash = hashString;
@@ -45,6 +49,7 @@ const invertHashedMapOrder = () => {
 
 	updateHashParams(invertedMapOrder);
 };
+
 const addHashExportPrompt = (mapDetails) => {
 	const mapsForExport = mapDetails
 		.map((mapDetail) => {
@@ -71,8 +76,9 @@ const hashLoD = () => {
 	if (!parsedHashParams.LoD) {
 		return;
 	}
-
-	return parsedHashParams.LoD;
+	console.log(parsedHashParams.LoD);
+	console.log(Number.parseFloat(parsedHashParams.LoD).toFixed(2));
+	return Number.parseFloat(parsedHashParams.LoD).toFixed(2);
 };
 
 const checkForPreviousTopos = () => {
@@ -97,6 +103,14 @@ const removeExportParam = () => {
 	}&LoD=${parsedHashParams.LoD}`;
 
 	window.location.hash = hashString;
+};
+
+const removeAnimationStatus = (isAnimating) => {
+	if (!isAnimating) {
+		parseHashParams;
+
+		parsedHashParams.window.location.hash += `&animating=${isAnimating}`;
+	}
 };
 
 export {
