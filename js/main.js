@@ -64,8 +64,7 @@ const initApp = async () => {
 									return;
 								}
 							}
-							console.log(view);
-							console.log(view.zoom);
+
 							queryConfig.setGeometry(view.extent);
 							queryConfig.mapView = view;
 							queryConfig.extentQueryCall();

@@ -402,8 +402,11 @@ background-color: chartreuse;
 } */
 
 .drag-sort-background {
-  background-color: darkgrey;
-  border-radius: 12px;
+  background-color: #EAEEF1;
+box-shadow: 
+  inset -6px -6px 6px #FFFFFF,
+  inset 6px 6px 8px #B8C2D3;
+border-radius: 12px;
   /* box-shadow: inset 6px 6px 6px #EAEEF1, -6px -6px 8px #F9FBFB, 6px 6px 8px #D8E0E7; */
 }
 

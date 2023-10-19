@@ -594,24 +594,24 @@ const queryConfig = {
 				rings: [
 					[
 						[
-							geographicAdjustedLocation.xmin.toFixed(1),
-							geographicAdjustedLocation.ymin.toFixed(1),
+							geographicAdjustedLocation.xmin.toFixed(2),
+							geographicAdjustedLocation.ymin.toFixed(2),
 						],
 						[
-							geographicAdjustedLocation.xmin.toFixed(1),
-							geographicAdjustedLocation.ymax.toFixed(1),
+							geographicAdjustedLocation.xmin.toFixed(2),
+							geographicAdjustedLocation.ymax.toFixed(2),
 						],
 						[
-							geographicAdjustedLocation.xmax.toFixed(1),
-							geographicAdjustedLocation.ymax.toFixed(1),
+							geographicAdjustedLocation.xmax.toFixed(2),
+							geographicAdjustedLocation.ymax.toFixed(2),
 						],
 						[
-							geographicAdjustedLocation.xmax.toFixed(1),
-							geographicAdjustedLocation.ymin.toFixed(1),
+							geographicAdjustedLocation.xmax.toFixed(2),
+							geographicAdjustedLocation.ymin.toFixed(2),
 						],
 						[
-							geographicAdjustedLocation.xmin.toFixed(1),
-							geographicAdjustedLocation.ymin.toFixed(1),
+							geographicAdjustedLocation.xmin.toFixed(2),
+							geographicAdjustedLocation.ymin.toFixed(2),
 						],
 					],
 				],

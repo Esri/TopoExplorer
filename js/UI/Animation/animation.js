@@ -14,6 +14,7 @@ const beginAnimation = () => {
 	toggleAnimateCheckboxVisibility();
 	preventingMapInteractions();
 	addMapCloseOverlay();
+	disableOpacitySlider();
 	animationStart();
 };
 
@@ -50,6 +51,12 @@ const removeMapCloseOverlay = () => {
 	// document.querySelector('#viewDiv').remove(closeDivOverlay);
 };
 
+const disableOpacitySlider = () => {
+	document.querySelectorAll('#pinnedList .opacity-slider').forEach((slider) => {
+		slider.disabled = true;
+	});
+};
+
 const toggleAnimateCheckboxVisibility = () => {
 	document.querySelectorAll('#pinnedList .animate.checkbox').forEach((box) => {
 		box.classList.toggle('hidden');
@@ -78,6 +85,10 @@ const toggleIconAndBtnTransparency = () => {
 	document
 		.querySelector('.esri-ui-top-right.esri-ui-corner')
 		.classList.toggle('invisible');
+
+	document.querySelectorAll('#pinnedList .mapCard-slider').forEach((slider) => {
+		slider.classList.toggle('transparency');
+	});
 };
 
 const adjustUIForAnimation = () => {

@@ -24,7 +24,7 @@ const updateHashParams = (data) => {
 		parsedHashParams.loc = `${data.center.longitude.toFixed(
 			2
 		)},${data.center.latitude.toFixed(2)}`;
-		parsedHashParams.LoD = data.zoom;
+		parsedHashParams.LoD = data.zoom.toFixed(2);
 	}
 
 	// console.log(exportParams);
