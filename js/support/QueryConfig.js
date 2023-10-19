@@ -436,7 +436,7 @@ const queryConfig = {
 	mapView: '',
 	where: whereStatement,
 	geometry: '',
-	spatialRelation: 'esriSpatialRelIntersects',
+	spatialRelation: 'esriSpatialRelEnvelopeIntersects',
 	queryOutfields: [
 		objectId,
 		mapName,
@@ -455,7 +455,7 @@ const queryConfig = {
 		return new URLSearchParams({
 			where: this.where,
 			geometry: this.geometry,
-			geometryType: 'esriGeometryPolygon',
+			geometryType: 'esriGeometryEnvelope',
 			spatialRel: this.spatialRelation,
 			inSR: 4326,
 			returnCountOnly: true,
@@ -466,7 +466,7 @@ const queryConfig = {
 		return new URLSearchParams({
 			where: this.where,
 			geometry: this.geometry,
-			geometryType: 'esriGeometryPolygon',
+			geometryType: 'esriGeometryEnvelope',
 			spatialRel: this.spatialRelation,
 			returnGeometry: true,
 			inSR: 4326,
@@ -588,37 +588,51 @@ const queryConfig = {
 				geographicAdjustedLocation.xmin -= 360;
 			}
 
-			const polygon = new Polygon({
-				hasZ: false,
-				hasM: false,
-				rings: [
-					[
-						[
-							geographicAdjustedLocation.xmin.toFixed(1),
-							geographicAdjustedLocation.ymin.toFixed(1),
-						],
-						[
-							geographicAdjustedLocation.xmin.toFixed(1),
-							geographicAdjustedLocation.ymax.toFixed(1),
-						],
-						[
-							geographicAdjustedLocation.xmax.toFixed(1),
-							geographicAdjustedLocation.ymax.toFixed(1),
-						],
-						[
-							geographicAdjustedLocation.xmax.toFixed(1),
-							geographicAdjustedLocation.ymin.toFixed(1),
-						],
-						[
-							geographicAdjustedLocation.xmin.toFixed(1),
-							geographicAdjustedLocation.ymin.toFixed(1),
-						],
-					],
-				],
-				spatialReference: {
-					wkid: 4326,
-				},
-			});
+			const xMargin =
+				(geographicAdjustedLocation.xmax - geographicAdjustedLocation.xmin) *
+				0.1;
+			const yMargin =
+				(geographicAdjustedLocation.ymax - geographicAdjustedLocation.ymin) *
+				0.1;
+
+			const polygon = {
+				xmin: geographicAdjustedLocation.xmin + xMargin,
+				ymin: geographicAdjustedLocation.ymin + yMargin,
+				xmax: geographicAdjustedLocation.xmax - xMargin,
+				ymax: geographicAdjustedLocation.ymax - yMargin,
+			};
+
+			// new Polygon({
+			// 	hasZ: false,
+			// 	hasM: false,
+			// 	rings: [
+			// 		[
+			// 			[
+			// 				geographicAdjustedLocation.xmin + xMargin,
+			// 				geographicAdjustedLocation.ymin + yMargin,
+			// 			],
+			// 			[
+			// 				geographicAdjustedLocation.xmin + xMargin,
+			// 				geographicAdjustedLocation.ymax - yMargin,
+			// 			],
+			// 			[
+			// 				geographicAdjustedLocation.xmax - xMargin,
+			// 				geographicAdjustedLocation.ymax - yMargin,
+			// 			],
+			// 			[
+			// 				geographicAdjustedLocation.xmax - xMargin,
+			// 				geographicAdjustedLocation.ymin + yMargin,
+			// 			],
+			// 			[
+			// 				geographicAdjustedLocation.xmin + xMargin,
+			// 				geographicAdjustedLocation.ymin + yMargin,
+			// 			],
+			// 		],
+			// 	],
+			// 	spatialReference: {
+			// 		wkid: 4326,
+			// 	},
+			// });
 
 			return (queryConfig.geometry = JSON.stringify(polygon));
 		});
