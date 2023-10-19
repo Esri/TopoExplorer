@@ -32,13 +32,9 @@ const updateHashParams = (data) => {
 		? `&export=${parsedHashParams.export}`
 		: '';
 
-	const animatingParams = parsedHashParams.isAnimating
-		? `&isAnimating=${parsedHashParams.isAnimating}`
-		: '';
-
 	const hashString = `maps=${parsedHashParams.maps || ''}&loc=${
 		parsedHashParams.loc
-	}&LoD=${parsedHashParams.LoD}${exportParams}${animatingParams}`;
+	}&LoD=${parsedHashParams.LoD}${exportParams}`;
 
 	//replacing the window location with the new information
 	window.location.hash = hashString;
