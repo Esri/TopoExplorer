@@ -1,5 +1,4 @@
 let parsedHashParams = null;
-// let exportParams;
 
 const parseHashParams = () => {
 	if (parsedHashParams) {
@@ -27,7 +26,6 @@ const updateHashParams = (data) => {
 		parsedHashParams.LoD = data.zoom.toFixed(2);
 	}
 
-	// console.log(exportParams);
 	const exportParams = parsedHashParams.export
 		? `&export=${parsedHashParams.export}`
 		: '';
@@ -72,8 +70,7 @@ const hashLoD = () => {
 	if (!parsedHashParams.LoD) {
 		return;
 	}
-	console.log(parsedHashParams.LoD);
-	console.log(Number.parseFloat(parsedHashParams.LoD).toFixed(2));
+
 	return Number.parseFloat(parsedHashParams.LoD).toFixed(2);
 };
 
@@ -99,14 +96,6 @@ const removeExportParam = () => {
 	}&LoD=${parsedHashParams.LoD}`;
 
 	window.location.hash = hashString;
-};
-
-const removeAnimationStatus = (isAnimating) => {
-	if (!isAnimating) {
-		parseHashParams;
-
-		parsedHashParams.window.location.hash += `&animating=${isAnimating}`;
-	}
 };
 
 export {
