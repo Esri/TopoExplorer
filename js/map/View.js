@@ -8,15 +8,7 @@ const initView = () => {
 			'esri/layers/GraphicsLayer',
 			'esri/geometry/SpatialReference',
 			'esri/widgets/Search',
-			'esri/widgets/Search/LocatorSearchSource',
-		], (
-			WebMap,
-			MapView,
-			GraphicsLayer,
-			SpatialReference,
-			Search,
-			LocatorSearchSource
-		) => {
+		], (WebMap, MapView, GraphicsLayer, SpatialReference, Search) => {
 			const footprintLayer = new GraphicsLayer({
 				id: 'mapFootprint',
 				title: 'mapFootprint',
@@ -49,6 +41,7 @@ const initView = () => {
 				zoom: hashLoD() || config.defaultMapSettings.zoom,
 				constraints: {
 					minZoom: config.defaultMapSettings.constraints.minZoom,
+					snapToZoom: false,
 				},
 				popup: {
 					popup: null,

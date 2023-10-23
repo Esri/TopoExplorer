@@ -58,6 +58,7 @@ const headerMapInfo = () => {
     
     <div class='mapInfo zoom'>${mapNameAndScale}</div>
     <div class='mapCard-slider'>${mapOpacitySlider}</div>
+    
   </div>
   `;
 	document.querySelector('.mobile-header').innerHTML = mapInfo;

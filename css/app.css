@@ -717,6 +717,7 @@ button .filterAndSortBtn:active {
 }
 
 #exploreList .notificationMessage{
+margin: 10px 0 0 0;
 text-align: center;
 font-size: 1rem;
 font-style: italic;
