@@ -572,14 +572,11 @@ const queryConfig = {
 		}));
 	},
 	setGeometry: function (locationData) {
-		require([
-			'esri/geometry/support/webMercatorUtils',
-			'esri/geometry/Polygon',
-		], (webMercatorUtils, Polygon) => {
-			const createPolygon = Polygon.fromExtent(locationData);
+		require(['esri/geometry/support/webMercatorUtils'], (webMercatorUtils) => {
+			// const createPolygon = Polygon.fromExtent(locationData);
 
-			const convertPolygonToWGS =
-				webMercatorUtils.webMercatorToGeographic(createPolygon);
+			// const convertPolygonToWGS =
+			// 	webMercatorUtils.webMercatorToGeographic(createPolygon);
 
 			const geographicAdjustedLocation =
 				webMercatorUtils.webMercatorToGeographic(locationData);
@@ -595,46 +592,14 @@ const queryConfig = {
 				(geographicAdjustedLocation.ymax - geographicAdjustedLocation.ymin) *
 				0.1;
 
-			const polygon = {
+			const envelope = {
 				xmin: geographicAdjustedLocation.xmin + xMargin,
 				ymin: geographicAdjustedLocation.ymin + yMargin,
 				xmax: geographicAdjustedLocation.xmax - xMargin,
 				ymax: geographicAdjustedLocation.ymax - yMargin,
 			};
 
-			// new Polygon({
-			// 	hasZ: false,
-			// 	hasM: false,
-			// 	rings: [
-			// 		[
-			// 			[
-			// 				geographicAdjustedLocation.xmin + xMargin,
-			// 				geographicAdjustedLocation.ymin + yMargin,
-			// 			],
-			// 			[
-			// 				geographicAdjustedLocation.xmin + xMargin,
-			// 				geographicAdjustedLocation.ymax - yMargin,
-			// 			],
-			// 			[
-			// 				geographicAdjustedLocation.xmax - xMargin,
-			// 				geographicAdjustedLocation.ymax - yMargin,
-			// 			],
-			// 			[
-			// 				geographicAdjustedLocation.xmax - xMargin,
-			// 				geographicAdjustedLocation.ymin + yMargin,
-			// 			],
-			// 			[
-			// 				geographicAdjustedLocation.xmin + xMargin,
-			// 				geographicAdjustedLocation.ymin + yMargin,
-			// 			],
-			// 		],
-			// 	],
-			// 	spatialReference: {
-			// 		wkid: 4326,
-			// 	},
-			// });
-
-			return (queryConfig.geometry = JSON.stringify(polygon));
+			return (queryConfig.geometry = JSON.stringify(envelope));
 		});
 	},
 	setSortChoice: function (choiceValue) {
