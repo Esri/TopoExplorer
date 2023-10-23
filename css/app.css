@@ -320,6 +320,11 @@ border-radius: 0;
   height: 15px;
 }
 
+.checkbox svg {
+  stroke: #637287;
+  stroke-width: 1.5px;
+}
+
 .mobile-header {
   
   background-color: #e7ebee;
@@ -732,6 +737,7 @@ button .filterAndSortBtn:active {
 }
 
 #exploreList .notificationMessage{
+margin: 10px 0 0 0;
 text-align: center;
 font-size: 1rem;
 font-style: italic;

@@ -46,15 +46,23 @@ to find topo maps.
 const serviceURL = config.environment.serviceUrls.historicalTopoImageService;
 
 let currentView;
+//this is the layer is tied to the outline highlighting the map when you hover over the it's corresponding map card
 let mapFootprintLayer;
+//this layer is the border that envelopes the topo map while it is rendered on the map.
 let mapHaloGraphicLayer;
+//these three basemap variables are used to help organize the order basemap layers as topo are added/removed on the map
 let basemapTerrainLayer;
 let basemapSatellite;
 let basemapLables;
+
+//will eventually be assigned to the 'map-list-items' class. These are the map cards.
 let mapListItems;
 
 let mapGeometry;
-let topoOnMapPlaceholder;
+
+//keeps track of the most-recently open topo map.
+let currentlyOpenedMapId;
+
 let arrayFromPinListHTML;
 let gettingTopoID;
 
@@ -160,7 +168,7 @@ const createMapSlotItems = (list, view) => {
 
             
             <div class='action-container ${
-							topoMap.OBJECTID == topoOnMapPlaceholder || isCardPinned !== -1
+							topoMap.OBJECTID == currentlyOpenedMapId || isCardPinned !== -1
 								? 'flex'
 								: 'invisible'
 						}'>
@@ -232,7 +240,7 @@ const createMapSlotItems = (list, view) => {
                   <div class='slider-range'>
                     <div class='slider-range-background'></div>
                     <div class='slider-range-color' style= "width: ${
-											topoMap.OBJECTID == topoOnMapPlaceholder ||
+											topoMap.OBJECTID == currentlyOpenedMapId ||
 											isCardPinned !== -1
 												? setTopoOpacity(topoMap.OBJECTID)
 												: 100
@@ -317,25 +325,25 @@ const setTopoMapPlaceholder = (oid) => {
 	}
 
 	if (
-		topoOnMapPlaceholder !== parseInt(oid) &&
-		pinnedCardIDsArray.indexOf(`${topoOnMapPlaceholder}`) === -1
+		currentlyOpenedMapId !== parseInt(oid) &&
+		pinnedCardIDsArray.indexOf(`${currentlyOpenedMapId}`) === -1
 	) {
-		removeTopoFromMap(topoOnMapPlaceholder);
+		removeTopoFromMap(currentlyOpenedMapId);
 	}
 
 	//if the topo on map and the oid are the same it means the user is closing the most recently opened card. Remove all aspects of the topo fromthe map and it's placeholder is no longer important.
-	if (topoOnMapPlaceholder == parseInt(oid)) {
-		topoOnMapPlaceholder = 0;
+	if (currentlyOpenedMapId == parseInt(oid)) {
+		currentlyOpenedMapId = 0;
 		gettingTopoID = 0;
 		return;
 	}
 
-	topoOnMapPlaceholder = parseInt(oid);
+	currentlyOpenedMapId = parseInt(oid);
 };
 
 const checkAnyOpenMapCards = (oid) => {
 	mapListItems.forEach((mapCard) => {
-		if (mapCard.attributes.oid.value == oid || topoOnMapPlaceholder == oid) {
+		if (mapCard.attributes.oid.value == oid || currentlyOpenedMapId == oid) {
 			return;
 		}
 		if (mapCard.querySelector('.action-container.invisible')) {
@@ -440,7 +448,7 @@ const isCurrentMapPinned = (targetMapCard, callback) => {
 			`.map-list-item[oid="${oid}"]`
 		);
 
-		if (oid == topoOnMapPlaceholder) {
+		if (oid == currentlyOpenedMapId) {
 			setTopoMapPlaceholder(oid);
 		}
 
@@ -457,7 +465,7 @@ const isCurrentMapPinned = (targetMapCard, callback) => {
 		//checking to see if there are any other topos pinned and if an unpinned map has been opened.If yes, stop the process.
 		if (
 			pinnedCardIDsArray.length == 0 &&
-			(topoOnMapPlaceholder == oid || topoOnMapPlaceholder == 0)
+			(currentlyOpenedMapId == oid || currentlyOpenedMapId == 0)
 		) {
 			return;
 		}

@@ -436,7 +436,7 @@ const queryConfig = {
 	mapView: '',
 	where: whereStatement,
 	geometry: '',
-	spatialRelation: 'esriSpatialRelIntersects',
+	spatialRelation: 'esriSpatialRelEnvelopeIntersects',
 	queryOutfields: [
 		objectId,
 		mapName,
@@ -455,7 +455,7 @@ const queryConfig = {
 		return new URLSearchParams({
 			where: this.where,
 			geometry: this.geometry,
-			geometryType: 'esriGeometryPolygon',
+			geometryType: 'esriGeometryEnvelope',
 			spatialRel: this.spatialRelation,
 			inSR: 4326,
 			returnCountOnly: true,
@@ -466,7 +466,7 @@ const queryConfig = {
 		return new URLSearchParams({
 			where: this.where,
 			geometry: this.geometry,
-			geometryType: 'esriGeometryPolygon',
+			geometryType: 'esriGeometryEnvelope',
 			spatialRel: this.spatialRelation,
 			returnGeometry: true,
 			inSR: 4326,
@@ -572,14 +572,11 @@ const queryConfig = {
 		}));
 	},
 	setGeometry: function (locationData) {
-		require([
-			'esri/geometry/support/webMercatorUtils',
-			'esri/geometry/Polygon',
-		], (webMercatorUtils, Polygon) => {
-			const createPolygon = Polygon.fromExtent(locationData);
+		require(['esri/geometry/support/webMercatorUtils'], (webMercatorUtils) => {
+			// const createPolygon = Polygon.fromExtent(locationData);
 
-			const convertPolygonToWGS =
-				webMercatorUtils.webMercatorToGeographic(createPolygon);
+			// const convertPolygonToWGS =
+			// 	webMercatorUtils.webMercatorToGeographic(createPolygon);
 
 			const geographicAdjustedLocation =
 				webMercatorUtils.webMercatorToGeographic(locationData);
@@ -588,39 +585,21 @@ const queryConfig = {
 				geographicAdjustedLocation.xmin -= 360;
 			}
 
-			const polygon = new Polygon({
-				hasZ: false,
-				hasM: false,
-				rings: [
-					[
-						[
-							geographicAdjustedLocation.xmin.toFixed(2),
-							geographicAdjustedLocation.ymin.toFixed(2),
-						],
-						[
-							geographicAdjustedLocation.xmin.toFixed(2),
-							geographicAdjustedLocation.ymax.toFixed(2),
-						],
-						[
-							geographicAdjustedLocation.xmax.toFixed(2),
-							geographicAdjustedLocation.ymax.toFixed(2),
-						],
-						[
-							geographicAdjustedLocation.xmax.toFixed(2),
-							geographicAdjustedLocation.ymin.toFixed(2),
-						],
-						[
-							geographicAdjustedLocation.xmin.toFixed(2),
-							geographicAdjustedLocation.ymin.toFixed(2),
-						],
-					],
-				],
-				spatialReference: {
-					wkid: 4326,
-				},
-			});
+			const xMargin =
+				(geographicAdjustedLocation.xmax - geographicAdjustedLocation.xmin) *
+				0.1;
+			const yMargin =
+				(geographicAdjustedLocation.ymax - geographicAdjustedLocation.ymin) *
+				0.1;
 
-			return (queryConfig.geometry = JSON.stringify(polygon));
+			const envelope = {
+				xmin: geographicAdjustedLocation.xmin + xMargin,
+				ymin: geographicAdjustedLocation.ymin + yMargin,
+				xmax: geographicAdjustedLocation.xmax - xMargin,
+				ymax: geographicAdjustedLocation.ymax - yMargin,
+			};
+
+			return (queryConfig.geometry = JSON.stringify(envelope));
 		});
 	},
 	setSortChoice: function (choiceValue) {
