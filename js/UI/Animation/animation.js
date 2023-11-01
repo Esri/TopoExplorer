@@ -1,11 +1,22 @@
 import {
 	animationStart,
+	animationEnd,
 	// setInitialDuration,
 } from '../Animation/AnimatingLayers.js?v=0.01';
 import { preventingMapInteractions } from '../EventsAndSelectors/EventsAndSelectors.js?v=0.01';
 
 //this variable is used to determine if the button events are disabled during animation
 let isAnimating = false;
+
+// const setAnimationSlider = (animationSpeedSlider, speedArray) => {
+// 	const set = () => {
+// 		animationSpeedSlider.max = speedArray.length * 10;
+// 		console.log(animationSpeedSlider);
+// 	};
+// 	return {
+// 		set,
+// 	};
+// };
 
 const beginAnimation = () => {
 	isAnimating = true;
@@ -15,6 +26,7 @@ const beginAnimation = () => {
 	preventingMapInteractions();
 	addMapCloseOverlay();
 	disableOpacitySlider();
+	//this last function, it's not a good name. Write something clearer.
 	animationStart();
 };
 
@@ -24,6 +36,9 @@ const endAnimation = () => {
 	togglePlayPause();
 	resetUIAfterAnimation();
 	toggleAnimateCheckboxVisibility();
+	enableOpacitySlider();
+	//this last function, it's not a good name. Write something clearer.
+	animationEnd();
 };
 
 const togglePlayPause = () => {
@@ -49,6 +64,12 @@ const addMapCloseOverlay = () => {
 const removeMapCloseOverlay = () => {
 	document.querySelector('.mapCloseOverlay').remove();
 	// document.querySelector('#viewDiv').remove(closeDivOverlay);
+};
+
+const enableOpacitySlider = () => {
+	document.querySelectorAll('#pinnedList .opacity-slider').forEach((slider) => {
+		slider.disabled = false;
+	});
 };
 
 const disableOpacitySlider = () => {
@@ -100,6 +121,7 @@ const resetUIAfterAnimation = () => {
 };
 
 export {
+	// setAnimationSlider,
 	beginAnimation,
 	endAnimation,
 	resetUIAfterAnimation,

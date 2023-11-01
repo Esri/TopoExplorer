@@ -55,6 +55,9 @@ const preventingMapInteractions = () => {
 sideBar.addEventListener(
 	'mouseenter',
 	(event) => {
+		if (isAnimating) {
+			return;
+		}
 		if (event.target.closest('.iconWrapper')) {
 			document.querySelectorAll('.tooltipText').forEach((tooltip) => {
 				if (tooltip.classList.contains('visible')) {
@@ -218,6 +221,7 @@ exploreList.addEventListener('scroll', () => {
 	}
 });
 
+//event listeners that work with animation process
 document
 	.querySelector('.icon .play-pause')
 	.addEventListener('click', (event) => {

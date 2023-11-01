@@ -62,17 +62,17 @@
   box-shadow:
   inset 6px 6px 6px #EAEEF1,
   -6px -6px 8px #FFFFFF,
-  6px 6px 8px #B3BED0;
+  6px 6px 8px #637287;
   }
 
 .map-list-item.animating {
   cursor: pointer;
   border-radius: 12px;
-  background: #F7F9F9;
+  background: linear-gradient(14deg, rgba(184,194,211,1) 0%, rgba(247,249,249,1) 75%);
   box-shadow:
   inset 6px 6px 6px #EAEEF1,
   -6px -6px 8px #FFFFFF,
-  6px 6px 8px #B3BED0;
+  6px 6px 8px #637287;
   }
 
 #exploreList .map-list-item:active{
@@ -419,3 +419,5 @@ border-radius: 12px;
   top: -200px;
   width:350px;
 }
+
+

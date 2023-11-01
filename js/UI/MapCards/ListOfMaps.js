@@ -895,7 +895,6 @@ sideBarElement.addEventListener('input', (event) => {
 	const eventTarget = event.target;
 	const targetOID = eventTarget.closest('.map-list-item').attributes.oid.value;
 
-	console.log('slider time');
 	opacitySliderEvent(eventTarget, targetOID);
 });
 

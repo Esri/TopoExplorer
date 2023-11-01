@@ -1,39 +1,46 @@
+// import { setAnimationSlider } from './animation.js?v=0.01';
 import {
 	findTopoLayer,
 	mapHaloGraphicLayer,
 	currentStateOfPinnedList,
 } from '../MapCards/ListOfMaps.js?v=0.01';
+import { imageExport } from '../../support/ImageExportQuery.js?v=0.01';
+import {
+	createMediaLayer,
+	removeMediaLayer,
+	createImageElementForMediaLayer,
+	removeTopoImageElements,
+} from '../../map/MediaLayer.js?v=0.01';
 
-// import { speeds } from './animation.js?v=0.01';
-
-const animationSpeed = document.querySelector('.animation-speed-value');
+const animationSpeedSlider = document.querySelector('.animation-speed-value');
 
 let mapIdIndex = -1;
 let arrayOfMapLayers = [];
+let arrayOfGeneratedURLs = [];
 let duration;
 let topoMap = null;
 let highlightingAnimatedMap;
 let pinListCurrentOrder;
+const speeds = [2000, 1000, 800, 500, 400, 200, 100, 20, 0];
 
-const speeds = [];
-
-const setInitialDuration = (speeds) => {
-	duration = speeds[(speeds.length - 1) / 2];
+const setAnimationSlider = (animationSpeedSlider, speedArray) => {
+	animationSpeedSlider.max = (speedArray.length - 1) * 10;
+	animationSpeedSlider.value = ((speedArray.length - 1) * 10) / 2;
+	console.log(animationSpeedSlider);
 };
 
-const animationSpeeds = (() => {
-	const animationFastSpeed = 50;
-	const animationSlowSpeed = 2000;
-	let speedSetting = animationSlowSpeed;
-	speeds.push(animationSlowSpeed);
-	const speedLevelIntervals = (animationSlowSpeed - animationFastSpeed) / 10;
-	while (speedSetting !== animationFastSpeed) {
-		speedSetting = speedSetting - speedLevelIntervals;
-		speeds.push(speedSetting);
-	}
-	setInitialDuration(speeds);
-})();
-console.log(speeds);
+const setInitialDuration = (speedArray) => {
+	duration = speedArray[(speedArray.length - 1) / 2];
+	console.log(duration);
+};
+
+console.log(setAnimationSlider);
+setAnimationSlider(animationSpeedSlider, speeds);
+setInitialDuration(speeds);
+
+const setPinListCurrentOrder = () => {
+	pinListCurrentOrder = currentStateOfPinnedList().reverse();
+};
 
 const hideMapHalos = () => {
 	mapHaloGraphicLayer.visible = false;
@@ -43,46 +50,82 @@ const showMapHalos = () => {
 	mapHaloGraphicLayer.visible = true;
 };
 
-const animationStart = () => {
-	hideMapHalos();
-	pinListCurrentOrder = currentStateOfPinnedList();
+const hideTopoLayers = () => {
 	pinListCurrentOrder.forEach((card, index) => {
 		console.log(card);
-		findTopoLayer(card.querySelector('.map-list-item').attributes.oid.value)
-			.then((layer) => {
-				console.log('starting animation');
-				layer.visible = false;
-				arrayOfMapLayers.push(layer);
-			})
-			.then(() => {
-				if (index === pinListCurrentOrder.length - 1) {
-					console.log('call the animation layer');
-					layerAnimation();
-				}
-			});
-	});
-};
-
-const animationEnd = () => {
-	showMapHalos();
-	pinListCurrentOrder.forEach((card, index) => {
 		findTopoLayer(
 			card.querySelector('.map-list-item').attributes.oid.value
 		).then((layer) => {
-			console.log('finishing animation');
-			layer.visible = true;
-			arrayOfMapLayers.pop(layer);
+			layer.visible = false;
+			// arrayOfMapLayers.push(layer);
 		});
 	});
 };
 
-animationSpeed.addEventListener('change', (event) => {
-	const value = Math.round(event.target.value / 10) * 1;
+// const removeImgs = () => {
+// 	document.querySelectorAll('#viewDiv img').forEach((img) => {
+// 		console.log(img);
+// 		img.remove();
+// 		// URL.revokeObjectURL()
+// 	});
+// };
+
+const showTopoLayers = () => {
+	pinListCurrentOrder.forEach((card, index) => {
+		console.log(card);
+		findTopoLayer(
+			card.querySelector('.map-list-item').attributes.oid.value
+		).then((layer) => {
+			layer.visible = true;
+		});
+	});
+};
+
+const exportingTopoImageAndCreatingImageElement = async () => {
+	for (const card of pinListCurrentOrder) {
+		await imageExport(
+			card.querySelector('.map-list-item').attributes.oid.value
+		).then(async (url) => {
+			console.log(url);
+			arrayOfGeneratedURLs.push(url);
+			await createImageElementForMediaLayer(url);
+		});
+	}
+};
+
+const animationStart = async () => {
+	setPinListCurrentOrder();
+	hideMapHalos();
+	hideTopoLayers();
+	await exportingTopoImageAndCreatingImageElement();
+	createMediaLayer();
+};
+
+const animationEnd = () => {
+	showMapHalos();
+	showTopoLayers();
+	removeMediaLayer();
+	revokeGeneratedURLs();
+	removeTopoImageElements();
+};
+
+const revokeGeneratedURLs = async () => {
+	arrayOfGeneratedURLs.map((url, index, thisArray) => {
+		console.log(url);
+		URL.revokeObjectURL(url);
+		thisArray.shift();
+	});
+};
+
+animationSpeedSlider.addEventListener('change', (event) => {
+	const value = Math.floor(event.target.value / speeds.length);
 	console.log(value);
 	duration = speeds[value];
+	console.log(duration);
 });
 
 const layerAnimation = async () => {
+	console.log(duration);
 	if (
 		document.querySelector('.play-pause .pause').classList.contains('invisible')
 	) {
@@ -101,29 +144,50 @@ const layerAnimation = async () => {
 	topoMap = arrayOfMapLayers[mapIdIndex];
 	highlightingAnimatedMap = pinListCurrentOrder[mapIdIndex];
 
-	console.log(topoMap);
-	console.log(pinListCurrentOrder[mapIdIndex]);
+	// console.log(topoMap);
+	// console.log(pinListCurrentOrder[mapIdIndex]);
 
 	layerIntervalVisibility(topoMap);
 };
 
 const layerIntervalVisibility = (topoMap) => {
-	console.log('this?');
 	const isCardChecked = highlightingAnimatedMap
 		.querySelector('.animate.checkbox .checkmark')
 		.classList.contains('hidden');
 
-	console.log(isCardChecked);
 	if (isCardChecked) {
 		layerAnimation();
 		return;
 	}
+	topoMap.visible = true;
+
 	highlightingAnimatedMap
 		.querySelector('.map-list-item')
 		.classList.add('animating');
-	topoMap.visible = true;
 
 	setTimeout(layerAnimation, duration);
 };
+//for me: this is a reference.
+// const createMediaLayer = () => {require([
+//   'esri/layers/MediaLayer',
+//   'esri/layers/support/ImageElement',
+//   'esri/layers/support/ExtentAndRotationGeoreference',
+//   'esri/geometry/Extent',
+// ], (MediaLayer, ImageElement, ExtentAndRotationGeoreference, Extent) => {
+//   const imageElement = new ImageElement({
+//     image: url,
+//     georeference: new ExtentAndRotationGeoreference({
+//       extent: queryConfig.mapView.extent,
+//     }),
+//   });
 
-export { animationStart, setInitialDuration };
+//   console.log(imageElement);
+
+//   const mediaLayer = new MediaLayer({
+//     source: imageElement,
+//   });
+//   queryConfig.mapView.map.add(mediaLayer);
+//   console.log(queryConfig.mapView);
+// });
+// }
+export { animationStart, animationEnd, setInitialDuration };
