@@ -1,4 +1,8 @@
-// import { setAnimationSlider } from './animation.js?v=0.01';
+import {
+	removeAnimationLoadingDiv,
+	addAnimationCloseBtn,
+	removeHighlight,
+} from './animation.js?v=0.01';
 import {
 	findTopoLayer,
 	mapHaloGraphicLayer,
@@ -7,6 +11,7 @@ import {
 import { imageExport } from '../../support/ImageExportQuery.js?v=0.01';
 import {
 	createMediaLayer,
+	createArrayOfImageElements,
 	removeMediaLayer,
 	createImageElementForMediaLayer,
 	removeTopoImageElements,
@@ -15,11 +20,12 @@ import {
 const animationSpeedSlider = document.querySelector('.animation-speed-value');
 
 let mapIdIndex = -1;
-let arrayOfMapLayers = [];
-let arrayOfGeneratedURLs = [];
+let arrayOfMapImages = [];
+let arrayOfImageData = [];
+let animationInterval;
 let duration;
-let topoMap = null;
-let highlightingAnimatedMap;
+// let topoMap = null;
+// let highlightingAnimatedMap;
 let pinListCurrentOrder;
 const speeds = [2000, 1000, 800, 500, 400, 200, 100, 20, 0];
 
@@ -39,7 +45,16 @@ setAnimationSlider(animationSpeedSlider, speeds);
 setInitialDuration(speeds);
 
 const setPinListCurrentOrder = () => {
-	pinListCurrentOrder = currentStateOfPinnedList().reverse();
+	pinListCurrentOrder = currentStateOfPinnedList();
+};
+
+const getAnimatingImages = async () => {
+	await createArrayOfImageElements(arrayOfMapImages);
+	console.log('got array of images');
+};
+
+const removeAnimatingImages = () => {
+	arrayOfMapImages.length = 0;
 };
 
 const hideMapHalos = () => {
@@ -57,7 +72,7 @@ const hideTopoLayers = () => {
 			card.querySelector('.map-list-item').attributes.oid.value
 		).then((layer) => {
 			layer.visible = false;
-			// arrayOfMapLayers.push(layer);
+			// arrayOfMapImages.push(layer);
 		});
 	});
 };
@@ -73,22 +88,23 @@ const hideTopoLayers = () => {
 const showTopoLayers = () => {
 	pinListCurrentOrder.forEach((card, index) => {
 		console.log(card);
-		findTopoLayer(
-			card.querySelector('.map-list-item').attributes.oid.value
-		).then((layer) => {
+		const cardId = card.querySelector('.map-list-item').attributes.oid.value;
+
+		findTopoLayer(cardId).then((layer) => {
 			layer.visible = true;
 		});
 	});
 };
 
 const exportingTopoImageAndCreatingImageElement = async () => {
-	for (const card of pinListCurrentOrder) {
-		await imageExport(
-			card.querySelector('.map-list-item').attributes.oid.value
-		).then(async (url) => {
-			console.log(url);
-			arrayOfGeneratedURLs.push(url);
-			await createImageElementForMediaLayer(url);
+	for await (const card of pinListCurrentOrder) {
+		const cardId = card.querySelector('.map-list-item').attributes.oid.value;
+		const currentOpacity = card.querySelector('.opacity-slider').value / 100;
+		await imageExport(cardId, currentOpacity).then(async (imageData) => {
+			console.log(imageData);
+			arrayOfImageData.push(imageData);
+			console.log(arrayOfImageData);
+			await createImageElementForMediaLayer(imageData);
 		});
 	}
 };
@@ -98,23 +114,52 @@ const animationStart = async () => {
 	hideMapHalos();
 	hideTopoLayers();
 	await exportingTopoImageAndCreatingImageElement();
-	createMediaLayer();
+	await createMediaLayer();
+	await getAnimatingImages();
+	startAnimationInterval();
+	removeAnimationLoadingDiv();
+	addAnimationCloseBtn();
 };
 
 const animationEnd = () => {
+	stopAnimationInterval();
+	// removeAnimationCardHighlight();
+	removeHighlight();
 	showMapHalos();
 	showTopoLayers();
 	removeMediaLayer();
 	revokeGeneratedURLs();
 	removeTopoImageElements();
+	removeAnimatingImages();
+	resetmapIdIndex();
 };
 
-const revokeGeneratedURLs = async () => {
-	arrayOfGeneratedURLs.map((url, index, thisArray) => {
-		console.log(url);
-		URL.revokeObjectURL(url);
-		thisArray.shift();
-	});
+const stopAnimationInterval = () => {
+	clearInterval(animationInterval);
+	animationInterval = null;
+};
+const revokeGeneratedURLs = () => {
+	while (arrayOfImageData.length > 0) {
+		URL.revokeObjectURL(arrayOfImageData[0].urlDataObj);
+		arrayOfImageData.shift();
+	}
+
+	console.log(
+		'need to know if this is empty of if its a thing',
+		arrayOfImageData
+	);
+};
+
+// const removeAnimationCardHighlight = (highlightingAnimatedMap) => {
+// 	if (highlightingAnimatedMap) {
+// 		highlightingAnimatedMap
+// 			.querySelector('.map-list-item')
+// 			.classList.remove('animating');
+// 	}
+// };
+
+const resetmapIdIndex = () => {
+	mapIdIndex = -1;
 };
 
 animationSpeedSlider.addEventListener('change', (event) => {
@@ -122,51 +167,139 @@ animationSpeedSlider.addEventListener('change', (event) => {
 	console.log(value);
 	duration = speeds[value];
 	console.log(duration);
+	stopAnimationInterval();
+	startAnimationInterval();
 });
 
-const layerAnimation = async () => {
-	console.log(duration);
-	if (
-		document.querySelector('.play-pause .pause').classList.contains('invisible')
-	) {
-		animationEnd();
-		return;
-	}
-	mapIdIndex === arrayOfMapLayers.length - 1 ? (mapIdIndex = 0) : mapIdIndex++;
+// const animateCardHighlight
+const startAnimationInterval = () => {
+	console.log(arrayOfMapImages);
+	animationInterval = setInterval(animate, duration);
+};
 
-	if (topoMap) {
-		topoMap.visible = false;
-		highlightingAnimatedMap
+let isCardUnchecked;
+
+const animate = () => {
+	console.log('animating6?');
+	console.log(mapIdIndex);
+	let topoMap;
+	let highlightingAnimatedMap;
+	let topoChosenOpacity;
+	// console.log(mapIdIndex);
+	// console.log(arrayOfImageData);
+
+	if (mapIdIndex !== -1) {
+		// topoMap = arrayOfMapImages[mapIdIndex];
+		// highlightingAnimatedMap = pinListCurrentOrder[mapIdIndex];
+		// topoChosenOpacity = arrayOfImageData[mapIdIndex].currentOpacity;
+
+		if (arrayOfMapImages[mapIdIndex].opacity !== 0) {
+			arrayOfMapImages[mapIdIndex].opacity = 0;
+		}
+
+		pinListCurrentOrder[mapIdIndex]
 			.querySelector('.map-list-item')
 			.classList.remove('animating');
 	}
 
-	topoMap = arrayOfMapLayers[mapIdIndex];
-	highlightingAnimatedMap = pinListCurrentOrder[mapIdIndex];
+	mapIdIndex === arrayOfMapImages.length - 1 ? (mapIdIndex = 0) : ++mapIdIndex;
 
-	// console.log(topoMap);
-	// console.log(pinListCurrentOrder[mapIdIndex]);
-
-	layerIntervalVisibility(topoMap);
-};
-
-const layerIntervalVisibility = (topoMap) => {
-	const isCardChecked = highlightingAnimatedMap
+	isCardUnchecked = pinListCurrentOrder[mapIdIndex]
 		.querySelector('.animate.checkbox .checkmark')
 		.classList.contains('hidden');
 
-	if (isCardChecked) {
-		layerAnimation();
-		return;
+	if (isCardUnchecked) {
+		console.log('no check');
+		// clearInterval(animationInterval);
+		// startAnimationInterval();
+		// ++mapIdIndex;
+		return findNextTopoToAnimate();
 	}
-	topoMap.visible = true;
+	console.log(mapIdIndex);
+	showTopoImage(mapIdIndex);
+	// arrayOfMapImages[mapIdIndex].opacity =
+	// 	arrayOfImageData[mapIdIndex].currentOpacity;
+	// pinListCurrentOrder[mapIdIndex]
+	// 	.querySelector('.map-list-item')
+	// .classList.add('animating');
+};
+
+const findNextTopoToAnimate = () => {
+	mapIdIndex === arrayOfMapImages.length - 1 ? (mapIdIndex = 0) : ++mapIdIndex;
+
+	isCardUnchecked = pinListCurrentOrder[mapIdIndex]
+		.querySelector('.animate.checkbox .checkmark')
+		.classList.contains('hidden');
+
+	if (isCardUnchecked) {
+		return findNextTopoToAnimate();
+	}
+
+	console.log('jumping to the next visible map', mapIdIndex);
+	showTopoImage(mapIdIndex);
+};
+// const layerAnimation = () => {
+// 	if (
+// 		document.querySelector('.play-pause .pause').classList.contains('invisible')
+// 	) {
+// 		animationEnd();
+// 		return;
+// 	}
+
+// 	mapIdIndex === arrayOfMapImages.length - 1 ? (mapIdIndex = 0) : mapIdIndex++;
+
+// 	// if (topoMap) {
+// 	// 	if (topoMap.opacity !== 0) {
+// 	// 		topoMap.opacity = 0;
+// 	// 	}
+// 	// 	highlightingAnimatedMap
+// 	// 		.querySelector('.map-list-item')
+// 	// 		.classList.remove('animating');
+// 	// }
+
+// 	topoMap = arrayOfMapImages[mapIdIndex];
+// 	highlightingAnimatedMap = pinListCurrentOrder[mapIdIndex];
+
+// 	showTopoImage(topoMap);
+// };
+
+const showTopoImage = (mapIdIndex) => {
+	let topoMap = arrayOfMapImages[mapIdIndex];
+	let highlightingAnimatedMap = pinListCurrentOrder[mapIdIndex];
+	let topoChosenOpacity = arrayOfImageData[mapIdIndex].currentOpacity;
+
+	// console.log(highlightingAnimatedMap);
+	// console.log('the current map', topoMap);
+	// console.log(topoChosenOpacity);
+	// const isCardUnchecked = highlightingAnimatedMap
+	// 	.querySelector('.animate.checkbox .checkmark')
+	// 	.classList.contains('hidden');
+
+	// if (isCardUnchecked) {
+	// 	clearInterval(animationInterval);
+	// 	startAnimationInterval();
+	// 	return;
+	// }
+	//make the topo visible
+	topoMap.opacity = topoChosenOpacity;
 
 	highlightingAnimatedMap
 		.querySelector('.map-list-item')
 		.classList.add('animating');
 
-	setTimeout(layerAnimation, duration);
+	// setTimeout(hideTopoImage, duration);
+	return;
 };
+
+// const hideTopoImage = () => {
+// 	topoMap.opacity = 0;
+// 	highlightingAnimatedMap
+// 		.querySelector('.map-list-item')
+// 		.classList.remove('animating');
+
+// 	layerAnimation();
+// };
+
 //for me: this is a reference.
 // const createMediaLayer = () => {require([
 //   'esri/layers/MediaLayer',

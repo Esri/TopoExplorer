@@ -42,7 +42,7 @@ const getTopoMap = (oid, url) => {
 // 	getImage(params);
 // };
 
-const imageExport = async (oid) => {
+const imageExport = async (oid, opacity) => {
 	// prepParams();
 	const exportImageSize = queryConfig.mapView.size.join(', ');
 	const exportMosaicRule = JSON.stringify({
@@ -68,7 +68,14 @@ const imageExport = async (oid) => {
 			params,
 			responseType: 'blob',
 		}).then((response) => {
+			console.log(response);
 			const url = URL.createObjectURL(response.data);
+			const imageData = {
+				id: oid,
+				url: url,
+				currentOpacity: opacity,
+				urlDataObj: response.data,
+			};
 
 			// require([
 			// 	'esri/layers/MediaLayer',
@@ -98,7 +105,7 @@ const imageExport = async (oid) => {
 			// imgElement.src = url;
 			// document.querySelector('#viewDiv').prepend(imgElement);
 
-			resolve(url);
+			resolve(imageData);
 		});
 	});
 };

@@ -24,7 +24,8 @@ const beginAnimation = () => {
 	adjustUIForAnimation();
 	toggleAnimateCheckboxVisibility();
 	preventingMapInteractions();
-	addMapCloseOverlay();
+	addmapAnimationOverlay();
+	addAnimationLoading();
 	disableOpacitySlider();
 	//this last function, it's not a good name. Write something clearer.
 	animationStart();
@@ -32,13 +33,61 @@ const beginAnimation = () => {
 
 const endAnimation = () => {
 	isAnimating = false;
-	removeMapCloseOverlay();
+	removemapAnimationOverlay();
 	togglePlayPause();
 	resetUIAfterAnimation();
 	toggleAnimateCheckboxVisibility();
 	enableOpacitySlider();
 	//this last function, it's not a good name. Write something clearer.
 	animationEnd();
+};
+
+const animationLoadingHTML = `             
+                                      <div style='position: absolute; left:25px; top: 25px;'>
+                                        <div style='display: flex;'>
+                                          <div class='spinner'>
+                                            <calcite-icon class="queryIndicator" icon="spinner" scale="l" aria-hidden="true" calcite-hydrated=""></calcite-icon>
+                                          </div>
+                                          <div class='AnimationLoadclose'>
+                                            <calcite-icon class="cancelAnimationBtn" icon="x-circle-f" scale="s" aria-hidden="true" calcite-hydrated=""></calcite-icon>
+                                          </div>
+                                        </div>
+                                        <div class='animationWaitText'>Creating Animation</div>
+                                      </div>
+                              `;
+
+const closeAnimationBtnHTML = ` 
+                                <div style='display: flex; position: absolute; left:25px; top: 25px;'>                             
+                                  <div class='closeAnimationBtn' style='text-align: right;'>
+                                    <svg width="64" height="64" viewBox="0 0 32 32" >
+                                      <path d="M23.985 8.722L16.707 16l7.278 7.278-.707.707L16 16.707l-7.278 7.278-.707-.707L15.293 16 8.015 8.722l.707-.707L16 15.293l7.278-7.278z"></path>
+                                    </svg>
+                                  </div>
+                                  <div class='downloadAnimationBtn' style='text-align: right;'>
+                                    <svg width="64" height="64" viewBox="0 0 32 32" >
+                                    <path d="M25 27H8v-1h17zm-3.646-9.646l-.707-.707L17 20.293V5h-1v15.293l-3.646-3.646-.707.707 4.853 4.853z"></path>
+                                    </svg>
+                                  </div>
+                                </div>
+                              `;
+
+const addAnimationLoading = () => {
+	const animationLoading = document.createElement('div');
+	animationLoading.classList.add('animationLoading');
+	animationLoading.innerHTML = animationLoadingHTML;
+
+	document.querySelector('.mapAnimationOverlay').prepend(animationLoading);
+};
+
+const addAnimationCloseBtn = () => {
+	const animationClose = document.createElement('div');
+	animationClose.classList.add('animationClose');
+	animationClose.innerHTML = closeAnimationBtnHTML;
+	document.querySelector('.mapAnimationOverlay').append(animationClose);
+};
+
+const removeAnimationLoadingDiv = () => {
+	document.querySelector('.animationLoading').remove();
 };
 
 const togglePlayPause = () => {
@@ -51,19 +100,24 @@ const togglePlayPause = () => {
 		.classList.toggle('invisible');
 };
 
-const addMapCloseOverlay = () => {
+const addmapAnimationOverlay = () => {
 	const closeDivOverlay = document.createElement('div');
-	closeDivOverlay.className = 'mapCloseOverlay';
-	closeDivOverlay.style = 'position: absolute; left: 25px; z-index: 3;';
-	const closeBtn =
-		'<svg width="64" height="64" viewBox="0 0 32 32" ><path d="M23.985 8.722L16.707 16l7.278 7.278-.707.707L16 16.707l-7.278 7.278-.707-.707L15.293 16 8.015 8.722l.707-.707L16 15.293l7.278-7.278z"></path></svg>';
-	closeDivOverlay.innerHTML = closeBtn;
+	closeDivOverlay.className = 'mapAnimationOverlay';
+	closeDivOverlay.style = `position: absolute; z-index: 3;  width:500px;
+  height: 500px;
+  background: linear-gradient(135deg, rgba(241,244,245,1) 20%, rgba(241,244,245,0) 50%);`;
+
+	// closeDivOverlay.innerHTML = closeBtn;
 	document.querySelector('#viewDiv').prepend(closeDivOverlay);
 };
 
-const removeMapCloseOverlay = () => {
-	document.querySelector('.mapCloseOverlay').remove();
+const removemapAnimationOverlay = () => {
+	document.querySelector('.mapAnimationOverlay').remove();
 	// document.querySelector('#viewDiv').remove(closeDivOverlay);
+};
+
+const removeHighlight = () => {
+	document.querySelector('.animating').classList.remove('animating');
 };
 
 const enableOpacitySlider = () => {
@@ -124,7 +178,10 @@ export {
 	// setAnimationSlider,
 	beginAnimation,
 	endAnimation,
+	removeAnimationLoadingDiv,
+	addAnimationCloseBtn,
 	resetUIAfterAnimation,
+	removeHighlight,
 	isAnimating,
 	// speeds,
 };

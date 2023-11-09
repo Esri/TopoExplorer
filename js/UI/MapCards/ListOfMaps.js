@@ -699,7 +699,7 @@ const opacitySliderEvent = (eventTarget, targetOID) => {
 	}
 
 	const sliderValue = eventTarget.value;
-
+	console.log(sliderValue);
 	handleOpacityChange(targetOID, sliderValue);
 	sliderColorPosition(sliderValue, targetOID);
 };

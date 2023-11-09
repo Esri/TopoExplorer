@@ -235,7 +235,7 @@ document
 	});
 
 document.querySelector('#viewDiv').addEventListener('click', (event) => {
-	if (isAnimating && event.target.closest('.mapCloseOverlay')) {
+	if (isAnimating && event.target.closest('.closeAnimationBtn')) {
 		endAnimation();
 	}
 });
