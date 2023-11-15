@@ -5,6 +5,7 @@ import {
 	endAnimation,
 	isAnimating,
 } from '../Animation/animation.js?v=0.01';
+import { setCancelledStatus } from '../Animation/AnimatingLayers.js?v=0.01';
 
 let account = null;
 // const view = queryConfig.mapView;
@@ -16,7 +17,7 @@ const exploreList = document.querySelector('#exploreList');
 const preventingMapInteractions = () => {
 	const view = queryConfig.mapView;
 
-	console.log('still animating');
+	// console.log('still animating');
 	view.on('drag', (event) => {
 		if (isAnimating) {
 			event.stopPropagation();
@@ -238,5 +239,13 @@ document.querySelector('#viewDiv').addEventListener('click', (event) => {
 	if (isAnimating && event.target.closest('.closeAnimationBtn')) {
 		endAnimation();
 	}
+
+	if (isAnimating && event.target.closest('.cancelAnimationBtn')) {
+		// endAnimation();
+		console.log('clicked');
+		setCancelledStatus(true);
+		// endAnimation();
+	}
 });
+
 export { addAccountImage, isMobileFormat, preventingMapInteractions };

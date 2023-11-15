@@ -1,14 +1,22 @@
+//NOTE: Rename this module to AnimationControl.
+
 import {
 	removeAnimationLoadingDiv,
 	addAnimationCloseBtn,
 	removeHighlight,
+	cardCheckStatus,
+	endAnimation,
+	isAnimating,
 } from './animation.js?v=0.01';
 import {
 	findTopoLayer,
 	mapHaloGraphicLayer,
 	currentStateOfPinnedList,
 } from '../MapCards/ListOfMaps.js?v=0.01';
-import { imageExport } from '../../support/ImageExportQuery.js?v=0.01';
+import {
+	imageExport,
+	cancelImageRequest,
+} from '../../support/ImageExportQuery.js?v=0.01';
 import {
 	createMediaLayer,
 	createArrayOfImageElements,
@@ -19,7 +27,9 @@ import {
 
 const animationSpeedSlider = document.querySelector('.animation-speed-value');
 
+let isCancelled = false;
 let mapIdIndex = -1;
+let isCardUnchecked;
 let arrayOfMapImages = [];
 let arrayOfImageData = [];
 let animationInterval;
@@ -28,6 +38,13 @@ let duration;
 // let highlightingAnimatedMap;
 let pinListCurrentOrder;
 const speeds = [2000, 1000, 800, 500, 400, 200, 100, 20, 0];
+
+//This currently doesn't do anything. 'isCancelled' isn't being evaluated for anything. It was, but it's not now...currently
+//this function is being called in the 'eventsAndSelectors' module.
+const setCancelledStatus = (status) => {
+	isCancelled = status;
+	console.log(isCancelled);
+};
 
 const setAnimationSlider = (animationSpeedSlider, speedArray) => {
 	animationSpeedSlider.max = (speedArray.length - 1) * 10;
@@ -50,7 +67,7 @@ const setPinListCurrentOrder = () => {
 
 const getAnimatingImages = async () => {
 	await createArrayOfImageElements(arrayOfMapImages);
-	console.log('got array of images');
+	console.log('got array of images', arrayOfMapImages);
 };
 
 const removeAnimatingImages = () => {
@@ -98,17 +115,31 @@ const showTopoLayers = () => {
 
 const exportingTopoImageAndCreatingImageElement = async () => {
 	for await (const card of pinListCurrentOrder) {
+		if (isCancelled) {
+			console.log('first cancelling');
+			cancelImageRequest();
+			return;
+		}
 		const cardId = card.querySelector('.map-list-item').attributes.oid.value;
 		const currentOpacity = card.querySelector('.opacity-slider').value / 100;
-		await imageExport(cardId, currentOpacity).then(async (imageData) => {
-			console.log(imageData);
-			arrayOfImageData.push(imageData);
-			console.log(arrayOfImageData);
-			await createImageElementForMediaLayer(imageData);
-		});
+
+		await imageExport(cardId, currentOpacity, isCancelled).then(
+			async (imageData) => {
+				if (isCancelled) {
+					console.log('cancelling');
+					// cancelImageRequest();
+					return;
+				}
+				console.log(imageData);
+				arrayOfImageData.push(imageData);
+				console.log(arrayOfImageData);
+				await createImageElementForMediaLayer(imageData);
+			}
+		);
 	}
 };
 
+//NOTE: this is the hub for all animation related data is called. So how would you manage these functions if the animation is cancelled during the load? What is the risk condition?
 const animationStart = async () => {
 	setPinListCurrentOrder();
 	hideMapHalos();
@@ -119,11 +150,12 @@ const animationStart = async () => {
 	startAnimationInterval();
 	removeAnimationLoadingDiv();
 	addAnimationCloseBtn();
+	return;
 };
 
-const animationEnd = () => {
+//note: some of these functions have more UI-centric. Thye could probably be moved into another module (i.e.: the animation.js module.)
+const animationEnd = async () => {
 	stopAnimationInterval();
-	// removeAnimationCardHighlight();
 	removeHighlight();
 	showMapHalos();
 	showTopoLayers();
@@ -132,6 +164,8 @@ const animationEnd = () => {
 	removeTopoImageElements();
 	removeAnimatingImages();
 	resetmapIdIndex();
+	// setCancelledStatus(false);
+	console.log('cancel status?', isCancelled);
 };
 
 const stopAnimationInterval = () => {
@@ -167,21 +201,26 @@ animationSpeedSlider.addEventListener('change', (event) => {
 	console.log(value);
 	duration = speeds[value];
 	console.log(duration);
-	stopAnimationInterval();
-	startAnimationInterval();
+	if (isAnimating) {
+		stopAnimationInterval();
+		startAnimationInterval();
+	}
 });
 
 // const animateCardHighlight
 const startAnimationInterval = () => {
+	if (isCancelled) {
+		return;
+	}
 	console.log(arrayOfMapImages);
 	animationInterval = setInterval(animate, duration);
 };
 
-let isCardUnchecked;
-
 const animate = () => {
-	console.log('animating6?');
-	console.log(mapIdIndex);
+	console.log('animating87l?');
+	// console.log(animationInterval);
+	// console.log(duration);
+	// console.log(mapIdIndex);
 	let topoMap;
 	let highlightingAnimatedMap;
 	let topoChosenOpacity;
@@ -204,9 +243,7 @@ const animate = () => {
 
 	mapIdIndex === arrayOfMapImages.length - 1 ? (mapIdIndex = 0) : ++mapIdIndex;
 
-	isCardUnchecked = pinListCurrentOrder[mapIdIndex]
-		.querySelector('.animate.checkbox .checkmark')
-		.classList.contains('hidden');
+	isCardUnchecked = cardCheckStatus(pinListCurrentOrder[mapIdIndex]);
 
 	if (isCardUnchecked) {
 		console.log('no check');
@@ -215,7 +252,7 @@ const animate = () => {
 		// ++mapIdIndex;
 		return findNextTopoToAnimate();
 	}
-	console.log(mapIdIndex);
+	// console.log(mapIdIndex);
 	showTopoImage(mapIdIndex);
 	// arrayOfMapImages[mapIdIndex].opacity =
 	// 	arrayOfImageData[mapIdIndex].currentOpacity;
@@ -227,9 +264,7 @@ const animate = () => {
 const findNextTopoToAnimate = () => {
 	mapIdIndex === arrayOfMapImages.length - 1 ? (mapIdIndex = 0) : ++mapIdIndex;
 
-	isCardUnchecked = pinListCurrentOrder[mapIdIndex]
-		.querySelector('.animate.checkbox .checkmark')
-		.classList.contains('hidden');
+	isCardUnchecked = cardCheckStatus(pinListCurrentOrder[mapIdIndex]);
 
 	if (isCardUnchecked) {
 		return findNextTopoToAnimate();
@@ -323,4 +358,4 @@ const showTopoImage = (mapIdIndex) => {
 //   console.log(queryConfig.mapView);
 // });
 // }
-export { animationStart, animationEnd, setInitialDuration };
+export { animationStart, animationEnd, setInitialDuration, setCancelledStatus };

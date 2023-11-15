@@ -1,6 +1,14 @@
 //import the queryConfig stuff here??
 import { queryConfig } from './QueryConfig.js?v=0.01';
 
+let controller = new AbortController();
+
+const cancelImageRequest = () => {
+	console.log('abort?');
+	controller.abort();
+	controller = new AbortController();
+};
+
 //This function should be it's own component. It's operating differently now. Leaving it here would just be confusing.
 const getTopoMap = (oid, url) => {
 	return new Promise((resolve, reject) => {
@@ -42,7 +50,12 @@ const getTopoMap = (oid, url) => {
 // 	getImage(params);
 // };
 
-const imageExport = async (oid, opacity) => {
+const imageExport = async (oid, opacity, isCancelled) => {
+	// console.log(isCancelled);
+	// if (isCancelled) {
+	// 	console.log('cancel');
+	// 	cancelImageRequest();
+	// }
 	// prepParams();
 	const exportImageSize = queryConfig.mapView.size.join(', ');
 	const exportMosaicRule = JSON.stringify({
@@ -66,6 +79,7 @@ const imageExport = async (oid, opacity) => {
 			url: queryConfig.imageExportEndpoint,
 			method: 'get',
 			params,
+			signal: controller.signal,
 			responseType: 'blob',
 		}).then((response) => {
 			console.log(response);
@@ -109,4 +123,4 @@ const imageExport = async (oid, opacity) => {
 		});
 	});
 };
-export { getTopoMap, imageExport };
+export { getTopoMap, imageExport, cancelImageRequest };

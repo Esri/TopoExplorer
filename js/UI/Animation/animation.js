@@ -71,6 +71,12 @@ const closeAnimationBtnHTML = `
                                 </div>
                               `;
 
+const cardCheckStatus = (mapIdIndex) => {
+	return mapIdIndex
+		.querySelector('.animate.checkbox .checkmark')
+		.classList.contains('hidden');
+};
+
 const addAnimationLoading = () => {
 	const animationLoading = document.createElement('div');
 	animationLoading.classList.add('animationLoading');
@@ -79,7 +85,10 @@ const addAnimationLoading = () => {
 	document.querySelector('.mapAnimationOverlay').prepend(animationLoading);
 };
 
-const addAnimationCloseBtn = () => {
+const addAnimationCloseBtn = (isCancelled) => {
+	if (isCancelled) {
+		return;
+	}
 	const animationClose = document.createElement('div');
 	animationClose.classList.add('animationClose');
 	animationClose.innerHTML = closeAnimationBtnHTML;
@@ -87,7 +96,9 @@ const addAnimationCloseBtn = () => {
 };
 
 const removeAnimationLoadingDiv = () => {
-	document.querySelector('.animationLoading').remove();
+	if (document.querySelector('.animationLoading')) {
+		document.querySelector('.animationLoading').remove();
+	}
 };
 
 const togglePlayPause = () => {
@@ -117,7 +128,9 @@ const removemapAnimationOverlay = () => {
 };
 
 const removeHighlight = () => {
-	document.querySelector('.animating').classList.remove('animating');
+	if (document.querySelector('.animating')) {
+		document.querySelector('.animating').classList.remove('animating');
+	}
 };
 
 const enableOpacitySlider = () => {
@@ -179,6 +192,7 @@ export {
 	beginAnimation,
 	endAnimation,
 	removeAnimationLoadingDiv,
+	cardCheckStatus,
 	addAnimationCloseBtn,
 	resetUIAfterAnimation,
 	removeHighlight,
