@@ -436,7 +436,7 @@ const queryConfig = {
 	mapView: '',
 	where: whereStatement,
 	geometry: '',
-	spatialRelation: 'esriSpatialRelEnvelopeIntersects',
+	spatialRelation: 'esriSpatialRelIntersects',
 	queryOutfields: [
 		objectId,
 		mapName,
@@ -455,7 +455,7 @@ const queryConfig = {
 		return new URLSearchParams({
 			where: this.where,
 			geometry: this.geometry,
-			geometryType: 'esriGeometryEnvelope',
+			geometryType: 'esriGeometryPolygon',
 			spatialRel: this.spatialRelation,
 			inSR: 4326,
 			returnCountOnly: true,
@@ -466,7 +466,7 @@ const queryConfig = {
 		return new URLSearchParams({
 			where: this.where,
 			geometry: this.geometry,
-			geometryType: 'esriGeometryEnvelope',
+			geometryType: 'esriGeometryPolygon',
 			spatialRel: this.spatialRelation,
 			returnGeometry: true,
 			inSR: 4326,
@@ -572,11 +572,14 @@ const queryConfig = {
 		}));
 	},
 	setGeometry: function (locationData) {
-		require(['esri/geometry/support/webMercatorUtils'], (webMercatorUtils) => {
-			// const createPolygon = Polygon.fromExtent(locationData);
+		require([
+			'esri/geometry/support/webMercatorUtils',
+			'esri/geometry/Polygon',
+		], (webMercatorUtils, Polygon) => {
+			const createPolygon = Polygon.fromExtent(locationData);
 
-			// const convertPolygonToWGS =
-			// 	webMercatorUtils.webMercatorToGeographic(createPolygon);
+			const convertPolygonToWGS =
+				webMercatorUtils.webMercatorToGeographic(createPolygon);
 
 			const geographicAdjustedLocation =
 				webMercatorUtils.webMercatorToGeographic(locationData);
@@ -592,14 +595,46 @@ const queryConfig = {
 				(geographicAdjustedLocation.ymax - geographicAdjustedLocation.ymin) *
 				0.1;
 
-			const envelope = {
+			const bufferAdjustedExtentEnvelope = {
 				xmin: geographicAdjustedLocation.xmin + xMargin,
 				ymin: geographicAdjustedLocation.ymin + yMargin,
 				xmax: geographicAdjustedLocation.xmax - xMargin,
 				ymax: geographicAdjustedLocation.ymax - yMargin,
 			};
 
-			return (queryConfig.geometry = JSON.stringify(envelope));
+			const polygon = new Polygon({
+				hasZ: false,
+				hasM: false,
+				rings: [
+					[
+						[
+							bufferAdjustedExtentEnvelope.xmin,
+							bufferAdjustedExtentEnvelope.ymin,
+						],
+						[
+							bufferAdjustedExtentEnvelope.xmin,
+							bufferAdjustedExtentEnvelope.ymax,
+						],
+						[
+							bufferAdjustedExtentEnvelope.xmax,
+							bufferAdjustedExtentEnvelope.ymax,
+						],
+						[
+							bufferAdjustedExtentEnvelope.xmax,
+							bufferAdjustedExtentEnvelope.ymin,
+						],
+						[
+							bufferAdjustedExtentEnvelope.xmin,
+							bufferAdjustedExtentEnvelope.ymin,
+						],
+					],
+				],
+				spatialReference: {
+					wkid: 4326,
+				},
+			});
+
+			return (queryConfig.geometry = JSON.stringify(polygon));
 		});
 	},
 	setSortChoice: function (choiceValue) {
