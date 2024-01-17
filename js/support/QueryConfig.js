@@ -590,10 +590,10 @@ const queryConfig = {
 
 			const xMargin =
 				(geographicAdjustedLocation.xmax - geographicAdjustedLocation.xmin) *
-				0.1;
+				0.05;
 			const yMargin =
 				(geographicAdjustedLocation.ymax - geographicAdjustedLocation.ymin) *
-				0.1;
+				0.05;
 
 			const bufferAdjustedExtentEnvelope = {
 				xmin: geographicAdjustedLocation.xmin + xMargin,
