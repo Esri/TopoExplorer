@@ -272,7 +272,7 @@ const createMapSlotItems = (list, view) => {
 	mapListItems = document.querySelectorAll('.map-list-item');
 }; //end of the mapCard Generator
 
-//We can move this inside the creatator module (just remember how to access different functions withing a function...obj notation)
+//We can move this inside the creator module (just remember how to access different functions withing a function...obj notation)
 const clearMapsList = () => {
 	mapsList.innerHTML = '';
 };
@@ -291,6 +291,8 @@ const toggleListVisibility = () => {
 
 	if (mapModes.querySelector('.pinned-mode').classList.contains('underline')) {
 		addDragEventListener();
+
+		checkPinStatusOfSelectedMap();
 	}
 };
 
@@ -311,7 +313,7 @@ mapModes.addEventListener('click', (event) => {
 	toggleListVisibility();
 });
 
-const setTopoMapPlaceholder = (oid) => {
+const setTopoMapPlaceholder = (oid, isMapOpen) => {
 	//if mobile is active, do not keep track of the most recently opened topo
 
 	if (isMobileFormat()) {
@@ -320,19 +322,23 @@ const setTopoMapPlaceholder = (oid) => {
 
 	if (
 		currentlyOpenedMapId !== parseInt(oid) &&
-		pinnedCardIDsArray.indexOf(`${currentlyOpenedMapId}`) === -1
+		pinnedCardIDsArray.indexOf(`${currentlyOpenedMapId}`) === -1 &&
+		currentlyOpenedMapId !== 0
 	) {
 		removeTopoFromMap(currentlyOpenedMapId);
 	}
 
 	//if the topo on map and the oid are the same it means the user is closing the most recently opened card. Remove all aspects of the topo fromthe map and it's placeholder is no longer important.
-	if (currentlyOpenedMapId == parseInt(oid)) {
+	if (currentlyOpenedMapId == oid) {
 		currentlyOpenedMapId = 0;
 		gettingTopoID = 0;
+		console.log(currentlyOpenedMapId);
 		return;
 	}
 
-	currentlyOpenedMapId = parseInt(oid);
+	if (!isMapOpen) {
+		currentlyOpenedMapId = parseInt(oid);
+	}
 };
 
 const checkAnyOpenMapCards = (oid) => {
@@ -421,6 +427,23 @@ const getPinnedTopoIndex = (oid) => {
 	return pinnedCardIDsArray.map((topoID) => topoID).indexOf(oid);
 };
 
+const checkPinStatusOfSelectedMap = () => {
+	if (pinnedCardIDsArray.indexOf(`${currentlyOpenedMapId}`) === -1) {
+		removeTopoFromMap(currentlyOpenedMapId);
+		closeSelectedMap(currentlyOpenedMapId);
+	}
+};
+
+const closeSelectedMap = (currentlyOpenedMapId) => {
+	const selectedMap = explorerList.querySelector(
+		`.map-list-item[oid="${currentlyOpenedMapId}"]`
+	);
+
+	selectedMap.querySelector('.action-container').classList.remove('flex');
+
+	selectedMap.querySelector('.action-container').classList.add('invisible');
+};
+
 const isCurrentMapPinned = (targetMapCard, callback) => {
 	const oid =
 		targetMapCard.querySelector('.map-list-item').attributes.oid.value;
@@ -442,7 +465,7 @@ const isCurrentMapPinned = (targetMapCard, callback) => {
 			`.map-list-item[oid="${oid}"]`
 		);
 
-		if (oid == currentlyOpenedMapId) {
+		if (oid == currentlyOpenedMapId && pinnedCardIDsArray.length > 1) {
 			setTopoMapPlaceholder(oid);
 		}
 
@@ -749,7 +772,7 @@ const isMapCardOpen = (target, targetOID) => {
 		return false;
 	} else {
 		closeMapCard(target);
-		setTopoMapPlaceholder(targetOID);
+		setTopoMapPlaceholder(targetOID, true);
 		removeTopoFromMap(targetOID);
 		return true;
 	}
