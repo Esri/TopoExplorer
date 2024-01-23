@@ -332,7 +332,6 @@ const setTopoMapPlaceholder = (oid, isMapOpen) => {
 	if (currentlyOpenedMapId == oid) {
 		currentlyOpenedMapId = 0;
 		gettingTopoID = 0;
-		console.log(currentlyOpenedMapId);
 		return;
 	}
 
