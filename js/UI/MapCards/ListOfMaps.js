@@ -323,13 +323,16 @@ const setTopoMapPlaceholder = (oid, isMapOpen) => {
 	if (
 		currentlyOpenedMapId !== parseInt(oid) &&
 		pinnedCardIDsArray.indexOf(`${currentlyOpenedMapId}`) === -1 &&
-		currentlyOpenedMapId !== 0
+		currentlyOpenedMapId !== 0 &&
+		currentlyOpenedMapId !== undefined
 	) {
+		console.log('removing topo');
 		removeTopoFromMap(currentlyOpenedMapId);
 	}
 
 	//if the topo on map and the oid are the same it means the user is closing the most recently opened card. Remove all aspects of the topo fromthe map and it's placeholder is no longer important.
 	if (currentlyOpenedMapId == oid) {
+		console.log('setting temp ID to 0');
 		currentlyOpenedMapId = 0;
 		gettingTopoID = 0;
 		return;
@@ -438,9 +441,14 @@ const closeSelectedMap = (currentlyOpenedMapId) => {
 		`.map-list-item[oid="${currentlyOpenedMapId}"]`
 	);
 
-	selectedMap.querySelector('.action-container').classList.remove('flex');
+	console.log(selectedMap);
+	if (selectedMap) {
+		selectedMap.querySelector('.action-container').classList.remove('flex');
 
-	selectedMap.querySelector('.action-container').classList.add('invisible');
+		selectedMap.querySelector('.action-container').classList.add('invisible');
+
+		setTopoMapPlaceholder(currentlyOpenedMapId, true);
+	}
 };
 
 const isCurrentMapPinned = (targetMapCard, callback) => {
@@ -464,8 +472,8 @@ const isCurrentMapPinned = (targetMapCard, callback) => {
 			`.map-list-item[oid="${oid}"]`
 		);
 
-		if (oid == currentlyOpenedMapId && pinnedCardIDsArray.length > 1) {
-			setTopoMapPlaceholder(oid);
+		if (oid == currentlyOpenedMapId && pinnedCardIDsArray.length >= 1) {
+			setTopoMapPlaceholder(oid, true);
 		}
 
 		if (targetMapCard.closest('#pinnedList')) {

@@ -20,6 +20,22 @@ const parseHashParams = () => {
 const updateHashParams = (data) => {
 	if (Array.isArray(data)) {
 		parsedHashParams.maps = data.join(',');
+
+		// console.log(parsedHashParams);
+		// console.log(parsedHashParams.maps);
+		// console.log(window.location.hash);
+		// console.log(window.location.hash.substring(1).split('&')[0]);
+		console.log(
+			window.location.hash.replace(
+				window.location.hash.substring(1).split('&')[0],
+				`maps=${parsedHashParams.maps}`
+			)
+		);
+		window.location.hash = window.location.hash.replace(
+			window.location.hash.substring(1).split('&')[0],
+			`maps=${parsedHashParams.maps}`
+		);
+		return;
 	} else {
 		parsedHashParams.loc = `${data.center.longitude.toFixed(
 			2
