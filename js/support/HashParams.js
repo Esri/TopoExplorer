@@ -31,6 +31,7 @@ const updateHashParams = (data) => {
 				`maps=${parsedHashParams.maps}`
 			)
 		);
+
 		window.location.hash = window.location.hash.replace(
 			window.location.hash.substring(1).split('&')[0],
 			`maps=${parsedHashParams.maps}`
