@@ -43,7 +43,7 @@ const speeds = [2000, 1000, 800, 500, 400, 200, 100, 20, 0];
 //this function is being called in the 'eventsAndSelectors' module.
 const setCancelledStatus = (status) => {
 	isCancelled = status;
-	console.log(isCancelled);
+	console.log('isCancelledUpdated');
 };
 
 const setAnimationSlider = (animationSpeedSlider, speedArray) => {
@@ -115,21 +115,21 @@ const showTopoLayers = () => {
 
 const exportingTopoImageAndCreatingImageElement = async () => {
 	for await (const card of pinListCurrentOrder) {
-		if (isCancelled) {
-			console.log('first cancelling');
-			cancelImageRequest();
-			return;
-		}
+		// if (isCancelled) {
+		// 	console.log('first cancelling');
+		// 	cancelImageRequest();
+		// 	return;
+		// }
 		const cardId = card.querySelector('.map-list-item').attributes.oid.value;
 		const currentOpacity = card.querySelector('.opacity-slider').value / 100;
 
 		await imageExport(cardId, currentOpacity, isCancelled).then(
 			async (imageData) => {
-				if (isCancelled) {
-					console.log('cancelling');
-					// cancelImageRequest();
-					return;
-				}
+				// if (isCancelled) {
+				// 	console.log('cancelling');
+				// 	// cancelImageRequest();
+				// 	return;
+				// }
 				console.log(imageData);
 				arrayOfImageData.push(imageData);
 				console.log(arrayOfImageData);
@@ -149,11 +149,23 @@ const animationStart = async () => {
 	await getAnimatingImages();
 	startAnimationInterval();
 	removeAnimationLoadingDiv();
-	addAnimationCloseBtn();
+	// addAnimationCloseBtn(isCancelled);
+	checkAnimationLoadStatus();
 	return;
 };
 
-//note: some of these functions have more UI-centric. Thye could probably be moved into another module (i.e.: the animation.js module.)
+const checkAnimationLoadStatus = () => {
+	if (isCancelled) {
+		console.log('this is supposed to be the last check');
+		addAnimationCloseBtn(isCancelled);
+
+		setCancelledStatus(false);
+		return;
+	}
+
+	addAnimationCloseBtn();
+};
+//note: some of these functions have more UI-centric. They could probably be moved into another module (i.e.: the animation.js module.)
 const animationEnd = async () => {
 	stopAnimationInterval();
 	removeHighlight();
@@ -163,9 +175,7 @@ const animationEnd = async () => {
 	revokeGeneratedURLs();
 	removeTopoImageElements();
 	removeAnimatingImages();
-	resetmapIdIndex();
-	// setCancelledStatus(false);
-	console.log('cancel status?', isCancelled);
+	resetMapIdIndex();
 };
 
 const stopAnimationInterval = () => {
@@ -192,7 +202,7 @@ const revokeGeneratedURLs = () => {
 // 	}
 // };
 
-const resetmapIdIndex = () => {
+const resetMapIdIndex = () => {
 	mapIdIndex = -1;
 };
 
@@ -209,9 +219,9 @@ animationSpeedSlider.addEventListener('change', (event) => {
 
 // const animateCardHighlight
 const startAnimationInterval = () => {
-	if (isCancelled) {
-		return;
-	}
+	// if (isCancelled) {
+	// 	return;
+	// }
 	console.log(arrayOfMapImages);
 	animationInterval = setInterval(animate, duration);
 };

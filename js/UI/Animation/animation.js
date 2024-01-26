@@ -24,13 +24,14 @@ const beginAnimation = () => {
 	adjustUIForAnimation();
 	toggleAnimateCheckboxVisibility();
 	preventingMapInteractions();
-	addmapAnimationOverlay();
+	addMapAnimationOverlay();
 	addAnimationLoading();
 	disableOpacitySlider();
 	//this last function, it's not a good name. Write something clearer.
 	animationStart();
 };
 
+//this is also a terrible function name
 const endAnimation = () => {
 	isAnimating = false;
 	removemapAnimationOverlay();
@@ -77,6 +78,11 @@ const cardCheckStatus = (mapIdIndex) => {
 		.classList.contains('hidden');
 };
 
+const addCancelTextToAnimationLoading = () => {
+	document.querySelector(
+		'.animationWaitText'
+	).innerHTML = `Cancelling Animation...`;
+};
 const addAnimationLoading = () => {
 	const animationLoading = document.createElement('div');
 	animationLoading.classList.add('animationLoading');
@@ -86,7 +92,9 @@ const addAnimationLoading = () => {
 };
 
 const addAnimationCloseBtn = (isCancelled) => {
+	console.log('adding close btn');
 	if (isCancelled) {
+		endAnimation();
 		return;
 	}
 	const animationClose = document.createElement('div');
@@ -111,7 +119,7 @@ const togglePlayPause = () => {
 		.classList.toggle('invisible');
 };
 
-const addmapAnimationOverlay = () => {
+const addMapAnimationOverlay = () => {
 	const closeDivOverlay = document.createElement('div');
 	closeDivOverlay.className = 'mapAnimationOverlay';
 	closeDivOverlay.style = `position: absolute; z-index: 3;  width:500px;
@@ -193,6 +201,7 @@ export {
 	endAnimation,
 	removeAnimationLoadingDiv,
 	cardCheckStatus,
+	addCancelTextToAnimationLoading,
 	addAnimationCloseBtn,
 	resetUIAfterAnimation,
 	removeHighlight,
