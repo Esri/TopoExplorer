@@ -8,16 +8,6 @@ import { preventingMapInteractions } from '../EventsAndSelectors/EventsAndSelect
 //this variable is used to determine if the button events are disabled during animation
 let isAnimating = false;
 
-// const setAnimationSlider = (animationSpeedSlider, speedArray) => {
-// 	const set = () => {
-// 		animationSpeedSlider.max = speedArray.length * 10;
-// 		console.log(animationSpeedSlider);
-// 	};
-// 	return {
-// 		set,
-// 	};
-// };
-
 const beginAnimation = () => {
 	isAnimating = true;
 	togglePlayPause();
@@ -34,7 +24,7 @@ const beginAnimation = () => {
 //this is also a terrible function name
 const endAnimation = () => {
 	isAnimating = false;
-	removemapAnimationOverlay();
+	removeMapAnimationOverlay();
 	togglePlayPause();
 	resetUIAfterAnimation();
 	toggleAnimateCheckboxVisibility();
@@ -49,7 +39,7 @@ const animationLoadingHTML = `
                                           <div class='spinner'>
                                             <calcite-icon class="queryIndicator" icon="spinner" scale="l" aria-hidden="true" calcite-hydrated=""></calcite-icon>
                                           </div>
-                                          <div class='AnimationLoadclose'>
+                                          <div class='animationLoadClose'>
                                             <calcite-icon class="cancelAnimationBtn" icon="x-circle-f" scale="s" aria-hidden="true" calcite-hydrated=""></calcite-icon>
                                           </div>
                                         </div>
@@ -92,7 +82,6 @@ const addAnimationLoading = () => {
 };
 
 const addAnimationCloseBtn = (isCancelled) => {
-	console.log('adding close btn');
 	if (isCancelled) {
 		endAnimation();
 		return;
@@ -106,6 +95,12 @@ const addAnimationCloseBtn = (isCancelled) => {
 const removeAnimationLoadingDiv = () => {
 	if (document.querySelector('.animationLoading')) {
 		document.querySelector('.animationLoading').remove();
+	}
+};
+
+const removeCloseAnimationBtn = (event) => {
+	if (event.target.closest('.animationLoadClose')) {
+		event.target.closest('.animationLoadClose').remove();
 	}
 };
 
@@ -130,7 +125,7 @@ const addMapAnimationOverlay = () => {
 	document.querySelector('#viewDiv').prepend(closeDivOverlay);
 };
 
-const removemapAnimationOverlay = () => {
+const removeMapAnimationOverlay = () => {
 	document.querySelector('.mapAnimationOverlay').remove();
 	// document.querySelector('#viewDiv').remove(closeDivOverlay);
 };
@@ -200,6 +195,7 @@ export {
 	beginAnimation,
 	endAnimation,
 	removeAnimationLoadingDiv,
+	removeCloseAnimationBtn,
 	cardCheckStatus,
 	addCancelTextToAnimationLoading,
 	addAnimationCloseBtn,

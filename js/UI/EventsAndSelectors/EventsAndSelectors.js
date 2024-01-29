@@ -2,6 +2,7 @@ import { getCredentials, logOutTry } from '../../support/OAuth.js?v=0.01';
 import { queryConfig } from '../../support/QueryConfig.js?v=0.01';
 import {
 	addCancelTextToAnimationLoading,
+	removeCloseAnimationBtn,
 	beginAnimation,
 	endAnimation,
 	isAnimating,
@@ -244,6 +245,7 @@ document.querySelector('#viewDiv').addEventListener('click', (event) => {
 	if (isAnimating && event.target.closest('.cancelAnimationBtn')) {
 		// endAnimation();
 		console.log('clicked');
+		removeCloseAnimationBtn(event);
 		addCancelTextToAnimationLoading();
 		setCancelledStatus(true);
 		// endAnimation();
