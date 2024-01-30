@@ -7,9 +7,11 @@ import { preventingMapInteractions } from '../EventsAndSelectors/EventsAndSelect
 
 //this variable is used to determine if the button events are disabled during animation
 let isAnimating = false;
+let isLoading = false;
 
 const beginAnimation = () => {
 	isAnimating = true;
+	setLoadingStatus();
 	togglePlayPause();
 	adjustUIForAnimation();
 	toggleAnimateCheckboxVisibility();
@@ -66,6 +68,10 @@ const cardCheckStatus = (mapIdIndex) => {
 	return mapIdIndex
 		.querySelector('.animate.checkbox .checkmark')
 		.classList.contains('hidden');
+};
+
+const setLoadingStatus = () => {
+	isLoading ? (isLoading = false) : (isLoading = true);
 };
 
 const addCancelTextToAnimationLoading = () => {
@@ -194,6 +200,7 @@ export {
 	// setAnimationSlider,
 	beginAnimation,
 	endAnimation,
+	setLoadingStatus,
 	removeAnimationLoadingDiv,
 	removeCloseAnimationBtn,
 	cardCheckStatus,
@@ -202,5 +209,6 @@ export {
 	resetUIAfterAnimation,
 	removeHighlight,
 	isAnimating,
+	isLoading,
 	// speeds,
 };

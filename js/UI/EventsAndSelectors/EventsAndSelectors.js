@@ -6,6 +6,7 @@ import {
 	beginAnimation,
 	endAnimation,
 	isAnimating,
+	isLoading,
 } from '../Animation/animation.js?v=0.01';
 import { setCancelledStatus } from '../Animation/AnimatingLayers.js?v=0.01';
 
@@ -228,11 +229,11 @@ exploreList.addEventListener('scroll', () => {
 document
 	.querySelector('.icon .play-pause')
 	.addEventListener('click', (event) => {
-		if (event.target.classList.contains('play')) {
+		if (event.target.classList.contains('play') && !isLoading) {
 			beginAnimation();
 		}
 
-		if (event.target.closest('.pause')) {
+		if (event.target.closest('.pause') && !isLoading) {
 			endAnimation();
 		}
 	});
@@ -249,6 +250,10 @@ document.querySelector('#viewDiv').addEventListener('click', (event) => {
 		addCancelTextToAnimationLoading();
 		setCancelledStatus(true);
 		// endAnimation();
+	}
+
+	if (isAnimating && event.target.closest('.downloadAnimationBtn')) {
+		console.log('downloadBox');
 	}
 });
 

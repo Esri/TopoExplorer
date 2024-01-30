@@ -438,6 +438,7 @@ const queryConfig = {
 	where: whereStatement,
 	geometry: '',
 	spatialRelation: 'esriSpatialRelIntersects',
+	inSR: 4326,
 	queryOutfields: [
 		objectId,
 		mapName,

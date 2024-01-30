@@ -7,6 +7,7 @@ import {
 	cardCheckStatus,
 	endAnimation,
 	isAnimating,
+	setLoadingStatus,
 } from './animation.js?v=0.01';
 import {
 	findTopoLayer,
@@ -127,12 +128,14 @@ const animationStart = async () => {
 const checkAnimationLoadStatus = () => {
 	if (isCancelled) {
 		addAnimationCloseBtn(isCancelled);
+		setLoadingStatus();
 
 		setCancelledStatus(false);
 		return;
 	}
 
 	addAnimationCloseBtn();
+	setLoadingStatus();
 };
 //note: some of these functions have more UI-centric. They could probably be moved into another module (i.e.: the animation.js module.)
 const animationEnd = async () => {
