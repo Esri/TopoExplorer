@@ -461,6 +461,7 @@ const queryConfig = {
 			spatialRel: this.spatialRelation,
 			inSR: this.inSR,
 			returnCountOnly: true,
+			returnExtentOnly: true,
 			f: 'json',
 		});
 	},
@@ -479,6 +480,7 @@ const queryConfig = {
 			f: 'json',
 		});
 	},
+	//this function initializes the query for up to 25 topo maps and processes their returned data.
 	queryMapData: function () {
 		if (isQueryInProcess) {
 			return;
