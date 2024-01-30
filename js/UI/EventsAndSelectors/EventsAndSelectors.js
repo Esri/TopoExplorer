@@ -1,15 +1,67 @@
 import { getCredentials, logOutTry } from '../../support/OAuth.js?v=0.01';
 import { queryConfig } from '../../support/QueryConfig.js?v=0.01';
+import {
+	addCancelTextToAnimationLoading,
+	removeCloseAnimationBtn,
+	beginAnimation,
+	endAnimation,
+	isAnimating,
+	isLoading,
+} from '../Animation/animation.js?v=0.01';
+import { setCancelledStatus } from '../Animation/AnimatingLayers.js?v=0.01';
 
 let account = null;
+// const view = queryConfig.mapView;
 const userIconHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="1.5 -2 24 24" height="30" width="30"><path d="M19.5 15h-7A6.508 6.508 0 0 0 6 21.5V29h20v-7.5a6.508 6.508 0 0 0-6.5-6.5zM25 28H7v-6.5a5.506 5.506 0 0 1 5.5-5.5h7a5.506 5.506 0 0 1 5.5 5.5zm-9-14.2A5.8 5.8 0 1 0 10.2 8a5.806 5.806 0 0 0 5.8 5.8zm0-10.633A4.833 4.833 0 1 1 11.167 8 4.839 4.839 0 0 1 16 3.167z"></path></svg>`;
 
 const sideBar = document.querySelector('#sideBar');
 const exploreList = document.querySelector('#exploreList');
 
+const preventingMapInteractions = () => {
+	const view = queryConfig.mapView;
+
+	// console.log('still animating');
+	view.on('drag', (event) => {
+		if (isAnimating) {
+			event.stopPropagation();
+		}
+	});
+
+	view.on('key-down', (event) => {
+		const haltedKeys = ['+', '-', 'Shift', '_', '='];
+		const keyPressed = event.key;
+		if (isAnimating) {
+			if (haltedKeys.indexOf(keyPressed) !== -1) {
+				event.stopPropagation();
+			}
+		}
+	});
+
+	view.on('mouse-wheel', (event) => {
+		if (isAnimating) {
+			event.stopPropagation();
+		}
+	});
+
+	view.on('double-click', (event) => {
+		if (isAnimating) {
+			event.stopPropagation();
+		}
+	});
+
+	view.on('double-click', ['Control'], (event) => {
+		if (isAnimating) {
+			event.stopPropagation();
+		}
+	});
+};
+
 sideBar.addEventListener(
 	'mouseenter',
 	(event) => {
+		if (isAnimating) {
+			return;
+		}
 		if (event.target.closest('.iconWrapper')) {
 			document.querySelectorAll('.tooltipText').forEach((tooltip) => {
 				if (tooltip.classList.contains('visible')) {
@@ -173,4 +225,36 @@ exploreList.addEventListener('scroll', () => {
 	}
 });
 
-export { addAccountImage, isMobileFormat };
+//event listeners that work with animation process
+document
+	.querySelector('.icon .play-pause')
+	.addEventListener('click', (event) => {
+		if (event.target.classList.contains('play') && !isLoading) {
+			beginAnimation();
+		}
+
+		if (event.target.closest('.pause') && !isLoading) {
+			endAnimation();
+		}
+	});
+
+document.querySelector('#viewDiv').addEventListener('click', (event) => {
+	if (isAnimating && event.target.closest('.closeAnimationBtn')) {
+		endAnimation();
+	}
+
+	if (isAnimating && event.target.closest('.cancelAnimationBtn')) {
+		// endAnimation();
+		console.log('clicked');
+		removeCloseAnimationBtn(event);
+		addCancelTextToAnimationLoading();
+		setCancelledStatus(true);
+		// endAnimation();
+	}
+
+	if (isAnimating && event.target.closest('.downloadAnimationBtn')) {
+		console.log('downloadBox');
+	}
+});
+
+export { addAccountImage, isMobileFormat, preventingMapInteractions };

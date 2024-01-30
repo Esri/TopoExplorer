@@ -30,6 +30,23 @@ const developmentEnv = {
 	},
 };
 
+const stagingEnv = {
+	appId: 'KZAK9DITO38X2SXM',
+	webMap: {
+		webMapItemId: '710264327ad24ff5ba996e2a7c773b7f',
+		webMapLayers: {
+			worldHillshade: '1b243539f4514b6ba35e7d995890db1d',
+			worldImagery: '10df2279f9684e4a9f6a7f08febac2a9',
+			outdoorLabels: '65605d0db3bd4067ad4805a81a4689b8',
+		},
+	},
+	serviceUrls: {
+		historicalTopoImageService:
+			'https://historical1-stg.arcgis.com/arcgis/rest/services/USA_Historical_Topographic_Maps/ImageServer',
+	},
+};
+
+//not a good variable name. While true, it's too vague
 const config = {
 	environment: '',
 	defaultMapSettings: {

@@ -9,8 +9,6 @@ import {
 	isHashedToposForQuery,
 } from './support/QueryConfig.js?v=0.01';
 
-// import { isScrollAtPageEnd } from './support/eventListeners/ScrollListener.js?v=0.01';
-
 import { updateHashParams } from './support/HashParams.js?v=0.01';
 import { getYearsAndScales } from './support/YearsAndScalesProcessing.js?v=0.01';
 

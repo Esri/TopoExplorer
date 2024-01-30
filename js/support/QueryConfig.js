@@ -433,10 +433,12 @@ const updateWhereStatement = () => {
 
 const queryConfig = {
 	url: `${url}/query`,
+	imageExportEndpoint: `${url}/exportImage`,
 	mapView: '',
 	where: whereStatement,
 	geometry: '',
 	spatialRelation: 'esriSpatialRelIntersects',
+	inSR: 4326,
 	queryOutfields: [
 		objectId,
 		mapName,
@@ -457,7 +459,7 @@ const queryConfig = {
 			geometry: this.geometry,
 			geometryType: 'esriGeometryPolygon',
 			spatialRel: this.spatialRelation,
-			inSR: 4326,
+			inSR: this.inSR,
 			returnCountOnly: true,
 			returnExtentOnly: true,
 			f: 'json',
@@ -470,7 +472,7 @@ const queryConfig = {
 			geometryType: 'esriGeometryPolygon',
 			spatialRel: this.spatialRelation,
 			returnGeometry: true,
-			inSR: 4326,
+			inSR: this.inSR,
 			outFields: this.queryOutfields,
 			resultOffset: this.resultOffset,
 			resultRecordCount: this.resultRecordCount,

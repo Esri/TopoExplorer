@@ -1,5 +1,4 @@
 let parsedHashParams = null;
-// let exportParams;
 
 const parseHashParams = () => {
 	if (parsedHashParams) {
@@ -44,7 +43,6 @@ const updateHashParams = (data) => {
 		parsedHashParams.LoD = data.zoom.toFixed(2);
 	}
 
-	// console.log(exportParams);
 	const exportParams = parsedHashParams.export
 		? `&export=${parsedHashParams.export}`
 		: '';
@@ -62,6 +60,7 @@ const invertHashedMapOrder = () => {
 
 	updateHashParams(invertedMapOrder);
 };
+
 const addHashExportPrompt = (mapDetails) => {
 	const mapsForExport = mapDetails
 		.map((mapDetail) => {
