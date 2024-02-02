@@ -14,7 +14,8 @@ const beginAnimation = () => {
 	setLoadingStatus();
 	togglePlayPause();
 	adjustUIForAnimation();
-	toggleAnimateCheckboxVisibility();
+	// toggleAnimateCheckboxVisibility();
+	// showAnimateCheckboxVisibility()
 	preventingMapInteractions();
 	addMapAnimationOverlay();
 	addAnimationLoading();
@@ -28,8 +29,10 @@ const endAnimation = () => {
 	isAnimating = false;
 	removeMapAnimationOverlay();
 	togglePlayPause();
+	removeMapCardUnavailableStatus()
 	resetUIAfterAnimation();
-	toggleAnimateCheckboxVisibility();
+	// toggleAnimateCheckboxVisibility();
+	hideAnimateCheckboxVisibility()
 	enableOpacitySlider();
 	//this last function, it's not a good name. Write something clearer.
 	animationEnd();
@@ -154,11 +157,61 @@ const disableOpacitySlider = () => {
 	});
 };
 
-const toggleAnimateCheckboxVisibility = () => {
-	document.querySelectorAll('#pinnedList .animate.checkbox').forEach((box) => {
-		box.classList.toggle('hidden');
+// const toggleAnimateCheckboxVisibility = () => {
+// 	document.querySelectorAll('#pinnedList .animate.checkbox').forEach((box) => {
+// 		box.classList.toggle('hidden');
+// 	});
+// };
+
+const showAnimateCheckboxVisibility = () => {
+	document.querySelectorAll('#pinnedList .animate.checkbox.hidden').forEach((box) => {
+		box.classList.remove('hidden');
 	});
 };
+
+const hideAnimateCheckboxVisibility = () => {
+	document.querySelectorAll('#pinnedList .animate.checkbox').forEach((box) => {
+		box.classList.add('hidden');
+	});
+
+	
+};
+
+const showAvailableTopoCheckbox = (oid) => {
+	console.log('checkbox')
+	const mapCard = document.querySelector(`#pinnedList .map-list-item[oid="${oid}"]`)
+	const mapCardCheckbox = mapCard.querySelector('.checkbox')
+	console.log(mapCardCheckbox)
+	mapCardCheckbox.classList.remove('hidden')
+}
+
+const hideUnavailableTopoCheckbox = (oid) => {
+	document.querySelector(`#pinnedList .map-list-item[oid="${oid}"]`)
+	const mapCard = document.querySelector(`#pinnedList .map-list-item[oid="${oid}"]`)
+	const mapCardCheckbox = mapCard.querySelector('.checkbox')
+	console.log('no cechkbox', mapCardCheckbox)
+}
+
+const uncheckMapCard = (oid) => {
+	document.querySelector(`#pinnedList .map-list-item[oid="${oid}"]`)
+	const mapCard = document.querySelector(`#pinnedList .map-list-item[oid="${oid}"]`)
+	const mapCardCheckmark = mapCard.querySelector('.checkmark')
+	mapCardCheckmark.classList.add('hidden')
+}
+
+const setMapCardUnavailableStaus = (oid) => {
+	// document.querySelector(`#pinnedList .map-list-item[oid="${oid}"]`).classList.add('unavailable')
+	// document.querySelector(`#pinnedList .map-list-item[oid="${oid}"]`)
+	const mapCard = document.querySelector(`#pinnedList .map-list-item[oid="${oid}"]`)
+	console.log(mapCard)
+	mapCard.classList.add('unavailable')
+}
+
+const removeMapCardUnavailableStatus = () => {
+	document.querySelectorAll('#pinnedList .map-list-item').forEach((card) => {
+	card.classList.remove('unavailable')
+	})
+}
 
 const toggleIconAndBtnTransparency = () => {
 	//add transparency to the explorer mode button
@@ -201,6 +254,11 @@ export {
 	beginAnimation,
 	endAnimation,
 	setLoadingStatus,
+	hideUnavailableTopoCheckbox,
+	uncheckMapCard,
+	showAvailableTopoCheckbox,
+	showAnimateCheckboxVisibility,
+	setMapCardUnavailableStaus,
 	removeAnimationLoadingDiv,
 	removeCloseAnimationBtn,
 	cardCheckStatus,

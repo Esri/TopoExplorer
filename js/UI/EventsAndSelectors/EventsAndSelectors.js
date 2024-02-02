@@ -224,12 +224,14 @@ exploreList.addEventListener('scroll', () => {
 		queryConfig.checkAvailableNumberOfMaps();
 	}
 });
-
+document.addEventListener('click',(event) => {
+	console.log(event.target)
+})
 //event listeners that work with animation process
 document
 	.querySelector('.icon .play-pause')
 	.addEventListener('click', (event) => {
-		if (event.target.classList.contains('play') && !isLoading) {
+		if (event.target.closest('svg').classList.contains('play') && !isLoading) {
 			beginAnimation();
 		}
 
