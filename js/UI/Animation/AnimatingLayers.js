@@ -107,7 +107,7 @@ const exportingTopoImageAndCreatingImageElement = async () => {
 	//if the geometry is within the extent, proceed with this map to the next steps 
 	//if not, move to the next one. 
 
-	let isContained
+	let isIntersecting
 
 	for await (const card of pinListCurrentOrder) {
 		const cardId = card.querySelector('.map-list-item').attributes.oid.value;
@@ -125,25 +125,25 @@ const exportingTopoImageAndCreatingImageElement = async () => {
 				
 			], (geometryEngine) => {
 				// const createPolygon = Polygon.getExtent(cardMapLocation);
-				 isContained = geometryEngine.contains(queryConfig.mapView.extent, JSON.parse(cardMapLocation))
+				 isIntersecting = geometryEngine.intersects(JSON.parse(cardMapLocation), queryConfig.mapView.extent)
 				console.log(geometryEngine)
 				// const isCrossing = geometryEngine.crosses( JSON.parse(cardMapLocation), queryConfig.mapView.extent)
-				console.log(isContained)
+				console.log(isIntersecting)
 				// console.log(isCrossing)
 				// console.log(createPolygon)
 				// if(createPolygon.extent.xMax < ){}
 				
 			});
 		
-			console.log(isContained)
+			console.log(isIntersecting)
 
 		await imageExport(cardId, currentOpacity, isCancelled).then(
 			
 			async (imageData) => {
 				arrayOfImageData.push(imageData);
 				await createImageElementForMediaLayer(imageData);
-				if(!isContained) {
-					console.log(isContained)
+				if(!isIntersecting) {
+					console.log(isIntersecting)
 					disableMapCardForAnimation()
 					setMapCardUnavailableStaus(cardId)
 					hideUnavailableTopoCheckbox(cardId)

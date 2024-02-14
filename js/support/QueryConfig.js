@@ -488,13 +488,88 @@ const queryConfig = {
 		isQueryInProcess = true;
 		extentQuery(this.url, this.mapDataParams())
 			.then((response) => {
+				console.log(response)
+				// checkForMapsVisibleWithinExtent()
 				this.topoMapsInExtent = response.data.features;
 
 				return this.topoMapsInExtent;
 			})
-			.then((listOfTopos) => {
+			.then( (listOfTopos) => {
+				// const getMaxCoordinates = (a, b, index) => {
+				// 	console.log(a, 'intial')
+				// 	console.log(b, 'comparer' )
+				// 	if (a[0] > b[0] && a[1] > b[1]){
+				// 		return a
+				// 	}
+				// }
+
+				const findMinCoordinates = (array) => {
+					return array.reduce((a,b, index) => {
+						console.log(a, 'a coord')
+						// console.log(a[0] > b[0])
+						// console.log(a[1] > b[1])
+						// console.log(a[0] > b[0] && a[1] > b[1])
+						console.log(b, 'b coord')
+						if (b[0] < a[0]) {
+							a[0] = b[0]
+					   }
+					   if (b[1] < a[1]) {
+						   a[1] = b[1]	
+					   }
+					 	console.log(a, 'new result coord')  
+					   return a
+					})
+					
+				}
 				this.resultOffset = this.resultOffset + this.resultRecordCount;
-				return this.processMapData(listOfTopos);
+
+				const test = listOfTopos.map((topo, index) => {
+					
+					console.log(index, 'index')
+					 return topo.geometry.rings.map((geometry) => {
+						console.log(geometry)
+						return	topo = findMinCoordinates(geometry)
+						// geometry.reduce((a,b, index) => {
+						// 	console.log(a)
+						// 	console.log(a[0])
+						// 	console.log(b)
+						
+						})
+					})
+				
+console.log(test)
+				// const visibleTopos = listOfTopos.filter(checkForMapsVisibleWithinExtent)
+
+
+				
+				// console.log(await visibleTopos)
+				// const visibleTopos = await Promise.all(listOfTopos.map(async (topo) => {
+				// 	// console.log(await checkForMapsVisibleWithinExtent(topo.geometry))
+				// 	const portionOfExtentArea = await checkForMapsVisibleWithinExtent(topo.geometry)
+				// 	console.log(portionOfExtentArea)
+				// 	if(portionOfExtentArea < 20){
+				// 		console.log('no')
+				// 		return 
+				// 	} 
+				// 	return topo
+					
+				// })).then((visibleTopos) =>{
+				// 	return visibleTopos
+				// });
+				// listOfTopos.map(async (topo) => {
+				// 	 const portionOfExtentArea = await checkForMapsVisibleWithinExtent(topo.geometry)
+				// 	console.log(topo.geometry)
+				// 	if (  portionOfExtentArea >= 20) {
+				// 		visibleTopos.push(topo) 
+				// 	}
+				// })
+				// console.log(visibleTopos())
+				// Promise.all(visibleTopos)
+				 return listOfTopos;
+			})
+			.then((visibleTopos) => {
+				console.log(visibleTopos)
+				return this.processMapData(visibleTopos)
 			})
 			.then((mapsList) => {
 				if (yearsAndMapScales.setZoomDependentScale() === -1) {
@@ -612,24 +687,24 @@ const queryConfig = {
 				rings: [
 					[
 						[
-							bufferAdjustedExtentEnvelope.xmin,
-							bufferAdjustedExtentEnvelope.ymin,
+							geographicAdjustedLocation.xmin,
+							geographicAdjustedLocation.ymin,
 						],
 						[
-							bufferAdjustedExtentEnvelope.xmin,
-							bufferAdjustedExtentEnvelope.ymax,
+							geographicAdjustedLocation.xmin,
+							geographicAdjustedLocation.ymax,
 						],
 						[
-							bufferAdjustedExtentEnvelope.xmax,
-							bufferAdjustedExtentEnvelope.ymax,
+							geographicAdjustedLocation.xmax,
+							geographicAdjustedLocation.ymax,
 						],
 						[
-							bufferAdjustedExtentEnvelope.xmax,
-							bufferAdjustedExtentEnvelope.ymin,
+							geographicAdjustedLocation.xmax,
+							geographicAdjustedLocation.ymin,
 						],
 						[
-							bufferAdjustedExtentEnvelope.xmin,
-							bufferAdjustedExtentEnvelope.ymin,
+							geographicAdjustedLocation.xmin,
+							geographicAdjustedLocation.ymin,
 						],
 					],
 				],
@@ -652,6 +727,30 @@ const queryConfig = {
 		extentQueryCall(this.url, this.totalMapsInExtentParams());
 	},
 };
+
+
+const checkForMapsVisibleWithinExtent = (topo) => {
+	console.log('checkForMapsVisibleWithinExtent called')
+			require([
+				'esri/geometry/geometryEngine',
+			], (geometryEngine) => {
+				const topoMapLocation = topo.geometry
+					const intersectingMaps = geometryEngine.intersect(queryConfig.mapView.extent, topoMapLocation)
+					const mapArea = geometryEngine.planarArea(intersectingMaps, 'square-miles');
+					const extentArea = geometryEngine.planarArea(queryConfig.mapView.extent, 'square-miles');
+					const percentOfTopoInExtent = Number.parseFloat((mapArea/extentArea)*100).toFixed(2)
+					console.log(mapArea, 'topo map area')
+					console.log(extentArea, 'extent area')
+					console.log(percentOfTopoInExtent+'%', 'percent of topo in extent')
+				
+					if (percentOfTopoInExtent > 20){
+						console.log('add it')
+						return(true)
+					}
+					
+			})
+		}
+	
 
 const resetQueryOffsetNumber = () => (queryConfig.resultOffset = 0);
 
