@@ -30,6 +30,11 @@ import {
 } from '../support/HashParams.js?v=0.01';
 import { resumeExportPrompt } from '../UI/ExportMaps/ExportMapsPrompt.js?v=0.01';
 import { isMobileFormat } from '../UI/EventsAndSelectors/EventsAndSelectors.js?v=0.01';
+import {
+	generateEnvelopeForTopo,
+	isEnvelopeWithinExtent,
+	evaluateItemsBasedOnVisibilityWithinExtent,
+} from '../support/ViableToposWithinExtent.js?v=0.01';
 
 const setURL = () => {
 	return config.environment.serviceUrls.historicalTopoImageService;
@@ -465,6 +470,17 @@ const queryConfig = {
 			f: 'json',
 		});
 	},
+	totalMapExtents: function () {
+		return new URLSearchParams({
+			where: this.where,
+			geometry: this.geometry,
+			geometryType: 'esriGeometryPolygon',
+			spatialRel: this.spatialRelation,
+			inSR: this.inSR,
+			returnExtentOnly: true,
+			f: 'json',
+		});
+	},
 	mapDataParams: function () {
 		return new URLSearchParams({
 			where: this.where,
@@ -486,90 +502,79 @@ const queryConfig = {
 			return;
 		}
 		isQueryInProcess = true;
+
 		extentQuery(this.url, this.mapDataParams())
 			.then((response) => {
-				console.log(response)
+				console.log(response);
 				// checkForMapsVisibleWithinExtent()
 				this.topoMapsInExtent = response.data.features;
 
 				return this.topoMapsInExtent;
 			})
-			.then( (listOfTopos) => {
-				// const getMaxCoordinates = (a, b, index) => {
-				// 	console.log(a, 'intial')
-				// 	console.log(b, 'comparer' )
-				// 	if (a[0] > b[0] && a[1] > b[1]){
-				// 		return a
-				// 	}
-				// }
-
-				const findMinCoordinates = (array) => {
-					return array.reduce((a,b, index) => {
-						console.log(a, 'a coord')
-						// console.log(a[0] > b[0])
-						// console.log(a[1] > b[1])
-						// console.log(a[0] > b[0] && a[1] > b[1])
-						console.log(b, 'b coord')
-						if (b[0] < a[0]) {
-							a[0] = b[0]
-					   }
-					   if (b[1] < a[1]) {
-						   a[1] = b[1]	
-					   }
-					 	console.log(a, 'new result coord')  
-					   return a
-					})
-					
-				}
+			.then((listOfTopos) => {
 				this.resultOffset = this.resultOffset + this.resultRecordCount;
 
-				const test = listOfTopos.map((topo, index) => {
-					
-					console.log(index, 'index')
-					 return topo.geometry.rings.map((geometry) => {
-						console.log(geometry)
-						return	topo = findMinCoordinates(geometry)
-						// geometry.reduce((a,b, index) => {
-						// 	console.log(a)
-						// 	console.log(a[0])
-						// 	console.log(b)
-						
-						})
-					})
-				
-console.log(test)
-				// const visibleTopos = listOfTopos.filter(checkForMapsVisibleWithinExtent)
+				// const generateEnvelopeForTopo = (geometry) => {
+				// 	const topoEnvelope = {
+				// 		minX: 0,
+				// 		minY: 0,
+				// 		maxX: 0,
+				// 		maxY: 0,
+				// 	};
 
+				// 	// console.log(topoEnvelope);
 
-				
-				// console.log(await visibleTopos)
-				// const visibleTopos = await Promise.all(listOfTopos.map(async (topo) => {
-				// 	// console.log(await checkForMapsVisibleWithinExtent(topo.geometry))
-				// 	const portionOfExtentArea = await checkForMapsVisibleWithinExtent(topo.geometry)
-				// 	console.log(portionOfExtentArea)
-				// 	if(portionOfExtentArea < 20){
-				// 		console.log('no')
-				// 		return 
-				// 	} 
-				// 	return topo
-					
-				// })).then((visibleTopos) =>{
-				// 	return visibleTopos
+				// 	geometry.map((coordinatePair, index) => {
+				// 		// console.log(index);
+				// 		if (index === 0) {
+				// 			topoEnvelope.minX = coordinatePair[0];
+				// 			topoEnvelope.minY = coordinatePair[1];
+				// 			topoEnvelope.maxY = coordinatePair[1];
+				// 			topoEnvelope.maxX = coordinatePair[0];
+				// 		}
+
+				// 		if (coordinatePair[0] < topoEnvelope.minX) {
+				// 			topoEnvelope.minX = coordinatePair[0];
+				// 		}
+				// 		if (coordinatePair[1] < topoEnvelope.minY) {
+				// 			topoEnvelope.minY = coordinatePair[1];
+				// 		}
+				// 		if (coordinatePair[0] > topoEnvelope.maxX) {
+				// 			topoEnvelope.maxX = coordinatePair[0];
+				// 		}
+				// 		if (coordinatePair[1] > topoEnvelope.maxY) {
+				// 			topoEnvelope.maxY = coordinatePair[1];
+				// 		}
+				// 	});
+
+				// 	return topoEnvelope;
+				// };
+
+				// listOfTopos.map((topo) => {
+				//   //create a property that will contain the topo's
+				//   topo.envelope = null
+				// 	return (topo.envelope = topo.geometry.rings.map((geometry) => {
+				// 		const envelope = generateEnvelopeForTopo(geometry);
+				// 		// console.log(envelope);
+				// 		return (topo.envelope = envelope);
+				// 	}));
 				// });
-				// listOfTopos.map(async (topo) => {
-				// 	 const portionOfExtentArea = await checkForMapsVisibleWithinExtent(topo.geometry)
-				// 	console.log(topo.geometry)
-				// 	if (  portionOfExtentArea >= 20) {
-				// 		visibleTopos.push(topo) 
-				// 	}
-				// })
-				// console.log(visibleTopos())
-				// Promise.all(visibleTopos)
-				 return listOfTopos;
+				return evaluateItemsBasedOnVisibilityWithinExtent(
+					listOfTopos,
+					this.mapView.extent
+				);
 			})
 			.then((visibleTopos) => {
-				console.log(visibleTopos)
-				return this.processMapData(visibleTopos)
+				console.log('this is for 25', visibleTopos);
+
+				// const viableTopos = isEnvelopeWithinExtent(
+				// 	visibleTopos,
+				// 	this.mapView.extent
+				// );
+				// console.log(viableTopos);
+
+				// return this.processMapData(visibleTopos);
+				return this.processMapData(visibleTopos);
 			})
 			.then((mapsList) => {
 				if (yearsAndMapScales.setZoomDependentScale() === -1) {
@@ -583,6 +588,7 @@ console.log(test)
 				return;
 			});
 	},
+	//
 	getNewMaps: function () {
 		this.resultOffset = 0;
 		this.resultRecordCount = 25;
@@ -594,12 +600,42 @@ console.log(test)
 			numberOfMapsinView(this.url, this.totalMapsInExtentParams())
 				.then((response) => {
 					this.totalMaps = response.data.count;
+					console.log(response.data.count);
+					console.log(response.data.count <= 500);
+					// if (response.data.count <= 500) {
+					// 	isQueryInProcess = false;
+					// 	console.log('new query');
+					// 	numberOfMapsinView(this.url, this.totalMapExtents()).then((res) => {
+					// 		console.log('new query res', res);
+					// 	});
+					// }
+				})
+				.then(() => {
+					isQueryInProcess = false;
+					if (this.totalMaps <= 500) {
+						isQueryInProcess = true;
+						console.log('new query');
+						return numberOfMapsinView(this.url, this.totalMapExtents())
+							.then((queryResponse) => {
+								console.log('new query res', queryResponse.data);
+								const mapPolygonsWithinExtent = res.data.features;
+								// res.map((topoInformation) => {});
+								const qualifyingTopos =
+									evaluateItemsBasedOnVisibilityWithinExtent(
+										mapPolygonsWithinExtent,
+										this.mapView.extent
+									).length;
+								console.log('first topo check', qualifyingTopos);
+								this.totalMaps = qualifyingTopos;
+								console.log(this.totalMaps);
+							})
+							.then(() => {
+								isQueryInProcess = false;
+							});
+					}
 				})
 				.then(() => {
 					updateMapcount(this.totalMaps);
-					isQueryInProcess = false;
-				})
-				.then(() => {
 					if (
 						!document
 							.querySelector('.explorer-mode.btn-text')
@@ -686,26 +722,11 @@ console.log(test)
 				hasM: false,
 				rings: [
 					[
-						[
-							geographicAdjustedLocation.xmin,
-							geographicAdjustedLocation.ymin,
-						],
-						[
-							geographicAdjustedLocation.xmin,
-							geographicAdjustedLocation.ymax,
-						],
-						[
-							geographicAdjustedLocation.xmax,
-							geographicAdjustedLocation.ymax,
-						],
-						[
-							geographicAdjustedLocation.xmax,
-							geographicAdjustedLocation.ymin,
-						],
-						[
-							geographicAdjustedLocation.xmin,
-							geographicAdjustedLocation.ymin,
-						],
+						[geographicAdjustedLocation.xmin, geographicAdjustedLocation.ymin],
+						[geographicAdjustedLocation.xmin, geographicAdjustedLocation.ymax],
+						[geographicAdjustedLocation.xmax, geographicAdjustedLocation.ymax],
+						[geographicAdjustedLocation.xmax, geographicAdjustedLocation.ymin],
+						[geographicAdjustedLocation.xmin, geographicAdjustedLocation.ymin],
 					],
 				],
 				spatialReference: {
@@ -728,29 +749,32 @@ console.log(test)
 	},
 };
 
-
 const checkForMapsVisibleWithinExtent = (topo) => {
-	console.log('checkForMapsVisibleWithinExtent called')
-			require([
-				'esri/geometry/geometryEngine',
-			], (geometryEngine) => {
-				const topoMapLocation = topo.geometry
-					const intersectingMaps = geometryEngine.intersect(queryConfig.mapView.extent, topoMapLocation)
-					const mapArea = geometryEngine.planarArea(intersectingMaps, 'square-miles');
-					const extentArea = geometryEngine.planarArea(queryConfig.mapView.extent, 'square-miles');
-					const percentOfTopoInExtent = Number.parseFloat((mapArea/extentArea)*100).toFixed(2)
-					console.log(mapArea, 'topo map area')
-					console.log(extentArea, 'extent area')
-					console.log(percentOfTopoInExtent+'%', 'percent of topo in extent')
-				
-					if (percentOfTopoInExtent > 20){
-						console.log('add it')
-						return(true)
-					}
-					
-			})
+	console.log('checkForMapsVisibleWithinExtent called');
+	require(['esri/geometry/geometryEngine'], (geometryEngine) => {
+		const topoMapLocation = topo.geometry;
+		const intersectingMaps = geometryEngine.intersect(
+			queryConfig.mapView.extent,
+			topoMapLocation
+		);
+		const mapArea = geometryEngine.planarArea(intersectingMaps, 'square-miles');
+		const extentArea = geometryEngine.planarArea(
+			queryConfig.mapView.extent,
+			'square-miles'
+		);
+		const percentOfTopoInExtent = Number.parseFloat(
+			(mapArea / extentArea) * 100
+		).toFixed(2);
+		console.log(mapArea, 'topo map area');
+		console.log(extentArea, 'extent area');
+		console.log(percentOfTopoInExtent + '%', 'percent of topo in extent');
+
+		if (percentOfTopoInExtent > 20) {
+			console.log('add it');
+			return true;
 		}
-	
+	});
+};
 
 const resetQueryOffsetNumber = () => (queryConfig.resultOffset = 0);
 

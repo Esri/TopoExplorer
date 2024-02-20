@@ -44,7 +44,7 @@ const mapFootprint = (mapCardID, geometry) => {
 											joinStyle: 'Miter',
 											lineStyle3D: 'Strip',
 											miterLimit: 10,
-											width: 2,
+											width: 1,
 											color: [255, 255, 255, 160],
 										},
 									],
