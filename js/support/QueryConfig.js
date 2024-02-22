@@ -576,7 +576,6 @@ const queryConfig = {
 		}));
 	},
 	setGeometry: function (locationData) {
-		console.log(locationData);
 		require([
 			'esri/geometry/support/webMercatorUtils',
 			'esri/geometry/Polygon',
@@ -626,68 +625,7 @@ const queryConfig = {
 			});
 
 			return (queryConfig.geometry = JSON.stringify(polygon));
-			// 	const createPolygon = Polygon.fromExtent(locationData);
-
-			// 	const convertPolygonToWGS =
-			// 		webMercatorUtils.webMercatorToGeographic(createPolygon);
-
-			// 	const geographicAdjustedLocation =
-			// 		webMercatorUtils.webMercatorToGeographic(locationData);
-
-			// 	if (geographicAdjustedLocation.xmin > geographicAdjustedLocation.xmax) {
-			// 		geographicAdjustedLocation.xmin -= 360;
-			// 	}
-
-			// 	const xMargin =
-			// 		(geographicAdjustedLocation.xmax - geographicAdjustedLocation.xmin) *
-			// 		0.05;
-			// 	const yMargin =
-			// 		(geographicAdjustedLocation.ymax - geographicAdjustedLocation.ymin) *
-			// 		0.05;
-
-			// 	const bufferAdjustedExtentEnvelope = {
-			// 		xmin: geographicAdjustedLocation.xmin + xMargin,
-			// 		ymin: geographicAdjustedLocation.ymin + yMargin,
-			// 		xmax: geographicAdjustedLocation.xmax - xMargin,
-			// 		ymax: geographicAdjustedLocation.ymax - yMargin,
-			// 	};
-
-			// 	const polygon = new Polygon({
-			// 		hasZ: false,
-			// 		hasM: false,
-			// 		rings: [
-			// 			[
-			// 				[
-			// 					bufferAdjustedExtentEnvelope.xmin,
-			// 					bufferAdjustedExtentEnvelope.ymin,
-			// 				],
-			// 				[
-			// 					bufferAdjustedExtentEnvelope.xmin,
-			// 					bufferAdjustedExtentEnvelope.ymax,
-			// 				],
-			// 				[
-			// 					bufferAdjustedExtentEnvelope.xmax,
-			// 					bufferAdjustedExtentEnvelope.ymax,
-			// 				],
-			// 				[
-			// 					bufferAdjustedExtentEnvelope.xmax,
-			// 					bufferAdjustedExtentEnvelope.ymin,
-			// 				],
-			// 				[
-			// 					bufferAdjustedExtentEnvelope.xmin,
-			// 					bufferAdjustedExtentEnvelope.ymin,
-			// 				],
-			// 			],
-			// 		],
-			// 		spatialReference: {
-			// 			wkid: 4326,
-			// 		},
-			// 	});
-
-			// 	return (queryConfig.geometry = JSON.stringify(polygon));
 		});
-		// queryConfig.geometry = JSON.stringify(locationData);
-		// console.log(queryConfig.geometry);
 	},
 	setSortChoice: function (choiceValue) {
 		return (this.sortChoice = sortOptions[choiceValue]);
