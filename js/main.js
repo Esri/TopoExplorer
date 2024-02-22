@@ -9,6 +9,8 @@ import {
 	isHashedToposForQuery,
 } from './support/QueryConfig.js?v=0.01';
 
+// import { isScrollAtPageEnd } from './support/eventListeners/ScrollListener.js?v=0.01';
+
 import { updateHashParams } from './support/HashParams.js?v=0.01';
 import { getYearsAndScales } from './support/YearsAndScalesProcessing.js?v=0.01';
 
@@ -23,7 +25,7 @@ import { setAccountData } from './support/AddItemRequest.js?v=0.01';
 
 const initApp = async () => {
 	try {
-		const oauthRespose = await authorization();
+		const oauthResponse = await authorization();
 		const view = await initView();
 		const sliderValues = await getYearsAndScales(view);
 		const getPreviousTopos = await isHashedToposForQuery(view);
@@ -35,9 +37,9 @@ const initApp = async () => {
 
 		view
 			.when(() => {
-				if (oauthRespose) {
-					addAccountImage(oauthRespose);
-					setAccountData(oauthRespose);
+				if (oauthResponse) {
+					addAccountImage(oauthResponse);
+					setAccountData(oauthResponse);
 				}
 
 				sliderValues;
