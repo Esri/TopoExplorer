@@ -62,6 +62,7 @@ let mapGeometry;
 
 //keeps track of the most-recently open topo map.
 let currentlyOpenedMapId;
+let currentlyOpenMapGeometry;
 
 let arrayFromPinListHTML;
 let gettingTopoID;
@@ -300,6 +301,21 @@ const toggleListVisibility = () => {
 
 		checkPinStatusOfSelectedMap();
 	}
+
+	if (
+		mapModes.querySelector('.explorer-mode').classList.contains('underline')
+	) {
+		c;
+		addTopoToMap(currentlyOpenedMapId, serviceURL);
+		const openTopoCard = document.querySelector(
+			`.map-list-item[oid="${currentlyOpenedMapId}"]`
+		);
+		const openTopoCardGeometry = currentlyOpenMapGeometry;
+		// console.log(currentlyOpenMapGeometry);
+		// console.log(openTopoCardGeometry);
+		// console.log(previouslyOpenTopoCard.attributes.geometry.value);
+		addHalo(currentlyOpenedMapId, openTopoCardGeometry);
+	}
 };
 
 mapModes.addEventListener('click', (event) => {
@@ -319,7 +335,7 @@ mapModes.addEventListener('click', (event) => {
 	toggleListVisibility();
 });
 
-const setTopoMapPlaceholder = (oid, isMapOpen) => {
+const setTopoMapPlaceholder = (oid, mapGeometry, isMapOpen) => {
 	//if mobile is active, do not keep track of the most recently opened topo
 
 	if (isMobileFormat()) {
@@ -332,13 +348,13 @@ const setTopoMapPlaceholder = (oid, isMapOpen) => {
 		currentlyOpenedMapId !== 0 &&
 		currentlyOpenedMapId !== undefined
 	) {
-		console.log('removing topo');
+		// console.log('removing topo');
 		removeTopoFromMap(currentlyOpenedMapId);
 	}
 
-	//if the topo on map and the oid are the same it means the user is closing the most recently opened card. Remove all aspects of the topo fromthe map and it's placeholder is no longer important.
+	//if the topo on map and the oid are the same it means the user is closing the most recently opened card. Remove all aspects of the topo from the map and it's placeholder is no longer important.
 	if (currentlyOpenedMapId == oid) {
-		console.log('setting temp ID to 0');
+		// console.log('setting temp ID to 0');
 		currentlyOpenedMapId = 0;
 		gettingTopoID = 0;
 		return;
@@ -346,6 +362,7 @@ const setTopoMapPlaceholder = (oid, isMapOpen) => {
 
 	if (!isMapOpen) {
 		currentlyOpenedMapId = parseInt(oid);
+		currentlyOpenMapGeometry = mapGeometry;
 	}
 };
 
@@ -436,25 +453,23 @@ const getPinnedTopoIndex = (oid) => {
 };
 
 const checkPinStatusOfSelectedMap = () => {
+	// console.log(currentlyOpenedMapId);
 	if (pinnedCardIDsArray.indexOf(`${currentlyOpenedMapId}`) === -1) {
-		removeTopoFromMap(currentlyOpenedMapId);
-		closeSelectedMap(currentlyOpenedMapId);
+		return removeTopoFromMap(currentlyOpenedMapId);
+		// closeSelectedMap(currentlyOpenedMapId);
 	}
 };
 
 const closeSelectedMap = (currentlyOpenedMapId) => {
-	const selectedMap = explorerList.querySelector(
-		`.map-list-item[oid="${currentlyOpenedMapId}"]`
-	);
-
-	console.log(selectedMap);
-	if (selectedMap) {
-		selectedMap.querySelector('.action-container').classList.remove('flex');
-
-		selectedMap.querySelector('.action-container').classList.add('invisible');
-
-		setTopoMapPlaceholder(currentlyOpenedMapId, true);
-	}
+	// const selectedMap = explorerList.querySelector(
+	// 	`.map-list-item[oid="${currentlyOpenedMapId}"]`
+	// );
+	// console.log(selectedMap);
+	// if (selectedMap) {
+	// 	selectedMap.querySelector('.action-container').classList.remove('flex');
+	// 	selectedMap.querySelector('.action-container').classList.add('invisible');
+	// 	setTopoMapPlaceholder(currentlyOpenedMapId, true);
+	// }
 };
 
 const isCurrentMapPinned = (targetMapCard, callback) => {
@@ -478,8 +493,10 @@ const isCurrentMapPinned = (targetMapCard, callback) => {
 			`.map-list-item[oid="${oid}"]`
 		);
 
+		const mapCardGeometry = relatedMapCard.attributes.geometry.value;
+
 		if (oid == currentlyOpenedMapId && pinnedCardIDsArray.length >= 1) {
-			setTopoMapPlaceholder(oid, true);
+			setTopoMapPlaceholder(oid, mapCardGeometry, true);
 		}
 
 		if (targetMapCard.closest('#pinnedList')) {
@@ -532,9 +549,10 @@ const findTopoLayer = (oid) => {
 };
 
 const addTopoToMap = (target, url) => {
-	gettingTopoID = target;
+	gettingTopoID = parseInt(target);
+
 	getTopoMap(target, url).then((topoImageLayer) => {
-		if (gettingTopoID !== topoImageLayer.id) {
+		if (gettingTopoID != topoImageLayer.id) {
 			topoImageLayer.cancelLoad();
 			removeHalo(topoImageLayer.id);
 			return;
@@ -597,11 +615,13 @@ const setTopoOpacity = (oid) => {
 };
 
 const removeTopoFromMap = (oid) => {
+	// console.log('removing', oid);
 	findTopoLayer(oid)
 		.then((specificTopo) => {
 			currentView.map.remove(specificTopo);
 		})
 		.then(() => {
+			// console.log('removing halo');
 			removeHalo(oid);
 		});
 };
@@ -729,7 +749,7 @@ const opacitySliderEvent = (eventTarget, targetOID) => {
 	}
 
 	const sliderValue = eventTarget.value;
-	console.log(sliderValue);
+	// console.log(sliderValue);
 	handleOpacityChange(targetOID, sliderValue);
 	sliderColorPosition(sliderValue, targetOID);
 };
@@ -781,11 +801,11 @@ const isMapCardOpen = (target, targetOID) => {
 		addTopoToMap(targetOID, serviceURL);
 		addHalo(targetOID, targetGeometry);
 		openMapCard(target);
-		setTopoMapPlaceholder(targetOID);
+		setTopoMapPlaceholder(targetOID, targetGeometry);
 		return false;
 	} else {
 		closeMapCard(target);
-		setTopoMapPlaceholder(targetOID, true);
+		setTopoMapPlaceholder(targetOID, targetGeometry, true);
 		removeTopoFromMap(targetOID);
 		return true;
 	}

@@ -17,7 +17,7 @@ const allYearChoices = (minMaxYears) => {
 			decadesArr.push(startYear);
 			startYear = startYear + 10;
 		}
-		decadesArr.push(startYear);
+		decadesArr.push(minMaxYears[1]);
 
 		resolve(decadesArr);
 	});

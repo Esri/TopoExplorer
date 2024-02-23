@@ -50,7 +50,7 @@ const mapFootprint = (mapCardID, geometry) => {
 									],
 								},
 								rotation: 45,
-								separation: 10,
+								separation: 30,
 							},
 							{
 								type: 'CIMSolidFill',

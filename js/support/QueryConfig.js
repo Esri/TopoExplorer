@@ -610,30 +610,31 @@ const queryConfig = {
 				geographicAdjustedLocation.xmin -= 360;
 			}
 
-			const xMargin =
-				(geographicAdjustedLocation.xmax - geographicAdjustedLocation.xmin) *
-				0.05;
-			const yMargin =
-				(geographicAdjustedLocation.ymax - geographicAdjustedLocation.ymin) *
-				0.05;
-
-			const bufferAdjustedExtentEnvelope = {
-				xmin: geographicAdjustedLocation.xmin + xMargin,
-				ymin: geographicAdjustedLocation.ymin + yMargin,
-				xmax: geographicAdjustedLocation.xmax - xMargin,
-				ymax: geographicAdjustedLocation.ymax - yMargin,
-			};
-
 			const polygon = new Polygon({
 				hasZ: false,
 				hasM: false,
 				rings: [
 					[
-						[geographicAdjustedLocation.xmin, geographicAdjustedLocation.ymin],
-						[geographicAdjustedLocation.xmin, geographicAdjustedLocation.ymax],
-						[geographicAdjustedLocation.xmax, geographicAdjustedLocation.ymax],
-						[geographicAdjustedLocation.xmax, geographicAdjustedLocation.ymin],
-						[geographicAdjustedLocation.xmin, geographicAdjustedLocation.ymin],
+						[
+							geographicAdjustedLocation.xmin.toFixed(6),
+							geographicAdjustedLocation.ymin.toFixed(6),
+						],
+						[
+							geographicAdjustedLocation.xmin.toFixed(6),
+							geographicAdjustedLocation.ymax.toFixed(6),
+						],
+						[
+							geographicAdjustedLocation.xmax.toFixed(6),
+							geographicAdjustedLocation.ymax.toFixed(6),
+						],
+						[
+							geographicAdjustedLocation.xmax.toFixed(6),
+							geographicAdjustedLocation.ymin.toFixed(6),
+						],
+						[
+							geographicAdjustedLocation.xmin.toFixed(6),
+							geographicAdjustedLocation.ymin.toFixed(6),
+						],
 					],
 				],
 				spatialReference: {
