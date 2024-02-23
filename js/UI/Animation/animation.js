@@ -29,12 +29,12 @@ const endAnimation = () => {
 	isAnimating = false;
 	removeMapAnimationOverlay();
 	togglePlayPause();
-	removeMapCardUnavailableStatus()
+	removeMapCardUnavailableStatus();
 	resetUIAfterAnimation();
 	// toggleAnimateCheckboxVisibility();
-	hideAnimateCheckboxVisibility()
+	hideAnimateCheckboxVisibility();
 	enableOpacitySlider();
-	resetAnimateCheckbox()
+	resetAnimateCheckbox();
 	//this last function, it's not a good name. Write something clearer.
 	animationEnd();
 };
@@ -164,43 +164,48 @@ const disableOpacitySlider = () => {
 // 	});
 // };
 
-
 const showAnimateCheckboxVisibility = () => {
-	document.querySelectorAll('#pinnedList .animate.checkbox.hidden').forEach((box) => {
-		box.classList.remove('hidden');
-	});
+	document
+		.querySelectorAll('#pinnedList .animate.checkbox.hidden')
+		.forEach((box) => {
+			box.classList.remove('hidden');
+		});
 };
 
 const hideAnimateCheckboxVisibility = () => {
 	document.querySelectorAll('#pinnedList .animate.checkbox').forEach((box) => {
 		box.classList.add('hidden');
 	});
-
-	
 };
 
 const showAvailableTopoCheckbox = (oid) => {
-	console.log('checkbox')
-	const mapCard = document.querySelector(`#pinnedList .map-list-item[oid="${oid}"]`)
-	const mapCardCheckbox = mapCard.querySelector('.checkbox')
-	console.log(mapCardCheckbox)
-	mapCardCheckbox.classList.remove('hidden')
-}
+	console.log('checkbox');
+	const mapCard = document.querySelector(
+		`#pinnedList .map-list-item[oid="${oid}"]`
+	);
+	const mapCardCheckbox = mapCard.querySelector('.checkbox');
+	console.log(mapCardCheckbox);
+	mapCardCheckbox.classList.remove('hidden');
+};
 
 const hideUnavailableTopoCheckbox = (oid) => {
-	document.querySelector(`#pinnedList .map-list-item[oid="${oid}"]`)
-	const mapCard = document.querySelector(`#pinnedList .map-list-item[oid="${oid}"]`)
+	document.querySelector(`#pinnedList .map-list-item[oid="${oid}"]`);
+	const mapCard = document.querySelector(
+		`#pinnedList .map-list-item[oid="${oid}"]`
+	);
 	// const mapCardCheckbox = mapCard.querySelector('.checkbox')
 	// mapCard.closest
 	// console.log('no cechkbox', mapCardCheckbox)
-}
+};
 
 const uncheckMapCard = (oid) => {
-	document.querySelector(`#pinnedList .map-list-item[oid="${oid}"]`)
-	const mapCard = document.querySelector(`#pinnedList .map-list-item[oid="${oid}"]`)
-	const mapCardCheckmark = mapCard.querySelector('.checkmark')
-	mapCardCheckmark.classList.add('hidden')
-}
+	document.querySelector(`#pinnedList .map-list-item[oid="${oid}"]`);
+	const mapCard = document.querySelector(
+		`#pinnedList .map-list-item[oid="${oid}"]`
+	);
+	const mapCardCheckmark = mapCard.querySelector('.checkmark');
+	mapCardCheckmark.classList.add('hidden');
+};
 
 const resetAnimateCheckbox = () => {
 	document.querySelectorAll('#pinnedList .animate.checkbox').forEach((box) => {
@@ -208,19 +213,21 @@ const resetAnimateCheckbox = () => {
 	});
 };
 
-const setMapCardUnavailableStaus = (oid) => {
+const setMapCardUnavailableStatus = (oid) => {
 	// document.querySelector(`#pinnedList .map-list-item[oid="${oid}"]`).classList.add('unavailable')
 	// document.querySelector(`#pinnedList .map-list-item[oid="${oid}"]`)
-	const mapCard = document.querySelector(`#pinnedList .map-list-item[oid="${oid}"]`)
-	console.log(mapCard)
-	mapCard.classList.add('trnsparency')
-}
+	const mapCard = document.querySelector(
+		`#pinnedList .map-list-item[oid="${oid}"]`
+	);
+	console.log(mapCard);
+	mapCard.classList.add('transparency');
+};
 
 const removeMapCardUnavailableStatus = () => {
 	document.querySelectorAll('#pinnedList .map-list-item').forEach((card) => {
-	card.classList.remove('trnsparency')
-	})
-}
+		card.classList.remove('transparency');
+	});
+};
 
 const toggleIconAndBtnTransparency = () => {
 	//add transparency to the explorer mode button
@@ -267,7 +274,7 @@ export {
 	uncheckMapCard,
 	showAvailableTopoCheckbox,
 	showAnimateCheckboxVisibility,
-	setMapCardUnavailableStaus,
+	setMapCardUnavailableStatus,
 	removeAnimationLoadingDiv,
 	removeCloseAnimationBtn,
 	cardCheckStatus,

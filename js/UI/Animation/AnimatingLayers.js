@@ -5,7 +5,7 @@ import {
 	addAnimationCloseBtn,
 	showAnimateCheckboxVisibility,
 	uncheckMapCard,
-	setMapCardUnavailableStaus,
+	setMapCardUnavailableStatus,
 	showAvailableTopoCheckbox,
 	hideUnavailableTopoCheckbox,
 	removeHighlight,
@@ -102,73 +102,87 @@ const showTopoLayers = () => {
 	});
 };
 
+let basemapContextImage;
+
 const exportingTopoImageAndCreatingImageElement = async () => {
 	//check to see if the map with the oid and it's geometry are within the geometry of the extent
-	//if the geometry is within the extent, proceed with this map to the next steps 
-	//if not, move to the next one. 
+	//if the geometry is within the extent, proceed with this map to the next steps
+	//if not, move to the next one.
 
-	let isIntersecting
+	let isIntersecting;
+
+	console.log('context', basemapContextImage);
+	arrayOfImageData.push(basemapContextImage);
 
 	for await (const card of pinListCurrentOrder) {
 		const cardId = card.querySelector('.map-list-item').attributes.oid.value;
-		const cardMapLocation = card.querySelector('.map-list-item').attributes.geometry.value;
+		const cardMapLocation =
+			card.querySelector('.map-list-item').attributes.geometry.value;
 		const currentOpacity = card.querySelector('.opacity-slider').value / 100;
 
-		console.log(queryConfig.mapView.extent)
-		console.log(JSON.stringify(queryConfig.mapView.extent))
-		console.log(JSON.stringify(cardMapLocation))
-		console.log(JSON.parse(cardMapLocation))
-		
-			require([
-				
-				'esri/geometry/geometryEngine',
-				
-			], (geometryEngine) => {
-				// const createPolygon = Polygon.getExtent(cardMapLocation);
-				 isIntersecting = geometryEngine.intersects(JSON.parse(cardMapLocation), queryConfig.mapView.extent)
-				console.log(geometryEngine)
-				// const isCrossing = geometryEngine.crosses( JSON.parse(cardMapLocation), queryConfig.mapView.extent)
-				console.log(isIntersecting)
-				// console.log(isCrossing)
-				// console.log(createPolygon)
-				// if(createPolygon.extent.xMax < ){}
-				
-			});
-		
-			console.log(isIntersecting)
+		// console.log(queryConfig.mapView.extent);
+		// console.log(JSON.stringify(queryConfig.mapView.extent));
+		// console.log(JSON.stringify(cardMapLocation));
+		// console.log(JSON.parse(cardMapLocation));
+
+		require(['esri/geometry/geometryEngine'], (geometryEngine) => {
+			// const createPolygon = Polygon.getExtent(cardMapLocation);
+			isIntersecting = geometryEngine.intersects(
+				JSON.parse(cardMapLocation),
+				queryConfig.mapView.extent
+			);
+			// console.log(geometryEngine);
+			// const isCrossing = geometryEngine.crosses( JSON.parse(cardMapLocation), queryConfig.mapView.extent)
+			// console.log(isIntersecting);
+			// console.log(isCrossing)
+			// console.log(createPolygon)
+			// if(createPolygon.extent.xMax < ){}
+		});
+
+		console.log(isIntersecting);
 
 		await imageExport(cardId, currentOpacity, isCancelled).then(
-			
 			async (imageData) => {
 				arrayOfImageData.push(imageData);
 				await createImageElementForMediaLayer(imageData);
-				if(!isIntersecting) {
-					console.log(isIntersecting)
-					disableMapCardForAnimation()
-					setMapCardUnavailableStaus(cardId)
-					hideUnavailableTopoCheckbox(cardId)
-					uncheckMapCard(cardId)
-					return
+				if (!isIntersecting) {
+					console.log(isIntersecting);
+					disableMapCardForAnimation();
+					setMapCardUnavailableStatus(cardId);
+					hideUnavailableTopoCheckbox(cardId);
+					uncheckMapCard(cardId);
+					return;
 				}
-				
-				showAvailableTopoCheckbox(cardId)
+
+				showAvailableTopoCheckbox(cardId);
 				// await createImageElementForMediaLayer(imageData);
 			}
 		);
 	}
 };
 
-
 const disableMapCardForAnimation = () => {
-	console.log('disable card')
+	console.log('disable card');
+};
 
-}
+const takeScreenshotOfView = async () => {
+	console.log(queryConfig.mapView);
+	return new Promise((resolve, reject) => {
+		queryConfig.mapView.takeScreenshot().then((screenshot) => {
+			const imgElement = screenshot.dataUrl;
+			console.log('screenshot', screenshot);
+			console.log(imgElement);
+			resolve((basemapContextImage = imgElement));
+		});
+	});
+};
 
 //NOTE: this is the hub for all animation related data is called. So how would you manage these functions if the animation is cancelled during the load? What is the risk condition?
 const animationStart = async () => {
 	setPinListCurrentOrder();
 	hideMapHalos();
 	hideTopoLayers();
+	await takeScreenshotOfView();
 	await exportingTopoImageAndCreatingImageElement();
 	await createMediaLayer();
 	await getAnimatingImages();
@@ -232,7 +246,7 @@ const startAnimationInterval = () => {
 };
 
 const animate = () => {
-	console.log(mapIdIndex)
+	console.log(mapIdIndex);
 	if (mapIdIndex !== -1) {
 		if (arrayOfMapImages[mapIdIndex].opacity !== 0) {
 			arrayOfMapImages[mapIdIndex].opacity = 0;
@@ -267,7 +281,6 @@ const findNextTopoToAnimate = () => {
 };
 
 const showTopoImage = (mapIdIndex) => {
-	
 	let topoMap = arrayOfMapImages[mapIdIndex];
 	let highlightingAnimatedMap = pinListCurrentOrder[mapIdIndex];
 	let topoChosenOpacity = arrayOfImageData[mapIdIndex].currentOpacity;
