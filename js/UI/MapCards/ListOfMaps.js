@@ -305,7 +305,6 @@ const toggleListVisibility = () => {
 	if (
 		mapModes.querySelector('.explorer-mode').classList.contains('underline')
 	) {
-		c;
 		addTopoToMap(currentlyOpenedMapId, serviceURL);
 		const openTopoCard = document.querySelector(
 			`.map-list-item[oid="${currentlyOpenedMapId}"]`
@@ -644,6 +643,9 @@ const removeHalo = (oid) => {
 };
 
 const addHalo = (oid, geometry) => {
+	if (!oid) {
+		return;
+	}
 	mapHalo(oid, geometry).then((topoOutline) => {
 		mapHaloGraphicLayer.graphics.add(topoOutline);
 	});

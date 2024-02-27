@@ -224,9 +224,9 @@ exploreList.addEventListener('scroll', () => {
 		queryConfig.checkAvailableNumberOfMaps();
 	}
 });
-document.addEventListener('click',(event) => {
-	console.log(event.target)
-})
+document.addEventListener('click', (event) => {
+	console.log(event.target);
+});
 //event listeners that work with animation process
 document
 	.querySelector('.icon .play-pause')

@@ -80,6 +80,7 @@ const mapHalo = (mapCardID, geometry) => {
 			GraphicsLayer,
 			Graphic
 		) {
+			console.log(geometry);
 			const mapOutline = JSON.parse(geometry);
 
 			const haloPolygon = {

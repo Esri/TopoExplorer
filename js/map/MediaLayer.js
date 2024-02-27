@@ -44,12 +44,14 @@ const removeMediaLayer = () => {
 };
 
 const createImageElementForMediaLayer = async (imageData) => {
+	console.log('here', imageData);
 	return await new Promise((resolve) => {
 		require([
 			'esri/layers/support/ImageElement',
 			'esri/layers/support/ExtentAndRotationGeoreference',
 			'esri/geometry/Extent',
 		], (ImageElement, ExtentAndRotationGeoreference, Extent) => {
+			console.log('creating image for meadia layer...');
 			const imageElement = new ImageElement({
 				id: imageData.id,
 				image: imageData.url,
