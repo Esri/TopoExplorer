@@ -63,10 +63,12 @@ setAnimationSlider(animationSpeedSlider, speeds);
 setInitialDuration(speeds);
 
 const setPinListCurrentOrder = () => {
+	console.log(0);
 	pinListCurrentOrder = currentStateOfPinnedList();
 };
 
 const getAnimatingImages = async () => {
+	console.log(6);
 	await createArrayOfImageElements(arrayOfMapImages);
 };
 
@@ -78,7 +80,8 @@ const removeImagesForDownload = () => {
 	imagesForDownload.length = 0;
 };
 
-const hideMapHalos = async () => {
+const hideMapHalos = () => {
+	console.log(1);
 	mapHaloGraphicLayer.visible = false;
 };
 
@@ -87,18 +90,18 @@ const showMapHalos = () => {
 };
 
 //note:I don't like how this works. there has to be a cleaner method
-const hideTopoLayers = async () => {
-	return new Promise((resolve, reject) => {
-		pinListCurrentOrder.forEach((card, index) => {
-			findTopoLayer(
-				card.querySelector('.map-list-item').attributes.oid.value
-			).then((layer) => {
-				layer.visible = false;
-			});
-			if (index === pinListCurrentOrder.length - 1) {
-				resolve();
-			}
+const hideTopoLayers = () => {
+	console.log(2);
+
+	pinListCurrentOrder.forEach((card, index) => {
+		findTopoLayer(
+			card.querySelector('.map-list-item').attributes.oid.value
+		).then((layer) => {
+			layer.visible = false;
 		});
+		if (index === pinListCurrentOrder.length - 1) {
+			return;
+		}
 	});
 };
 
@@ -113,6 +116,7 @@ const showTopoLayers = () => {
 };
 
 const exportingTopoImageAndCreatingImageElement = async () => {
+	console.log(4);
 	//check to see if the map with the oid and it's geometry are within the geometry of the extent
 	//if the geometry is within the extent, proceed with this map to the next steps
 	//if not, move to the next one.
@@ -133,25 +137,23 @@ const exportingTopoImageAndCreatingImageElement = async () => {
 			);
 		});
 
-		await imageExport(cardId, currentOpacity, isCancelled).then(
-			async (imageData) => {
-				console.log(arrayOfImageData);
-				arrayOfImageData.push(imageData);
-				imagesForDownload.push(imageData);
-				await createImageElementForMediaLayer(imageData);
-				if (!isIntersecting) {
-					console.log(isIntersecting);
-					disableMapCardForAnimation();
-					setMapCardUnavailableStatus(cardId);
-					hideUnavailableTopoCheckbox(cardId);
-					uncheckMapCard(cardId);
-					return;
-				}
-
-				showAvailableTopoCheckbox(cardId);
-				console.log(imagesForDownload);
+		await imageExport(cardId, currentOpacity, isCancelled).then((imageData) => {
+			console.log(arrayOfImageData);
+			arrayOfImageData.push(imageData);
+			imagesForDownload.push(imageData);
+			createImageElementForMediaLayer(imageData);
+			if (!isIntersecting) {
+				console.log(isIntersecting);
+				disableMapCardForAnimation();
+				setMapCardUnavailableStatus(cardId);
+				hideUnavailableTopoCheckbox(cardId);
+				uncheckMapCard(cardId);
+				return;
 			}
-		);
+
+			showAvailableTopoCheckbox(cardId);
+			console.log(imagesForDownload);
+		});
 	}
 };
 
@@ -160,7 +162,8 @@ const disableMapCardForAnimation = () => {
 };
 
 const takeScreenshotOfView = async () => {
-	return new Promise((resolve, reject) => {
+	console.log(3);
+	return new Promise(async (resolve, reject) => {
 		const screenshotQualityValue = 75;
 		const screenshotFormat = 'jpg';
 
@@ -174,7 +177,7 @@ const takeScreenshotOfView = async () => {
 		};
 
 		console.log(options);
-		queryConfig.mapView.takeScreenshot(options).then((screenshot) => {
+		await queryConfig.mapView.takeScreenshot(options).then((screenshot) => {
 			console.log('screenshot', screenshot);
 
 			const basemapImgURL = screenshot.dataUrl;
@@ -190,14 +193,15 @@ const takeScreenshotOfView = async () => {
 };
 
 //NOTE: this is the hub for all animation related data is called. So how would you manage these functions if the animation is cancelled during the load? What is the risk condition?
+//This section should be refactored, the 'awaits' are unnecessary and confusing. But some of the functions associated with these calls have asynchronous behavior (modules, fetch/server calls)
 const animationStart = async () => {
 	setPinListCurrentOrder();
-	await hideMapHalos();
-	await hideTopoLayers();
+	hideMapHalos();
+	hideTopoLayers();
 	await exportingTopoImageAndCreatingImageElement();
 	await createMediaLayer();
 	await getAnimatingImages();
-	await takeScreenshotOfView();
+	takeScreenshotOfView();
 	startAnimationInterval();
 	removeAnimationLoadingDiv();
 	checkAnimationLoadStatus();

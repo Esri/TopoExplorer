@@ -5,6 +5,7 @@ let mediaLayer;
 const mediaLayerIdAndTitle = 'animation';
 
 const createMediaLayer = async () => {
+	console.log(5);
 	return new Promise((resolve, reject) => {
 		require(['esri/layers/MediaLayer'], (MediaLayer) => {
 			mediaLayer = new MediaLayer({
@@ -23,7 +24,7 @@ const createMediaLayer = async () => {
 	});
 };
 
-const createArrayOfImageElements = async (array) => {
+const createArrayOfImageElements = (array) => {
 	// const imageElementsArray = [];
 	// console.log(mediaLayer);
 	// mediaLayer.source.elements.items.forEach((imageElement) => {
@@ -31,7 +32,7 @@ const createArrayOfImageElements = async (array) => {
 	// });
 
 	for (const topoImage of mediaLayer.source.elements.items) {
-		await array.push(topoImage);
+		array.push(topoImage);
 	}
 
 	return array;

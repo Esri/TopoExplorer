@@ -750,6 +750,18 @@ font-style: italic;
   line-height: 1.5rem
 }
 
+.animationOptionsWrapper {
+  padding-top: 7rem;
+  width: 12rem;
+  top: 0;
+  right: 0;
+  position: relative;
+}
+
+.downloadOptions {
+  background-color: chartreuse;
+}
+
 svg{
   fill: #637287;
 }
