@@ -12,7 +12,7 @@ import {
 //this variable is used to determine if the button events are disabled during animation
 let isAnimating = false;
 let isLoading = false;
-
+console.log('animation');
 const beginAnimation = () => {
 	isAnimating = true;
 	setLoadingStatus();
@@ -43,6 +43,7 @@ const endAnimation = () => {
 	animationEnd();
 };
 
+// console.log('test', test);
 // const animationLoadingHTML = `
 //                                       <div style='position: absolute; left:25px; top: 25px;'>
 //                                         <div style='display: flex;'>

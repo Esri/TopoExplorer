@@ -750,18 +750,32 @@ font-style: italic;
   line-height: 1.5rem
 }
 
-.animationOptionsWrapper {
+.downloadOptionsWrapper {
+  background: #F1F4F5;
   padding-top: 7rem;
-  width: 12rem;
+  width: 15rem;
   top: 0;
   right: 0;
   position: relative;
+  box-shadow: 4px 4px 6px #111111;
 }
 
-.downloadOptions {
-  background-color: chartreuse;
+/* .downloadOptions { */
+/* } */
+
+.choice:hover{
+  /* background-color: black; */
+  color: cyan;
+  text-decoration: underline;
 }
 
+.choice div {
+  background: salmon;
+}
+
+.choice:hover div{
+background: red;
+}
 svg{
   fill: #637287;
 }

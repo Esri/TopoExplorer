@@ -256,7 +256,9 @@ document.querySelector('#viewDiv').addEventListener('click', (event) => {
 
 	if (isAnimating && event.target.closest('.downloadAnimationBtn')) {
 		console.log('downloadBox');
-		document.querySelector('.downloadOptions').classList.toggle('invisible');
+		document
+			.querySelector('.downloadOptionsWrapper')
+			.classList.toggle('invisible');
 	}
 });
 
