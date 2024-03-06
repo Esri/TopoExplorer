@@ -4,7 +4,6 @@ import { queryConfig } from './QueryConfig.js?v=0.01';
 let controller = new AbortController();
 
 const cancelImageRequest = () => {
-	console.log('abort?');
 	controller.abort();
 	controller = new AbortController();
 };

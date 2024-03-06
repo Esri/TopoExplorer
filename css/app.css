@@ -762,11 +762,28 @@ font-style: italic;
 
 /* .downloadOptions { */
 /* } */
+.choice {
+  /* padding: 10px;  */
+  line-height: 3rem;
+  display: flex; 
+  justify-content: center;
+  align-items: center;  
+}
+
+.choice div{
+  margin-right: 0.5rem;
+}
+
+.choice .smallerSize {
+  color: chartreuse;
+
+}
 
 .choice:hover{
   /* background-color: black; */
-  color: cyan;
+  color: #242b33;
   text-decoration: underline;
+  font-weight: bold;
 }
 
 .choice div {
@@ -778,6 +795,12 @@ background: red;
 }
 svg{
   fill: #637287;
+}
+
+.selected {
+  background: linear-gradient(0deg, rgba(231,235,238,1) 0%, rgba(241,244,245,1) 100%);
+  border-radius: 12px;
+  box-shadow: inset 0px 1px 1px 1px rgba(255,255,255,1), 0px -8px 8px 4px rgba(219,227,233,1);
 }
 
 @media only screen and (max-width: 366px) {

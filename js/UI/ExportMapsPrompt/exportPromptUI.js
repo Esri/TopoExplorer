@@ -21,11 +21,11 @@ let accountURL;
 
 const setUserContentURL = (urlKey, urlBase, url) => {
 	//NOTE: this conditional is set to determine if the user has logged in, and if a url for an exported webmap needs to be parsed. I think I could come up with a different answer other than using this conditional?
-	if (!urlBase) {
-		return;
-	}
+	// if (!urlBase) {
+	// 	return;
+	// }
 
-	if (!urlKey) {
+	if (!urlKey || !urlBase) {
 		accountURL = `${url}`;
 		return;
 	}
@@ -35,6 +35,7 @@ const setUserContentURL = (urlKey, urlBase, url) => {
 
 const setWebMapURL = (itemID) => {
 	webMapURL = `${accountURL}/home/item.html?id=${itemID}`;
+	console.log(webMapURL);
 };
 
 const exportFields = `
@@ -144,7 +145,7 @@ promptBox.addEventListener('click', (event) => {
 		return;
 	}
 
-	window.open(webMapURL, '_blank').focus();
+	window.open(webMapURL, '_blank');
 	closeExportPrompt();
 });
 

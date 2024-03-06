@@ -15,8 +15,8 @@ const formats = [
 		largeFormatWidth: '18px',
 		largeFormatHeight: '18px',
 		largeFormatSize: `${pixelSizes[1]} x ${pixelSizes[1]}`,
-		smallFormatWidth: '12px',
-		smallFormatHeight: '12px',
+		smallFormatWidth: '13px',
+		smallFormatHeight: '13px',
 		smallFormatSize: `${pixelSizes[2]} x ${pixelSizes[2]}`,
 	},
 	{
@@ -30,4 +30,4 @@ const formats = [
 	},
 ];
 
-export { pixelSizes, formats };
+export { formats };

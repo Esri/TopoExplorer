@@ -12,7 +12,7 @@ import {
 //this variable is used to determine if the button events are disabled during animation
 let isAnimating = false;
 let isLoading = false;
-console.log('animation');
+
 const beginAnimation = () => {
 	isAnimating = true;
 	setLoadingStatus();
@@ -92,7 +92,6 @@ const endAnimation = () => {
 //                                 </div>
 //                               `;
 
-console.log('something', closeAnimationBtnHTML);
 const cardCheckStatus = (mapIdIndex) => {
 	return mapIdIndex
 		.querySelector('.animate.checkbox .checkmark')
@@ -204,12 +203,11 @@ const hideAnimateCheckboxVisibility = () => {
 };
 
 const showAvailableTopoCheckbox = (oid) => {
-	console.log('checkbox');
 	const mapCard = document.querySelector(
 		`#pinnedList .map-list-item[oid="${oid}"]`
 	);
 	const mapCardCheckbox = mapCard.querySelector('.checkbox');
-	console.log(mapCardCheckbox);
+
 	mapCardCheckbox.classList.remove('hidden');
 };
 
@@ -244,7 +242,7 @@ const setMapCardUnavailableStatus = (oid) => {
 	const mapCard = document.querySelector(
 		`#pinnedList .map-list-item[oid="${oid}"]`
 	);
-	console.log(mapCard);
+
 	mapCard.classList.add('transparency');
 };
 

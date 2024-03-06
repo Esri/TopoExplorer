@@ -262,4 +262,12 @@ document.querySelector('#viewDiv').addEventListener('click', (event) => {
 	}
 });
 
+document.querySelector('#viewDiv').addEventListener('mouseover', (event) => {
+	console.log('thing');
+	console.log(event.target.classList);
+	if (event.target.closest('.choice')) {
+		console.log('choices');
+	}
+});
+
 export { addAccountImage, isMobileFormat, preventingMapInteractions };

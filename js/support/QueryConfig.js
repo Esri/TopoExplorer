@@ -505,7 +505,6 @@ const queryConfig = {
 
 		extentQuery(this.url, this.mapDataParams())
 			.then((response) => {
-				console.log(response);
 				// checkForMapsVisibleWithinExtent()
 				this.topoMapsInExtent = response.data.features;
 

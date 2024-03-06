@@ -1,4 +1,4 @@
-import { formats, pixelSizes } from './animationOptionsSettings.js?v=0.01';
+import { formats } from './animationOptionsSettings.js?v=0.01';
 
 const animationLoadingHTML = `             
                                       <div style='position: absolute; left:25px; top: 25px;'>
@@ -15,21 +15,21 @@ const animationLoadingHTML = `
                               `;
 
 const downloadOptionsHTML = formats
-	.map((format) => {
+	.map((size) => {
 		return `
             <div>
-              <h4 style='text-align: center;'>${format.format.toUpperCase()}</h4>
-              <div class='choice' style='padding: 10px; display: flex; justify-content: space-evenly'>
-                <div style='width:${format.largeFormatWidth}; height: ${
-			format.largeFormatHeight
+              <h4 style='text-align: center;'>${size.format.toUpperCase()}</h4>
+              <div class='choice'>
+                <div style='width:${size.largeFormatWidth}; height: ${
+			size.largeFormatHeight
 		};'></div>
-                <span>${format.largeFormatSize}</span>
+                <span>${size.largeFormatSize}</span>
               </div>
-              <div class='choice' style='padding: 10px; display: flex; justify-content: space-evenly'>
-                <div style='width:${format.smallFormatWidth}; height: ${
-			format.smallFormatHeight
-		};'></div>
-                <span>${format.smallFormatSize}</span>
+              <div class='choice'>
+                <div class= 'smallerSize' style='width:${
+									size.smallFormatWidth
+								}; height: ${size.smallFormatHeight};'></div>
+                <span>${size.smallFormatSize}</span>
               </div>
             </div>
          `;
@@ -50,7 +50,7 @@ const closeAnimationBtnHTML = `
                                     </div>
                                   </div>                                
 <div class='downloadOptionsWrapper invisible'>
-                                  <div class='downloadOptions'>
+                                  <div class='downloadOptions' style='padding:20px'>
                                     ${downloadOptionsHTML}
                                   </div>
                                   
@@ -58,5 +58,5 @@ const closeAnimationBtnHTML = `
                               `;
 
 const test = () => closeAnimationBtnHTML;
-console.log('in the Options UI file', closeAnimationBtnHTML);
+
 export { animationLoadingHTML, closeAnimationBtnHTML, test };

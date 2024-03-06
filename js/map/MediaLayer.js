@@ -5,7 +5,6 @@ let mediaLayer;
 const mediaLayerIdAndTitle = 'animation';
 
 const createMediaLayer = async () => {
-	console.log(5);
 	return new Promise((resolve, reject) => {
 		require(['esri/layers/MediaLayer'], (MediaLayer) => {
 			mediaLayer = new MediaLayer({
@@ -18,7 +17,7 @@ const createMediaLayer = async () => {
 				mediaLayer,
 				queryConfig.mapView.map.layers.items.length - 2
 			);
-			console.log(queryConfig.mapView.map.layers.items.length - 2);
+
 			resolve();
 		});
 	});
@@ -40,19 +39,15 @@ const createArrayOfImageElements = (array) => {
 
 const removeMediaLayer = () => {
 	queryConfig.mapView.map.remove(mediaLayer);
-
-	console.log(queryConfig.mapView.map.layers.items);
 };
 
 const createImageElementForMediaLayer = async (imageData) => {
-	console.log('here', imageData);
 	return await new Promise((resolve) => {
 		require([
 			'esri/layers/support/ImageElement',
 			'esri/layers/support/ExtentAndRotationGeoreference',
 			'esri/geometry/Extent',
 		], (ImageElement, ExtentAndRotationGeoreference, Extent) => {
-			console.log('creating image for meadia layer...');
 			const imageElement = new ImageElement({
 				id: imageData.id,
 				image: imageData.url,
@@ -64,8 +59,6 @@ const createImageElementForMediaLayer = async (imageData) => {
 			});
 
 			mediaLayerSourceElementsArray.push(imageElement);
-
-			console.log(mediaLayerSourceElementsArray);
 		});
 		resolve();
 	});
@@ -73,7 +66,6 @@ const createImageElementForMediaLayer = async (imageData) => {
 
 const removeTopoImageElements = () => {
 	mediaLayerSourceElementsArray.length = 0;
-	console.log(mediaLayerSourceElementsArray);
 };
 
 export {

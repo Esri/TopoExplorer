@@ -63,12 +63,10 @@ setAnimationSlider(animationSpeedSlider, speeds);
 setInitialDuration(speeds);
 
 const setPinListCurrentOrder = () => {
-	console.log(0);
 	pinListCurrentOrder = currentStateOfPinnedList();
 };
 
 const getAnimatingImages = async () => {
-	console.log(6);
 	await createArrayOfImageElements(arrayOfMapImages);
 };
 
@@ -81,7 +79,6 @@ const removeImagesForDownload = () => {
 };
 
 const hideMapHalos = () => {
-	console.log(1);
 	mapHaloGraphicLayer.visible = false;
 };
 
@@ -91,8 +88,6 @@ const showMapHalos = () => {
 
 //note:I don't like how this works. there has to be a cleaner method
 const hideTopoLayers = () => {
-	console.log(2);
-
 	pinListCurrentOrder.forEach((card, index) => {
 		findTopoLayer(
 			card.querySelector('.map-list-item').attributes.oid.value
@@ -116,7 +111,6 @@ const showTopoLayers = () => {
 };
 
 const exportingTopoImageAndCreatingImageElement = async () => {
-	console.log(4);
 	//check to see if the map with the oid and it's geometry are within the geometry of the extent
 	//if the geometry is within the extent, proceed with this map to the next steps
 	//if not, move to the next one.
@@ -138,12 +132,10 @@ const exportingTopoImageAndCreatingImageElement = async () => {
 		});
 
 		await imageExport(cardId, currentOpacity, isCancelled).then((imageData) => {
-			console.log(arrayOfImageData);
 			arrayOfImageData.push(imageData);
 			imagesForDownload.push(imageData);
 			createImageElementForMediaLayer(imageData);
 			if (!isIntersecting) {
-				console.log(isIntersecting);
 				disableMapCardForAnimation();
 				setMapCardUnavailableStatus(cardId);
 				hideUnavailableTopoCheckbox(cardId);
@@ -152,7 +144,6 @@ const exportingTopoImageAndCreatingImageElement = async () => {
 			}
 
 			showAvailableTopoCheckbox(cardId);
-			console.log(imagesForDownload);
 		});
 	}
 };
@@ -162,13 +153,12 @@ const disableMapCardForAnimation = () => {
 };
 
 const takeScreenshotOfView = async () => {
-	console.log(3);
 	return new Promise(async (resolve, reject) => {
 		const screenshotQualityValue = 75;
 		const screenshotFormat = 'jpg';
 
 		let pixelRatio = window.devicePixelRatio;
-		console.log(pixelRatio);
+
 		const options = {
 			format: screenshotFormat,
 			height: (queryConfig.mapView.height * pixelRatio).toFixed(0),
@@ -176,10 +166,7 @@ const takeScreenshotOfView = async () => {
 			quality: screenshotQualityValue,
 		};
 
-		console.log(options);
 		await queryConfig.mapView.takeScreenshot(options).then((screenshot) => {
-			console.log('screenshot', screenshot);
-
 			const basemapImgURL = screenshot.dataUrl;
 
 			const basemapImage = {
