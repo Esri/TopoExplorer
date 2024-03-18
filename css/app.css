@@ -8,7 +8,7 @@
   font-family: "Roboto Condensed";
   src: 
     local('Roboto Condensed')
-    url('https://fonts.gstatic.com/s/robotocondensed/v25/ieVl2ZhZI2eCN5jzbjEETS9weq8-19K7DQ.woff2')
+    url('../public/font/robotoCondensed.woff2')
     
 }
 
@@ -473,7 +473,7 @@ background: none;
 
 @font-face {
   font-family: 'Roboto Condensed';
-  src: url("https://fonts.gstatic.com/s/robotocondensed/v25/ieVl2ZhZI2eCN5jzbjEETS9weq8-19K7DQ.woff2");
+  src: url("../public/font/robotoCondensed.woff2");
 }
 .pinned-mode-options {
 flex: auto;
