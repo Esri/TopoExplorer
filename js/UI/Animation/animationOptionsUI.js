@@ -1,4 +1,5 @@
 import { formats } from './animationOptionsSettings.js?v=0.01';
+import { checkToposIncludedForDownload } from './AnimatingLayers.js?v=0.01';
 
 const animationLoadingHTML = `             
                                       <div style='position: absolute; left:25px; top: 25px;'>
@@ -23,13 +24,13 @@ const downloadOptionsHTML = formats
                 <div style='width:${size.largeFormatWidth}; height: ${
 			size.largeFormatHeight
 		};'></div>
-                <span>${size.largeFormatSize}</span>
+                <a href='' download>${size.largeFormatSize}</a>
               </div>
               <div class='choice'>
                 <div class= 'smallerSize' style='width:${
 									size.smallFormatWidth
 								}; height: ${size.smallFormatHeight};'></div>
-                <span>${size.smallFormatSize}</span>
+                <a href='' download>${size.smallFormatSize}</a>
               </div>
             </div>
          `;

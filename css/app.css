@@ -863,7 +863,7 @@ svg{
 
 .selected {
   background: linear-gradient(0deg, rgba(231,235,238,1) 0%, rgba(241,244,245,1) 100%);
-  border-radius: 12px;
+  border-radius: 12px 12px 0 0;
   box-shadow: inset 0px 1px 1px 1px rgba(255,255,255,1), 0px -8px 8px 4px rgba(219,227,233,1);
 }
 

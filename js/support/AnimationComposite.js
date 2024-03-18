@@ -55,6 +55,7 @@ const makeCompositeForAnimationDownload = async (basemap, topo) => {
 			console.log(blob);
 			const url = URL.createObjectURL(blob);
 			console.log(`${url}`);
+			document.querySelector('.smallerSize a').attributes.href = url;
 		});
 	};
 };

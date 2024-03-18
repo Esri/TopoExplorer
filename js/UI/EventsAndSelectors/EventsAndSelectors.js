@@ -296,7 +296,7 @@ document.querySelector('#viewDiv').addEventListener('mouseover', (event) => {
 
 		const dimension = event.target
 			.closest('.choice')
-			.querySelector('span').innerText;
+			.querySelector('a').innerText;
 
 		// findAspectRatio(window.innerWidth - 400, window.innerHeight, orientation);
 		findAspectRatio(dimension, orientation);
