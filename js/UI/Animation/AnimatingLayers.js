@@ -13,6 +13,7 @@ import {
 	endAnimation,
 	isAnimating,
 	setLoadingStatus,
+	enableAnimationSpeedSlider,
 } from './animation.js?v=0.01';
 import {
 	findTopoLayer,
@@ -30,6 +31,7 @@ import {
 	createImageElementForMediaLayer,
 	removeTopoImageElements,
 } from '../../map/MediaLayer.js?v=0.01';
+import { makeCompositeForAnimationDownload } from '../../support/AnimationComposite.js?v=0.01';
 
 const animationSpeedSlider = document.querySelector('.animation-speed-value');
 
@@ -38,7 +40,11 @@ let mapIdIndex = -1;
 let isCardUnchecked;
 let arrayOfMapImages = [];
 let arrayOfImageData = [];
-let imagesForDownload = [];
+let imagesForDownload = {
+	basemap: null,
+	topoImages: [],
+	animationImages: [],
+};
 let animationInterval;
 let duration;
 let pinListCurrentOrder;
@@ -75,7 +81,8 @@ const removeAnimatingImages = () => {
 };
 
 const removeImagesForDownload = () => {
-	imagesForDownload.length = 0;
+	imagesForDownload.basemap = null;
+	imagesForDownload.topoImages.length = 0;
 };
 
 const hideMapHalos = () => {
@@ -87,7 +94,7 @@ const showMapHalos = () => {
 };
 
 //note:I don't like how this works. there has to be a cleaner method
-const hideTopoLayers = () => {
+const hideTopoLayers = async () => {
 	pinListCurrentOrder.forEach((card, index) => {
 		findTopoLayer(
 			card.querySelector('.map-list-item').attributes.oid.value
@@ -110,50 +117,97 @@ const showTopoLayers = () => {
 	});
 };
 
+const isIntersecting = async (cardMapLocation, mapViewExtent) => {
+	return new Promise((resolve, reject) => {
+		require(['esri/geometry/geometryEngine'], (geometryEngine) => {
+			// const createPolygon = Polygon.getExtent(cardMapLocation);
+			let isTopoInView = geometryEngine.intersects(
+				JSON.parse(cardMapLocation),
+				mapViewExtent
+			);
+			console.log(isTopoInView);
+			resolve(isTopoInView);
+		});
+	});
+};
+
 const exportingTopoImageAndCreatingImageElement = async () => {
 	//check to see if the map with the oid and it's geometry are within the geometry of the extent
 	//if the geometry is within the extent, proceed with this map to the next steps
 	//if not, move to the next one.
 
-	let isIntersecting;
-
-	for await (const card of pinListCurrentOrder) {
+	for (const card of pinListCurrentOrder) {
 		const cardId = card.querySelector('.map-list-item').attributes.oid.value;
 		const cardMapLocation =
 			card.querySelector('.map-list-item').attributes.geometry.value;
 		const currentOpacity = card.querySelector('.opacity-slider').value / 100;
 
-		require(['esri/geometry/geometryEngine'], (geometryEngine) => {
-			// const createPolygon = Polygon.getExtent(cardMapLocation);
-			isIntersecting = geometryEngine.intersects(
-				JSON.parse(cardMapLocation),
-				queryConfig.mapView.extent
+		if (await isIntersecting(cardMapLocation, queryConfig.mapView.extent)) {
+			console.log('exporting');
+			await imageExport(cardId, currentOpacity, isCancelled).then(
+				(imageData) => {
+					imageData.isCheckedForAnimation = true;
+
+					arrayOfImageData.push(imageData);
+					imagesForDownload.topoImages.push(imageData);
+					createImageElementForMediaLayer(imageData);
+					showAvailableTopoCheckbox(cardId);
+				}
 			);
-		});
-
-		await imageExport(cardId, currentOpacity, isCancelled).then((imageData) => {
-			arrayOfImageData.push(imageData);
-			imagesForDownload.push(imageData);
-			createImageElementForMediaLayer(imageData);
-			if (!isIntersecting) {
-				disableMapCardForAnimation();
-				setMapCardUnavailableStatus(cardId);
-				hideUnavailableTopoCheckbox(cardId);
-				uncheckMapCard(cardId);
-				return;
-			}
-
-			showAvailableTopoCheckbox(cardId);
-		});
+		} else {
+			disableMapCardForAnimation(cardId);
+		}
 	}
+
+	// console.log('is topo in view?', isIntersecting());
+	// if (await isIntersecting()) {
+	// 	console.log('exporting');
+	// 	await imageExport(cardId, currentOpacity, isCancelled).then(
+	// 		(imageData) => {
+	// 			//
+	// 			imageData.isCheckedForAnimation = true;
+
+	// 			arrayOfImageData.push(imageData);
+	// 			imagesForDownload.topoImages.push(imageData);
+	// 			createImageElementForMediaLayer(imageData);
+	// 			showAvailableTopoCheckbox(cardId);
+	// 		}
+	// 	);
+	// } else {
+	// 	disableMapCardForAnimation(cardId);
+	// 	// return;
+	// }
+
+	// await imageExport(cardId, currentOpacity, isCancelled).then((imageData) => {
+	// 	arrayOfImageData.push(imageData);
+	// 	imagesForDownload.push(imageData);
+	// 	createImageElementForMediaLayer(imageData);
+	// 	if (!isIntersecting) {
+	// 		disableMapCardForAnimation(cardId);
+	// 		// setMapCardUnavailableStatus(cardId);
+	// 		// hideUnavailableTopoCheckbox(cardId);
+	// 		// uncheckMapCard(cardId);
+	// 		return;
+	// 	}
+
+	// 	showAvailableTopoCheckbox(cardId);
+	// });
 };
 
-const disableMapCardForAnimation = () => {
+const disableMapCardForAnimation = (cardId) => {
+	console.log(cardId);
 	console.log('disable card');
+	setMapCardUnavailableStatus(cardId);
+	hideUnavailableTopoCheckbox(cardId);
+	uncheckMapCard(cardId);
 };
 
-const takeScreenshotOfView = async () => {
-	return new Promise(async (resolve, reject) => {
+const topoIsNotCheckedForAnimation = () => {
+	//this function will set the 'isCheckedForAnimation' value in the imagesForDownload obj to false.
+};
+
+const takeScreenshotOfView = () => {
+	return new Promise((resolve, reject) => {
 		const screenshotQualityValue = 75;
 		const screenshotFormat = 'jpg';
 
@@ -166,16 +220,43 @@ const takeScreenshotOfView = async () => {
 			quality: screenshotQualityValue,
 		};
 
-		await queryConfig.mapView.takeScreenshot(options).then((screenshot) => {
-			const basemapImgURL = screenshot.dataUrl;
+		queryConfig.mapView.takeScreenshot(options).then(async (screenshot) => {
+			const screenshotResponse = await fetch(screenshot.dataUrl);
+			const blob = URL.createObjectURL(await screenshotResponse.blob());
 
 			const basemapImage = {
 				id: 0,
-				url: basemapImgURL,
+				url: blob,
 			};
-			imagesForDownload.unshift(basemapImage);
+
+			imagesForDownload.basemap = basemapImage;
 			resolve();
 		});
+	});
+};
+
+const toggleMapCardDownloadAvailability = (mapCardOID) => {
+	console.log(mapCardOID);
+	imagesForDownload.topoImages.map((topoImageData) => {
+		if (topoImageData.id === mapCardOID) {
+			if (topoImageData.isCheckedForAnimation) {
+				topoImageData.isCheckedForAnimation = false;
+			} else {
+				topoImageData.isCheckedForAnimation = true;
+			}
+		}
+	});
+};
+
+const checkToposIncludedForDownload = () => {
+	console.log(imagesForDownload);
+	imagesForDownload.topoImages.map((topoImageInAnimation) => {
+		if (topoImageInAnimation.isCheckedForAnimation) {
+			makeCompositeForAnimationDownload(
+				imagesForDownload.basemap,
+				topoImageInAnimation
+			);
+		}
 	});
 };
 
@@ -183,15 +264,16 @@ const takeScreenshotOfView = async () => {
 //This section should be refactored, the 'awaits' are unnecessary and confusing. But some of the functions associated with these calls have asynchronous behavior (modules, fetch/server calls)
 const animationStart = async () => {
 	setPinListCurrentOrder();
-	hideMapHalos();
 	hideTopoLayers();
+	hideMapHalos();
 	await exportingTopoImageAndCreatingImageElement();
 	await createMediaLayer();
 	await getAnimatingImages();
-	takeScreenshotOfView();
+	await takeScreenshotOfView();
 	startAnimationInterval();
 	removeAnimationLoadingDiv();
 	checkAnimationLoadStatus();
+	// checkToposIncludedForDownload();
 	return;
 };
 
@@ -199,6 +281,7 @@ const checkAnimationLoadStatus = () => {
 	if (isCancelled) {
 		addAnimationCloseBtn(isCancelled);
 		setLoadingStatus();
+		enableAnimationSpeedSlider();
 
 		setCancelledStatus(false);
 		return;
@@ -206,9 +289,10 @@ const checkAnimationLoadStatus = () => {
 
 	addAnimationCloseBtn();
 	setLoadingStatus();
+	enableAnimationSpeedSlider();
 };
 //note: some of these functions have more UI-centric. They could probably be moved into another module (i.e.: the animation.js module.)
-const animationEnd = async () => {
+const animationEnd = () => {
 	stopAnimationInterval();
 	removeHighlight();
 	showMapHalos();
@@ -250,7 +334,7 @@ const startAnimationInterval = () => {
 };
 
 const animate = () => {
-	console.log(mapIdIndex);
+	// console.log(mapIdIndex);
 	if (mapIdIndex !== -1) {
 		if (arrayOfMapImages[mapIdIndex].opacity !== 0) {
 			arrayOfMapImages[mapIdIndex].opacity = 0;
@@ -298,4 +382,11 @@ const showTopoImage = (mapIdIndex) => {
 	return;
 };
 
-export { animationStart, animationEnd, setInitialDuration, setCancelledStatus };
+export {
+	animationStart,
+	animationEnd,
+	setInitialDuration,
+	setCancelledStatus,
+	toggleMapCardDownloadAvailability,
+	checkToposIncludedForDownload,
+};

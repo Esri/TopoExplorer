@@ -8,7 +8,15 @@ import {
 	isAnimating,
 	isLoading,
 } from '../Animation/animation.js?v=0.01';
-import { setCancelledStatus } from '../Animation/AnimatingLayers.js?v=0.01';
+import {
+	setCancelledStatus,
+	checkToposIncludedForDownload,
+} from '../Animation/AnimatingLayers.js?v=0.01';
+import { findAspectRatio } from '../Animation/animationOptionsUI.js?v=0.01';
+import {
+	displayInfoModal,
+	removeInfoModal,
+} from '../InfoModal/infoModalUI.js?v=0.01';
 
 let account = null;
 // const view = queryConfig.mapView;
@@ -224,9 +232,20 @@ exploreList.addEventListener('scroll', () => {
 		queryConfig.checkAvailableNumberOfMaps();
 	}
 });
+
 document.addEventListener('click', (event) => {
 	console.log(event.target);
+
+	if (event.target.closest('.modalClose')) {
+		console.log('close modal');
+		removeInfoModal();
+	}
 });
+
+document.querySelector('.app.heading').addEventListener('click', () => {
+	displayInfoModal();
+});
+
 //event listeners that work with animation process
 document
 	.querySelector('.icon .play-pause')
@@ -259,15 +278,40 @@ document.querySelector('#viewDiv').addEventListener('click', (event) => {
 		document
 			.querySelector('.downloadOptionsWrapper')
 			.classList.toggle('invisible');
-	}
-});
 
-document.querySelector('#viewDiv').addEventListener('mouseover', (event) => {
-	console.log('thing');
-	console.log(event.target.classList);
+		event.target.closest('.downloadAnimationBtn').style.display = 'none';
+	}
+
 	if (event.target.closest('.choice')) {
-		console.log('choices');
+		console.log('choice click');
+		checkToposIncludedForDownload();
 	}
 });
 
+//TODO: Clean-up this event listener. It's not clear what's going on.
+document.querySelector('#viewDiv').addEventListener('mouseover', (event) => {
+	if (event.target.closest('.choice')) {
+		const orientation =
+			event.target.closest('.choiceGroup').firstElementChild.innerText;
+
+		const dimension = event.target
+			.closest('.choice')
+			.querySelector('span').innerText;
+
+		// findAspectRatio(window.innerWidth - 400, window.innerHeight, orientation);
+		findAspectRatio(dimension, orientation);
+		document
+			.querySelector('.downloadPreview div')
+			.classList.remove('invisible');
+	}
+
+	if (
+		!event.target.closest('.choice') &&
+		document.querySelector('.downloadPreview div')
+	) {
+		document.querySelector('.downloadPreview div').classList.add('invisible');
+	}
+});
+
+document.querySelector;
 export { addAccountImage, isMobileFormat, preventingMapInteractions };

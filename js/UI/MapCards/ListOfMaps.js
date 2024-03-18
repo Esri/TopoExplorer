@@ -1,4 +1,3 @@
-// import { mapItemListener } from '../../support/eventListeners/MapItemListener.js?v=0.01';
 import { isMobileFormat } from '../EventsAndSelectors/EventsAndSelectors.js?v=0.01';
 import {
 	updateHashParams,
@@ -18,6 +17,7 @@ import { getCredentials } from '../../support/OAuth.js?v=0.01';
 import { setUserToken } from '../../support/AddItemRequest.js?v=0.01';
 import { config } from '../../../app-config.js?v=0.01';
 import { isAnimating, endAnimation } from '../Animation/animation.js?v=0.01';
+import { toggleMapCardDownloadAvailability } from '../Animation/AnimatingLayers.js?v=0.01';
 
 const sideBarElement = document.querySelector('#sideBar');
 const mapsList = document.querySelector('#exploreList');
@@ -894,6 +894,9 @@ sideBarElement.addEventListener('click', (event) => {
 
 	if (eventTarget.closest('.animate.checkbox')) {
 		toggleAnimateCheckbox(eventTarget);
+		toggleMapCardDownloadAvailability(
+			eventTarget.closest('.map-list-item').attributes.oid.value
+		);
 	}
 
 	if (isAnimating) {
@@ -938,7 +941,8 @@ sideBarElement.addEventListener('input', (event) => {
 	event.stopImmediatePropagation();
 	if (
 		event.target.closest('.dualSliderContainer') ||
-		event.target.closest('.animation-slider-container')
+		event.target.closest('.animation-slider-container') ||
+		event.target.closest('.animation-speed-value')
 	) {
 		return;
 	}

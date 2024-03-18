@@ -33,6 +33,26 @@ main {
   width: 100%;
 }
 
+.modalBox {
+  width: 33%;
+  display:flex;
+  background: linear-gradient(0deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
+  border-radius: 0.75rem;
+  padding: 2.5rem;
+  font-size: 1.5rem;
+}
+
+.modalBox a{
+  text-decoration: underline;
+}
+
+.modalText{
+  margin: 0 1rem;
+}
+
+.modalText div{
+  margin: 1rem 0;
+}
 .esri-view .esri-view-surface--inset-outline:focus::after {
   outline: none;
 }‍‍‍
@@ -132,6 +152,19 @@ button {
   font-weight: bold;
 }
 
+.infoModalBackground {
+  display: flex;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  z-index: 5;
+  background: radial-gradient(circle, rgba(231,235,238,1) 0%, rgba(184,194,211,0.9) 100%);
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
 .export-prompt{
   position: absolute;
   height: 100%;
@@ -143,6 +176,7 @@ button {
   justify-content: center;
   align-items: center;
 }
+
 
 .close-btn {
   text-align: right;
@@ -366,6 +400,7 @@ main .map-list-item.mobile{
   max-width: 500px;
   padding: 0 10px;
   background-color: #e7ebee;
+  z-index: 3;
 }
 
 .map-mode-container {
@@ -452,6 +487,10 @@ background: none;
   font-size: 1.4rem;
   line-height: 1;
   padding: 0 10px;
+}
+
+.app.heading{
+  cursor:pointer
 }
 
 .heading .letter-spacing {
@@ -787,14 +826,39 @@ font-style: italic;
 }
 
 .choice div {
-  background: salmon;
+  background: #ABB4C2;;
 }
 
 .choice:hover div{
-background: red;
+background: #637287;
 }
+
 svg{
   fill: #637287;
+}
+
+.downloadPreview {
+  width: 100%;
+  position: absolute;
+  z-index: 2;
+  /* background: black; */
+  height: 100%;
+  opacity: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.activeDownload {
+  background: transparent;
+  width: 100%;
+  height: 100%;
+}
+
+.gutter {
+  background: black;
+  width: 100%;
+  height: 100%;
 }
 
 .selected {
