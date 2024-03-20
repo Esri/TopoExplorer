@@ -24,13 +24,13 @@ const downloadOptionsHTML = formats
                 <div style='width:${size.largeFormatWidth}; height: ${
 			size.largeFormatHeight
 		};'></div>
-                <a href='' download>${size.largeFormatSize}</a>
+                <a>${size.largeFormatSize}</a>
               </div>
               <div class='choice'>
                 <div class= 'smallerSize' style='width:${
 									size.smallFormatWidth
 								}; height: ${size.smallFormatHeight};'></div>
-                <a href='' download>${size.smallFormatSize}</a>
+                <a>${size.smallFormatSize}</a>
               </div>
             </div>
          `;
@@ -78,19 +78,19 @@ const findAspectRatio = (dimension) => {
 	const previewWidth = parseInt(previewDimensions[0]);
 	const previewHeight = parseInt(previewDimensions[1]);
 
-	console.log('innerWidth', window.innerWidth);
-	console.log('sidebar', widthOfSideBar);
+	// console.log('innerWidth', window.innerWidth);
+	// console.log('sidebar', widthOfSideBar);
 	// console.log(getComputedStyle(document.querySelector('#sideBar')));
-	console.log(width);
+	// console.log(width);
 
-	console.log(height);
-	console.log(previewDimensions);
+	// console.log(height);
+	// console.log(previewDimensions);
 
 	if (previewWidth > previewHeight) {
 		previewHighlight.width = `${width}px`;
 		previewHighlight.height = `${(width / previewWidth) * previewHeight}px`;
-		console.log(previewHighlight.width);
-		console.log(previewHighlight.height);
+		// console.log(previewHighlight.width);
+		// console.log(previewHighlight.height);
 	}
 
 	if (previewWidth === previewHeight) {

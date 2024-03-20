@@ -177,6 +177,12 @@ button {
   align-items: center;
 }
 
+.export-prompt-wrapper{
+  width:30rem;
+  background: linear-gradient(0deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
+  border-radius: 0.75rem;
+  padding: 2.5rem;
+}
 
 .close-btn {
   text-align: right;

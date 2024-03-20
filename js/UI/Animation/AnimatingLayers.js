@@ -141,15 +141,19 @@ const exportingTopoImageAndCreatingImageElement = async () => {
 		const cardMapLocation =
 			card.querySelector('.map-list-item').attributes.geometry.value;
 		const currentOpacity = card.querySelector('.opacity-slider').value / 100;
+		const imageName = card.querySelector('.map-list-item .name').textContent;
+		console.log(imageName);
 
 		if (await isIntersecting(cardMapLocation, queryConfig.mapView.extent)) {
 			console.log('exporting');
 			await imageExport(cardId, currentOpacity, isCancelled).then(
 				(imageData) => {
 					imageData.isCheckedForAnimation = true;
+					imageData.mapName = imageName;
 
 					arrayOfImageData.push(imageData);
 					imagesForDownload.topoImages.push(imageData);
+					console.log(imagesForDownload);
 					createImageElementForMediaLayer(imageData);
 					showAvailableTopoCheckbox(cardId);
 				}
@@ -248,14 +252,16 @@ const toggleMapCardDownloadAvailability = (mapCardOID) => {
 	});
 };
 
-const checkToposIncludedForDownload = () => {
+const checkToposIncludedForDownload = async () => {
 	console.log(imagesForDownload);
-	imagesForDownload.topoImages.map((topoImageInAnimation) => {
+	imagesForDownload.topoImages.map(async (topoImageInAnimation) => {
 		if (topoImageInAnimation.isCheckedForAnimation) {
-			makeCompositeForAnimationDownload(
+			await makeCompositeForAnimationDownload(
 				imagesForDownload.basemap,
 				topoImageInAnimation
-			);
+			).then((image) => {
+				console.log('image?', image);
+			});
 		}
 	});
 };
@@ -298,7 +304,8 @@ const animationEnd = () => {
 	showMapHalos();
 	showTopoLayers();
 	removeMediaLayer();
-	revokeGeneratedURLs();
+	revokeTopoMapBlobURLs();
+	revokeBasemapBlobURL();
 	removeTopoImageElements();
 	removeAnimatingImages();
 	removeImagesForDownload();
@@ -309,11 +316,17 @@ const stopAnimationInterval = () => {
 	clearInterval(animationInterval);
 	animationInterval = null;
 };
-const revokeGeneratedURLs = () => {
+
+const revokeTopoMapBlobURLs = () => {
 	while (arrayOfImageData.length > 0) {
 		URL.revokeObjectURL(arrayOfImageData[0].urlDataObj);
 		arrayOfImageData.shift();
 	}
+};
+
+const revokeBasemapBlobURL = () => {
+	URL.revokeObjectURL(imagesForDownload.basemap.url);
+	console.log('clearing out blobs', imagesForDownload);
 };
 
 const resetMapIdIndex = () => {

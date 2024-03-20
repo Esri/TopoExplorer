@@ -1,10 +1,9 @@
-console.log('modal module');
-
 const livingAtlasURL = 'https://livingatlas.arcgis.com/en/home/';
 const USGSTopoMapCollection =
 	'https://www.arcgis.com/home/item.html?id=ee19794feeed4e068ba99b2ddcb6c2db';
 const topMapExplorerItemPage =
 	'https://www.arcgis.com/home/item.html?id=c66fe3e5d16043e4bde748af2e84ecf5';
+const appEmail = 'topoexplorer@esri.com';
 
 const information = `<div class='modalBox'> 
                       <div class='modalText'>
@@ -17,7 +16,8 @@ const information = `<div class='modalBox'>
                         </div>
                         <div>
                           Learn more about the Historical Topo Map Explorer <a href='${topMapExplorerItemPage}' target='_blank'>here</a>.
-                        </div> 
+                        </div>
+                        <div> If you have any questions or comments, please email <a href="mailto:${appEmail}">${appEmail}</a></div> 
                       </div>
                       <div class='modalClose' style='margin: 0 1rem;'>
                       <svg xmlns="http://www.w3.org/2000/svg" height="32" width="32"><path d="M23.985 8.722L16.707 16l7.278 7.278-.707.707L16 16.707l-7.278 7.278-.707-.707L15.293 16 8.015 8.722l.707-.707L16 15.293l7.278-7.278z"></path></svg>
@@ -28,8 +28,6 @@ const information = `<div class='modalBox'>
 const infoModalBackground = document.createElement('div');
 infoModalBackground.classList.add('infoModalBackground');
 infoModalBackground.innerHTML = information;
-
-console.log(infoModalBackground);
 
 const displayInfoModal = () => {
 	const infoModalWrapper = document.createElement('div');
