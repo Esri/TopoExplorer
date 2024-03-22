@@ -2,6 +2,7 @@ import { getCredentials, logOutTry } from '../../support/OAuth.js?v=0.01';
 import { queryConfig } from '../../support/QueryConfig.js?v=0.01';
 import {
 	addCancelTextToAnimationLoading,
+	addDownloadingNotification,
 	removeCloseAnimationBtn,
 	beginAnimation,
 	endAnimation,
@@ -17,6 +18,7 @@ import {
 	displayInfoModal,
 	removeInfoModal,
 } from '../InfoModal/infoModalUI.js?v=0.01';
+import { cancelAnimationVideo } from '../../support/animationDownload.js?v=0.01';
 
 let account = null;
 // const view = queryConfig.mapView;
@@ -261,11 +263,13 @@ document
 
 document.querySelector('#viewDiv').addEventListener('click', (event) => {
 	if (isAnimating && event.target.closest('.closeAnimationBtn')) {
+		event.stopImmediatePropagation();
 		endAnimation();
 	}
 
 	if (isAnimating && event.target.closest('.cancelAnimationBtn')) {
 		// endAnimation();
+		event.stopImmediatePropagation();
 		console.log('clicked');
 		removeCloseAnimationBtn(event);
 		addCancelTextToAnimationLoading();
@@ -274,6 +278,7 @@ document.querySelector('#viewDiv').addEventListener('click', (event) => {
 	}
 
 	if (isAnimating && event.target.closest('.downloadAnimationBtn')) {
+		event.stopImmediatePropagation();
 		console.log('downloadBox');
 		document
 			.querySelector('.downloadOptionsWrapper')
@@ -283,8 +288,15 @@ document.querySelector('#viewDiv').addEventListener('click', (event) => {
 	}
 
 	if (event.target.closest('.choice')) {
+		event.stopImmediatePropagation();
 		console.log('choice click');
 		checkToposIncludedForDownload();
+		addDownloadingNotification();
+	}
+
+	if (event.target.closest('.mapAnimationOverlay a')) {
+		event.stopImmediatePropagation();
+		cancelAnimationVideo();
 	}
 });
 

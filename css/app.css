@@ -563,6 +563,22 @@ transform: translate(5px, 0px);
   margin: 0 1rem;
 }
 
+.downloadIndicator{
+  padding: 1rem;
+  background:#e7ebee;
+  box-shadow: 4px 4px 6px #111111;
+  align-items: center;
+}
+
+.downloadIndicator div {
+margin: 0 0.5rem;
+}
+
+.downloadIndicator a {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .animation-slider-container{
   width: 80%;
   display: flex;
@@ -587,10 +603,6 @@ display: flex;}
 
 .animation-second-row input[type="range"] {
   appearance: none; 
-  /* background: transparent;
-  background-repeat: no-repeat;
-  border-radius: 3px;
-  width: 100%; */
   background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(209,216,226,1) 100%);
   width: 100%;
   border-radius: 3px;
@@ -805,8 +817,6 @@ font-style: italic;
   box-shadow: 4px 4px 6px #111111;
 }
 
-/* .downloadOptions { */
-/* } */
 .choice {
   /* padding: 10px;  */
   line-height: 3rem;
@@ -819,16 +829,12 @@ font-style: italic;
   margin-right: 0.5rem;
 }
 
-.choice .smallerSize {
-  color: chartreuse;
-
-}
-
 .choice:hover{
   /* background-color: black; */
   color: #242b33;
   text-decoration: underline;
   font-weight: bold;
+  cursor: pointer;
 }
 
 .choice div {

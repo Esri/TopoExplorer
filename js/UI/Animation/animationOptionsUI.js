@@ -1,5 +1,11 @@
 import { formats } from './animationOptionsSettings.js?v=0.01';
-import { checkToposIncludedForDownload } from './AnimatingLayers.js?v=0.01';
+import {
+	checkToposIncludedForDownload,
+	setAnimationDimensions,
+} from './AnimatingLayers.js?v=0.01';
+
+let newWidth;
+let newHeight;
 
 const animationLoadingHTML = `             
                                       <div style='position: absolute; left:25px; top: 25px;'>
@@ -64,59 +70,60 @@ const animationDownloadAspectRatioPreviewElement = `
                                                     </div>
                                                     `;
 
+const creatingDownloadHTML = `
+                              <div>
+                                <div style = 'display:flex;' > 
+                                <div class='downloadIndicator flex'>
+                                  <span class='spinner'>
+                                    <calcite-icon class="queryIndicator" icon="spinner" scale="l" aria-hidden="true" calcite-hydrated=""></calcite-icon>
+                                  </span>
+                                  <div>...creating mp4.</div>
+                                  <a class='invisible'>Cancel</a>
+                                  </div>
+                                </div>
+                              </div>
+                             `;
 const findAspectRatio = (dimension) => {
 	//this function receives a value for width and a value for height, then adjusts the size of mapView
 	//dimensions to create a preview for the download area that reflects the aspect ratio from the given dimensions.
 
+	console.log(dimension);
 	const widthOfSideBar = 400;
-	const width = window.innerWidth - widthOfSideBar;
-	const height = window.innerHeight;
+	const mapViewWidth = window.innerWidth - widthOfSideBar;
+	const mapViewHeight = window.innerHeight;
 	const previewHighlight = document.querySelector('.downloadPreview div').style;
 
 	//parse the values of the potential download's width & height from the download options' UI into an array
 	const previewDimensions = dimension.split(' x ');
 	const previewWidth = parseInt(previewDimensions[0]);
 	const previewHeight = parseInt(previewDimensions[1]);
+	const aspectRatio = previewWidth / previewHeight;
 
-	// console.log('innerWidth', window.innerWidth);
-	// console.log('sidebar', widthOfSideBar);
-	// console.log(getComputedStyle(document.querySelector('#sideBar')));
-	// console.log(width);
+	newHeight = mapViewHeight;
+	newWidth = mapViewHeight * aspectRatio;
 
-	// console.log(height);
-	// console.log(previewDimensions);
-
-	if (previewWidth > previewHeight) {
-		previewHighlight.width = `${width}px`;
-		previewHighlight.height = `${(width / previewWidth) * previewHeight}px`;
-		// console.log(previewHighlight.width);
-		// console.log(previewHighlight.height);
+	if (newWidth > mapViewWidth) {
+		// console.log('adjust');
+		newWidth = mapViewWidth;
+		newHeight = mapViewWidth * (1 / aspectRatio);
 	}
 
-	if (previewWidth === previewHeight) {
-		if (width > height) {
-			previewHighlight.width = `${height}px`;
-			previewHighlight.height = `${height}px`;
-		} else {
-			previewHighlight.height = `${width}px`;
-			previewHighlight.width = `${width}px`;
-		}
+	if (newWidth > previewWidth) {
+		console.log('screen too big');
+		console.log(newWidth, previewWidth);
+		newWidth = previewWidth;
+		newHeight = previewHeight;
 	}
+	previewHighlight.width = `${newWidth}px`;
+	previewHighlight.height = `${newHeight}px`;
 
-	if (previewWidth < previewHeight) {
-		previewHighlight.width = `${(height / previewHeight) * previewWidth}px`;
-		previewHighlight.height = `${height}px`;
-	}
-
-	console.log(
-		'final dimensions',
-		previewHighlight.width,
-		previewHighlight.height
-	);
+	console.log('final dimensions', newWidth, newHeight);
+	return setAnimationDimensions(newWidth, newHeight);
 };
 export {
 	animationLoadingHTML,
 	closeAnimationBtnHTML,
 	animationDownloadAspectRatioPreviewElement,
+	creatingDownloadHTML,
 	findAspectRatio,
 };

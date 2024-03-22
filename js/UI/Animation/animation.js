@@ -8,6 +8,7 @@ import {
 	animationLoadingHTML,
 	closeAnimationBtnHTML,
 	animationDownloadAspectRatioPreviewElement,
+	creatingDownloadHTML,
 } from './animationOptionsUI.js?v=0.01';
 
 //this variable is used to determine if the button events are disabled during animation
@@ -133,6 +134,23 @@ const addMapAnimationOverlay = () => {
 
 	// closeDivOverlay.innerHTML = closeBtn;
 	document.querySelector('#viewDiv').prepend(closeDivOverlay);
+};
+
+const addDownloadingNotification = () => {
+	console.log('called');
+	console.log(document.querySelector('.mapAnimationOverlay'));
+	document.querySelector('.mapAnimationOverlay').innerHTML =
+		creatingDownloadHTML;
+};
+
+const removeDownloadIndicator = () => {
+	document.querySelector('.mapAnimationOverlay div').remove();
+};
+
+const addDownloadCancel = () => {
+	document
+		.querySelector('.mapAnimationOverlay a')
+		.classList.remove('invisible');
 };
 
 const removeMapAnimationOverlay = () => {
@@ -281,6 +299,9 @@ export {
 	cardCheckStatus,
 	addCancelTextToAnimationLoading,
 	addAnimationCloseBtn,
+	addDownloadingNotification,
+	addDownloadCancel,
+	removeDownloadIndicator,
 	resetUIAfterAnimation,
 	removeHighlight,
 	isAnimating,

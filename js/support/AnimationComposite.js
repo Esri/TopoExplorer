@@ -1,7 +1,7 @@
 const widthOfSideBar = 400;
 const arrayOfCompositeImages = [];
 
-console.log('linkle up');
+console.log('loink');
 const makeCompositeForAnimationDownload = async (basemap, topo) => {
 	console.log(topo);
 	return new Promise(async (resolve, reject) => {
@@ -132,7 +132,6 @@ const download = (url, canvas) => {
 	anchor.remove();
 	console.log(anchor);
 	revokeBlobDownloadURL(url);
-	deleteCanvasElement(canvas);
 };
 
 const deleteCanvasElement = (canvas) => {

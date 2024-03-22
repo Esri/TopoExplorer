@@ -32,6 +32,7 @@ import {
 	removeTopoImageElements,
 } from '../../map/MediaLayer.js?v=0.01';
 import { makeCompositeForAnimationDownload } from '../../support/AnimationComposite.js?v=0.01';
+import { createAnimationVideo } from '../../support/animationDownload.js?v=0.01';
 
 const animationSpeedSlider = document.querySelector('.animation-speed-value');
 
@@ -43,12 +44,20 @@ let arrayOfImageData = [];
 let imagesForDownload = {
 	basemap: null,
 	topoImages: [],
-	animationImages: [],
+};
+const animationDimensions = {
+	width: null,
+	height: null,
 };
 let animationInterval;
 let duration;
 let pinListCurrentOrder;
 const speeds = [2000, 1000, 800, 500, 400, 200, 100, 20, 0];
+
+const setAnimationDimensions = (width, height) => {
+	animationDimensions.width = width;
+	animationDimensions.height = height;
+};
 
 //This currently doesn't do anything. 'isCancelled' isn't being evaluated for anything. It was, but it's not now...currently
 //this function is being called in the 'eventsAndSelectors' module.
@@ -241,6 +250,7 @@ const takeScreenshotOfView = () => {
 
 const toggleMapCardDownloadAvailability = (mapCardOID) => {
 	console.log(mapCardOID);
+
 	imagesForDownload.topoImages.map((topoImageData) => {
 		if (topoImageData.id === mapCardOID) {
 			if (topoImageData.isCheckedForAnimation) {
@@ -253,17 +263,42 @@ const toggleMapCardDownloadAvailability = (mapCardOID) => {
 };
 
 const checkToposIncludedForDownload = async () => {
-	console.log(imagesForDownload);
-	imagesForDownload.topoImages.map(async (topoImageInAnimation) => {
-		if (topoImageInAnimation.isCheckedForAnimation) {
+	const animationFrames = [];
+
+	for (const mapImageData of imagesForDownload.topoImages) {
+		if (mapImageData.isCheckedForAnimation) {
 			await makeCompositeForAnimationDownload(
 				imagesForDownload.basemap,
-				topoImageInAnimation
+				mapImageData
 			).then((image) => {
 				console.log('image?', image);
+
+				animationFrames.push(image);
 			});
 		}
-	});
+
+		// imagesForDownload.topoImages.map(async (topoImageInAnimation) => {
+		// 	if (topoImageInAnimation.isCheckedForAnimation) {
+		// 		await makeCompositeForAnimationDownload(
+		// 			imagesForDownload.basemap,
+		// 			topoImageInAnimation
+		// 		).then((image) => {
+		// 			console.log('image?', image);
+		// 		});
+		// 	}
+		// });
+	}
+	const animationParams = {
+		data: animationFrames,
+		animationSpeed: animationInterval,
+		outputWidth: animationDimensions.width,
+		outputHeight: animationDimensions.height,
+		authoringApp: 'Topo Map Explorer',
+		abortController: new AbortController(),
+	};
+
+	console.log(animationParams);
+	createAnimationVideo(animationParams);
 };
 
 //NOTE: this is the hub for all animation related data is called. So how would you manage these functions if the animation is cancelled during the load? What is the risk condition?
@@ -402,4 +437,5 @@ export {
 	setCancelledStatus,
 	toggleMapCardDownloadAvailability,
 	checkToposIncludedForDownload,
+	setAnimationDimensions,
 };
