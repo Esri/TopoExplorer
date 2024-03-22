@@ -49,12 +49,12 @@ const revokeCompositeBlobURLs = (compositeData) => {
 	});
 };
 
-const downloadVideo = (url) => {
+const downloadVideo = (url, filename) => {
 	console.log(url);
 	const anchor = document.createElement('a');
 
 	anchor.href = url;
-	anchor.download = 'animationComposite.png';
+	anchor.download = `${filename}.mp4`;
 
 	anchor.click();
 	anchor.remove();

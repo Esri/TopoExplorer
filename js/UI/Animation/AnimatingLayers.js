@@ -150,7 +150,9 @@ const exportingTopoImageAndCreatingImageElement = async () => {
 		const cardMapLocation =
 			card.querySelector('.map-list-item').attributes.geometry.value;
 		const currentOpacity = card.querySelector('.opacity-slider').value / 100;
-		const imageName = card.querySelector('.map-list-item .name').textContent;
+		const imageName = `${
+			card.querySelector('.map-list-item .mapSlotHeader').textContent
+		}, `;
 		console.log(imageName);
 
 		if (await isIntersecting(cardMapLocation, queryConfig.mapView.extent)) {
