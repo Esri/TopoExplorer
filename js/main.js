@@ -38,6 +38,7 @@ const initApp = async () => {
 		view
 			.when(() => {
 				if (oauthResponse) {
+					console.log('from main', oauthResponse);
 					addAccountImage(oauthResponse);
 					setAccountData(oauthResponse);
 				}

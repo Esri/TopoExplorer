@@ -4,18 +4,28 @@ import {
 	// setInitialDuration,
 } from '../Animation/AnimatingLayers.js?v=0.01';
 import { preventingMapInteractions } from '../EventsAndSelectors/EventsAndSelectors.js?v=0.01';
+import {
+	animationLoadingHTML,
+	closeAnimationBtnHTML,
+	animationDownloadAspectRatioPreviewElement,
+	creatingDownloadHTML,
+} from './animationOptionsUI.js?v=0.01';
 
 //this variable is used to determine if the button events are disabled during animation
 let isAnimating = false;
 let isLoading = false;
 
+//not a helpful function name when there's two functions with basically the same name.
 const beginAnimation = () => {
 	isAnimating = true;
+	disableAnimationSpeedSlider();
 	setLoadingStatus();
 	togglePlayPause();
 	adjustUIForAnimation();
-	toggleAnimateCheckboxVisibility();
+	// toggleAnimateCheckboxVisibility();
+	// showAnimateCheckboxVisibility()
 	preventingMapInteractions();
+	addDownloadAspectRatioPreviewLayer();
 	addMapAnimationOverlay();
 	addAnimationLoading();
 	disableOpacitySlider();
@@ -27,42 +37,17 @@ const beginAnimation = () => {
 const endAnimation = () => {
 	isAnimating = false;
 	removeMapAnimationOverlay();
+	removeDownloadPreview();
 	togglePlayPause();
+	removeMapCardUnavailableStatus();
 	resetUIAfterAnimation();
-	toggleAnimateCheckboxVisibility();
+	// toggleAnimateCheckboxVisibility();
+	hideAnimateCheckboxVisibility();
 	enableOpacitySlider();
+	resetAnimateCheckbox();
 	//this last function, it's not a good name. Write something clearer.
 	animationEnd();
 };
-
-const animationLoadingHTML = `             
-                                      <div style='position: absolute; left:25px; top: 25px;'>
-                                        <div style='display: flex;'>
-                                          <div class='spinner'>
-                                            <calcite-icon class="queryIndicator" icon="spinner" scale="l" aria-hidden="true" calcite-hydrated=""></calcite-icon>
-                                          </div>
-                                          <div class='animationLoadClose'>
-                                            <calcite-icon class="cancelAnimationBtn" icon="x-circle-f" scale="s" aria-hidden="true" calcite-hydrated=""></calcite-icon>
-                                          </div>
-                                        </div>
-                                        <div class='animationWaitText'>Creating Animation</div>
-                                      </div>
-                              `;
-
-const closeAnimationBtnHTML = ` 
-                                <div style='display: flex; position: absolute; left:25px; top: 25px;'>                             
-                                  <div class='closeAnimationBtn' style='text-align: right;'>
-                                    <svg width="64" height="64" viewBox="0 0 32 32" >
-                                      <path d="M23.985 8.722L16.707 16l7.278 7.278-.707.707L16 16.707l-7.278 7.278-.707-.707L15.293 16 8.015 8.722l.707-.707L16 15.293l7.278-7.278z"></path>
-                                    </svg>
-                                  </div>
-                                  <div class='downloadAnimationBtn' style='text-align: right;'>
-                                    <svg width="64" height="64" viewBox="0 0 32 32" >
-                                    <path d="M25 27H8v-1h17zm-3.646-9.646l-.707-.707L17 20.293V5h-1v15.293l-3.646-3.646-.707.707 4.853 4.853z"></path>
-                                    </svg>
-                                  </div>
-                                </div>
-                              `;
 
 const cardCheckStatus = (mapIdIndex) => {
 	return mapIdIndex
@@ -72,6 +57,16 @@ const cardCheckStatus = (mapIdIndex) => {
 
 const setLoadingStatus = () => {
 	isLoading ? (isLoading = false) : (isLoading = true);
+};
+
+const disableAnimationSpeedSlider = () => {
+	document
+		.querySelector('.animation-speed-value')
+		.setAttribute('disabled', true);
+};
+
+const enableAnimationSpeedSlider = () => {
+	document.querySelector('.animation-speed-value').removeAttribute('disabled');
 };
 
 const addCancelTextToAnimationLoading = () => {
@@ -120,6 +115,16 @@ const togglePlayPause = () => {
 		.classList.toggle('invisible');
 };
 
+const addDownloadAspectRatioPreviewLayer = () => {
+	const downloadPreview = document.createElement('div');
+	downloadPreview.innerHTML = animationDownloadAspectRatioPreviewElement;
+	document.querySelector('#viewDiv').prepend(downloadPreview);
+};
+
+const removeDownloadPreview = () => {
+	document.querySelector('.downloadPreview').parentElement.remove();
+};
+
 const addMapAnimationOverlay = () => {
 	const closeDivOverlay = document.createElement('div');
 	closeDivOverlay.className = 'mapAnimationOverlay';
@@ -131,11 +136,29 @@ const addMapAnimationOverlay = () => {
 	document.querySelector('#viewDiv').prepend(closeDivOverlay);
 };
 
+const addDownloadingNotification = () => {
+	console.log('called');
+	console.log(document.querySelector('.mapAnimationOverlay'));
+	document.querySelector('.mapAnimationOverlay').innerHTML =
+		creatingDownloadHTML;
+};
+
+const removeDownloadIndicator = () => {
+	document.querySelector('.mapAnimationOverlay div').remove();
+};
+
+const addDownloadCancel = () => {
+	document
+		.querySelector('.mapAnimationOverlay a')
+		.classList.remove('invisible');
+};
+
 const removeMapAnimationOverlay = () => {
 	document.querySelector('.mapAnimationOverlay').remove();
 	// document.querySelector('#viewDiv').remove(closeDivOverlay);
 };
 
+//thisneeds a better name it's highlighting the topo's card while the corresponding topo is visible during animation.
 const removeHighlight = () => {
 	if (document.querySelector('.animating')) {
 		document.querySelector('.animating').classList.remove('animating');
@@ -154,9 +177,73 @@ const disableOpacitySlider = () => {
 	});
 };
 
-const toggleAnimateCheckboxVisibility = () => {
+// const toggleAnimateCheckboxVisibility = () => {
+// 	document.querySelectorAll('#pinnedList .animate.checkbox').forEach((box) => {
+// 		box.classList.toggle('hidden');
+// 	});
+// };
+
+const showAnimateCheckboxVisibility = () => {
+	document
+		.querySelectorAll('#pinnedList .animate.checkbox.hidden')
+		.forEach((box) => {
+			box.classList.remove('hidden');
+		});
+};
+
+const hideAnimateCheckboxVisibility = () => {
 	document.querySelectorAll('#pinnedList .animate.checkbox').forEach((box) => {
-		box.classList.toggle('hidden');
+		box.classList.add('hidden');
+	});
+};
+
+const showAvailableTopoCheckbox = (oid) => {
+	const mapCard = document.querySelector(
+		`#pinnedList .map-list-item[oid="${oid}"]`
+	);
+	const mapCardCheckbox = mapCard.querySelector('.checkbox');
+
+	mapCardCheckbox.classList.remove('hidden');
+};
+
+const hideUnavailableTopoCheckbox = (oid) => {
+	document.querySelector(`#pinnedList .map-list-item[oid="${oid}"]`);
+	const mapCard = document.querySelector(
+		`#pinnedList .map-list-item[oid="${oid}"]`
+	);
+	// const mapCardCheckbox = mapCard.querySelector('.checkbox')
+	// mapCard.closest
+	// console.log('no cechkbox', mapCardCheckbox)
+};
+
+const uncheckMapCard = (oid) => {
+	document.querySelector(`#pinnedList .map-list-item[oid="${oid}"]`);
+	const mapCard = document.querySelector(
+		`#pinnedList .map-list-item[oid="${oid}"]`
+	);
+	const mapCardCheckmark = mapCard.querySelector('.checkmark');
+	mapCardCheckmark.classList.add('hidden');
+};
+
+const resetAnimateCheckbox = () => {
+	document.querySelectorAll('#pinnedList .animate.checkbox').forEach((box) => {
+		box.querySelector('.checkmark').classList.remove('hidden');
+	});
+};
+
+const setMapCardUnavailableStatus = (oid) => {
+	// document.querySelector(`#pinnedList .map-list-item[oid="${oid}"]`).classList.add('unavailable')
+	// document.querySelector(`#pinnedList .map-list-item[oid="${oid}"]`)
+	const mapCard = document.querySelector(
+		`#pinnedList .map-list-item[oid="${oid}"]`
+	);
+
+	mapCard.classList.add('transparency');
+};
+
+const removeMapCardUnavailableStatus = () => {
+	document.querySelectorAll('#pinnedList .map-list-item').forEach((card) => {
+		card.classList.remove('transparency');
 	});
 };
 
@@ -201,11 +288,20 @@ export {
 	beginAnimation,
 	endAnimation,
 	setLoadingStatus,
+	enableAnimationSpeedSlider,
+	hideUnavailableTopoCheckbox,
+	uncheckMapCard,
+	showAvailableTopoCheckbox,
+	showAnimateCheckboxVisibility,
+	setMapCardUnavailableStatus,
 	removeAnimationLoadingDiv,
 	removeCloseAnimationBtn,
 	cardCheckStatus,
 	addCancelTextToAnimationLoading,
 	addAnimationCloseBtn,
+	addDownloadingNotification,
+	addDownloadCancel,
+	removeDownloadIndicator,
 	resetUIAfterAnimation,
 	removeHighlight,
 	isAnimating,

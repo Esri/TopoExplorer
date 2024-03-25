@@ -17,13 +17,13 @@ const createMediaLayer = async () => {
 				mediaLayer,
 				queryConfig.mapView.map.layers.items.length - 2
 			);
-			console.log(queryConfig.mapView.map.layers.items.length - 2);
+
 			resolve();
 		});
 	});
 };
 
-const createArrayOfImageElements = async (array) => {
+const createArrayOfImageElements = (array) => {
 	// const imageElementsArray = [];
 	// console.log(mediaLayer);
 	// mediaLayer.source.elements.items.forEach((imageElement) => {
@@ -31,7 +31,7 @@ const createArrayOfImageElements = async (array) => {
 	// });
 
 	for (const topoImage of mediaLayer.source.elements.items) {
-		await array.push(topoImage);
+		array.push(topoImage);
 	}
 
 	return array;
@@ -39,8 +39,6 @@ const createArrayOfImageElements = async (array) => {
 
 const removeMediaLayer = () => {
 	queryConfig.mapView.map.remove(mediaLayer);
-
-	console.log(queryConfig.mapView.map.layers.items);
 };
 
 const createImageElementForMediaLayer = async (imageData) => {
@@ -61,8 +59,6 @@ const createImageElementForMediaLayer = async (imageData) => {
 			});
 
 			mediaLayerSourceElementsArray.push(imageElement);
-
-			console.log(mediaLayerSourceElementsArray);
 		});
 		resolve();
 	});
@@ -70,7 +66,6 @@ const createImageElementForMediaLayer = async (imageData) => {
 
 const removeTopoImageElements = () => {
 	mediaLayerSourceElementsArray.length = 0;
-	console.log(mediaLayerSourceElementsArray);
 };
 
 export {

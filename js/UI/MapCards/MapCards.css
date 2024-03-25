@@ -75,6 +75,13 @@
   6px 6px 8px #637287;
   }
 
+  .map-list-item.unavailable {
+    background-color: #EAEEF1;
+    box-shadow: 
+      inset -6px -6px 6px #FFFFFF,
+      inset 6px 6px 8px #B8C2D3;
+  }
+
 #exploreList .map-list-item:active{
   border-radius: 12px;
   background: #F7F9F9;

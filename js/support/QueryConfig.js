@@ -30,6 +30,11 @@ import {
 } from '../support/HashParams.js?v=0.01';
 import { resumeExportPrompt } from '../UI/ExportMaps/ExportMapsPrompt.js?v=0.01';
 import { isMobileFormat } from '../UI/EventsAndSelectors/EventsAndSelectors.js?v=0.01';
+import {
+	generateEnvelopeForTopo,
+	isEnvelopeWithinExtent,
+	evaluateItemsBasedOnVisibilityWithinExtent,
+} from '../support/ViableToposWithinExtent.js?v=0.01';
 
 const setURL = () => {
 	return config.environment.serviceUrls.historicalTopoImageService;
@@ -465,6 +470,17 @@ const queryConfig = {
 			f: 'json',
 		});
 	},
+	totalMapExtents: function () {
+		return new URLSearchParams({
+			where: this.where,
+			geometry: this.geometry,
+			geometryType: 'esriGeometryPolygon',
+			spatialRel: this.spatialRelation,
+			inSR: this.inSR,
+			returnExtentOnly: true,
+			f: 'json',
+		});
+	},
 	mapDataParams: function () {
 		return new URLSearchParams({
 			where: this.where,
@@ -486,8 +502,10 @@ const queryConfig = {
 			return;
 		}
 		isQueryInProcess = true;
+
 		extentQuery(this.url, this.mapDataParams())
 			.then((response) => {
+				// checkForMapsVisibleWithinExtent()
 				this.topoMapsInExtent = response.data.features;
 
 				return this.topoMapsInExtent;
@@ -508,6 +526,7 @@ const queryConfig = {
 				return;
 			});
 	},
+	//
 	getNewMaps: function () {
 		this.resultOffset = 0;
 		this.resultRecordCount = 25;
@@ -518,13 +537,11 @@ const queryConfig = {
 			hideMapCount(),
 			numberOfMapsinView(this.url, this.totalMapsInExtentParams())
 				.then((response) => {
+					isQueryInProcess = false;
 					this.totalMaps = response.data.count;
 				})
 				.then(() => {
 					updateMapcount(this.totalMaps);
-					isQueryInProcess = false;
-				})
-				.then(() => {
 					if (
 						!document
 							.querySelector('.explorer-mode.btn-text')
@@ -576,7 +593,6 @@ const queryConfig = {
 		}));
 	},
 	setGeometry: function (locationData) {
-		console.log(locationData);
 		require([
 			'esri/geometry/support/webMercatorUtils',
 			'esri/geometry/Polygon',
@@ -626,68 +642,7 @@ const queryConfig = {
 			});
 
 			return (queryConfig.geometry = JSON.stringify(polygon));
-			// 	const createPolygon = Polygon.fromExtent(locationData);
-
-			// 	const convertPolygonToWGS =
-			// 		webMercatorUtils.webMercatorToGeographic(createPolygon);
-
-			// 	const geographicAdjustedLocation =
-			// 		webMercatorUtils.webMercatorToGeographic(locationData);
-
-			// 	if (geographicAdjustedLocation.xmin > geographicAdjustedLocation.xmax) {
-			// 		geographicAdjustedLocation.xmin -= 360;
-			// 	}
-
-			// 	const xMargin =
-			// 		(geographicAdjustedLocation.xmax - geographicAdjustedLocation.xmin) *
-			// 		0.05;
-			// 	const yMargin =
-			// 		(geographicAdjustedLocation.ymax - geographicAdjustedLocation.ymin) *
-			// 		0.05;
-
-			// 	const bufferAdjustedExtentEnvelope = {
-			// 		xmin: geographicAdjustedLocation.xmin + xMargin,
-			// 		ymin: geographicAdjustedLocation.ymin + yMargin,
-			// 		xmax: geographicAdjustedLocation.xmax - xMargin,
-			// 		ymax: geographicAdjustedLocation.ymax - yMargin,
-			// 	};
-
-			// 	const polygon = new Polygon({
-			// 		hasZ: false,
-			// 		hasM: false,
-			// 		rings: [
-			// 			[
-			// 				[
-			// 					bufferAdjustedExtentEnvelope.xmin,
-			// 					bufferAdjustedExtentEnvelope.ymin,
-			// 				],
-			// 				[
-			// 					bufferAdjustedExtentEnvelope.xmin,
-			// 					bufferAdjustedExtentEnvelope.ymax,
-			// 				],
-			// 				[
-			// 					bufferAdjustedExtentEnvelope.xmax,
-			// 					bufferAdjustedExtentEnvelope.ymax,
-			// 				],
-			// 				[
-			// 					bufferAdjustedExtentEnvelope.xmax,
-			// 					bufferAdjustedExtentEnvelope.ymin,
-			// 				],
-			// 				[
-			// 					bufferAdjustedExtentEnvelope.xmin,
-			// 					bufferAdjustedExtentEnvelope.ymin,
-			// 				],
-			// 			],
-			// 		],
-			// 		spatialReference: {
-			// 			wkid: 4326,
-			// 		},
-			// 	});
-
-			// 	return (queryConfig.geometry = JSON.stringify(polygon));
 		});
-		// queryConfig.geometry = JSON.stringify(locationData);
-		// console.log(queryConfig.geometry);
 	},
 	setSortChoice: function (choiceValue) {
 		return (this.sortChoice = sortOptions[choiceValue]);
@@ -699,6 +654,33 @@ const queryConfig = {
 		}
 		extentQueryCall(this.url, this.totalMapsInExtentParams());
 	},
+};
+
+const checkForMapsVisibleWithinExtent = (topo) => {
+	console.log('checkForMapsVisibleWithinExtent called');
+	require(['esri/geometry/geometryEngine'], (geometryEngine) => {
+		const topoMapLocation = topo.geometry;
+		const intersectingMaps = geometryEngine.intersect(
+			queryConfig.mapView.extent,
+			topoMapLocation
+		);
+		const mapArea = geometryEngine.planarArea(intersectingMaps, 'square-miles');
+		const extentArea = geometryEngine.planarArea(
+			queryConfig.mapView.extent,
+			'square-miles'
+		);
+		const percentOfTopoInExtent = Number.parseFloat(
+			(mapArea / extentArea) * 100
+		).toFixed(2);
+		console.log(mapArea, 'topo map area');
+		console.log(extentArea, 'extent area');
+		console.log(percentOfTopoInExtent + '%', 'percent of topo in extent');
+
+		if (percentOfTopoInExtent > 20) {
+			console.log('add it');
+			return true;
+		}
+	});
 };
 
 const resetQueryOffsetNumber = () => (queryConfig.resultOffset = 0);

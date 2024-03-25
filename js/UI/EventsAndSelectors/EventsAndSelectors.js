@@ -2,13 +2,23 @@ import { getCredentials, logOutTry } from '../../support/OAuth.js?v=0.01';
 import { queryConfig } from '../../support/QueryConfig.js?v=0.01';
 import {
 	addCancelTextToAnimationLoading,
+	addDownloadingNotification,
 	removeCloseAnimationBtn,
 	beginAnimation,
 	endAnimation,
 	isAnimating,
 	isLoading,
 } from '../Animation/animation.js?v=0.01';
-import { setCancelledStatus } from '../Animation/AnimatingLayers.js?v=0.01';
+import {
+	setCancelledStatus,
+	checkToposIncludedForDownload,
+} from '../Animation/AnimatingLayers.js?v=0.01';
+import { findAspectRatio } from '../Animation/animationOptionsUI.js?v=0.01';
+import {
+	displayInfoModal,
+	removeInfoModal,
+} from '../InfoModal/infoModalUI.js?v=0.01';
+import { cancelAnimationVideo } from '../../support/animationDownload.js?v=0.01';
 
 let account = null;
 // const view = queryConfig.mapView;
@@ -225,11 +235,24 @@ exploreList.addEventListener('scroll', () => {
 	}
 });
 
+document.addEventListener('click', (event) => {
+	console.log(event.target);
+
+	if (event.target.closest('.modalClose')) {
+		console.log('close modal');
+		removeInfoModal();
+	}
+});
+
+document.querySelector('.app.heading').addEventListener('click', () => {
+	displayInfoModal();
+});
+
 //event listeners that work with animation process
 document
 	.querySelector('.icon .play-pause')
 	.addEventListener('click', (event) => {
-		if (event.target.classList.contains('play') && !isLoading) {
+		if (event.target.closest('svg').classList.contains('play') && !isLoading) {
 			beginAnimation();
 		}
 
@@ -240,11 +263,13 @@ document
 
 document.querySelector('#viewDiv').addEventListener('click', (event) => {
 	if (isAnimating && event.target.closest('.closeAnimationBtn')) {
+		event.stopImmediatePropagation();
 		endAnimation();
 	}
 
 	if (isAnimating && event.target.closest('.cancelAnimationBtn')) {
 		// endAnimation();
+		event.stopImmediatePropagation();
 		console.log('clicked');
 		removeCloseAnimationBtn(event);
 		addCancelTextToAnimationLoading();
@@ -253,8 +278,52 @@ document.querySelector('#viewDiv').addEventListener('click', (event) => {
 	}
 
 	if (isAnimating && event.target.closest('.downloadAnimationBtn')) {
+		event.stopImmediatePropagation();
 		console.log('downloadBox');
+		document
+			.querySelector('.downloadOptionsWrapper')
+			.classList.toggle('invisible');
+
+		event.target.closest('.downloadAnimationBtn').style.display = 'none';
+	}
+
+	if (event.target.closest('.choice')) {
+		event.stopImmediatePropagation();
+		console.log('choice click');
+		checkToposIncludedForDownload();
+		addDownloadingNotification();
+	}
+
+	if (event.target.closest('.mapAnimationOverlay a')) {
+		event.stopImmediatePropagation();
+		cancelAnimationVideo();
 	}
 });
 
+//TODO: Clean-up this event listener. It's not clear what's going on.
+document.querySelector('#viewDiv').addEventListener('mouseover', (event) => {
+	if (event.target.closest('.choice')) {
+		const orientation =
+			event.target.closest('.choiceGroup').firstElementChild.innerText;
+
+		const dimension = event.target
+			.closest('.choice')
+			.querySelector('a').innerText;
+
+		// findAspectRatio(window.innerWidth - 400, window.innerHeight, orientation);
+		findAspectRatio(dimension, orientation);
+		document
+			.querySelector('.downloadPreview div')
+			.classList.remove('invisible');
+	}
+
+	if (
+		!event.target.closest('.choice') &&
+		document.querySelector('.downloadPreview div')
+	) {
+		document.querySelector('.downloadPreview div').classList.add('invisible');
+	}
+});
+
+document.querySelector;
 export { addAccountImage, isMobileFormat, preventingMapInteractions };

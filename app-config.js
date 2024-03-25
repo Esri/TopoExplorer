@@ -15,7 +15,9 @@ const productionEnv = {
 };
 
 const developmentEnv = {
-	appId: 'KZAK9DITO38X2SXM',
+	//testing this appId for DEV. It's taken from the previous topoExplorer App.
+	appId: 'TopoExplorer',
+	// appId: 'KZAK9DITO38X2SXM',
 	webMap: {
 		webMapItemId: '710264327ad24ff5ba996e2a7c773b7f',
 		webMapLayers: {

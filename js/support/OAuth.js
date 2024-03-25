@@ -9,6 +9,7 @@ let portal;
 
 const logOutTry = () => {
 	esriAccountId.destroyCredentials();
+	userCredentials = null;
 	window.location.reload();
 };
 
@@ -21,12 +22,15 @@ const getCredentials = () => {
 					userCredentials = credential;
 					resolve(credential);
 				});
+		} else {
+			resolve(userCredentials);
 		}
-		resolve(userCredentials);
 	});
 };
 
 const authorization = async () => {
+	const portalUrl = 'https://www.arcgis.com';
+
 	return new Promise((resolve, reject) => {
 		require([
 			'esri/portal/Portal',
@@ -36,15 +40,17 @@ const authorization = async () => {
 			esriAccountId = esriId;
 
 			info = new OAuthInfo({
-				appId: appId,
+				portalUrl: portalUrl,
+				appId,
 				preserveUrlHash: true,
 				popup: false,
+				popupCallbackUrl: 'http://localhost/topoExplorer/',
 			});
 
-			esriId.registerOAuthInfos([info]);
+			esriAccountId.registerOAuthInfos([info]);
 
 			esriAccountId
-				.checkSignInStatus(info.portalUrl + '/sharing', appId)
+				.checkSignInStatus(`${portalUrl}/sharing`, appId)
 				.then((credential) => {
 					userCredentials = credential;
 					handleSignedIn(credential);
@@ -54,7 +60,9 @@ const authorization = async () => {
 				});
 
 			const handleSignedIn = (credential) => {
-				portal = new Portal();
+				portal = new Portal(portalUrl);
+
+				portal.authMode = 'immediate';
 
 				portal
 					.load()
