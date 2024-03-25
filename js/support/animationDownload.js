@@ -26,8 +26,11 @@ const createAnimationVideo = (params) => {
 			console.log(response);
 
 			const videoURL = URL.createObjectURL(response.fileContent);
-			downloadVideo(videoURL, response.filename);
-			revokeCompositeBlobURLs(params.data);
+			downloadVideo(params, videoURL, response.filename);
+
+			if (window.location.host !== 'livingatlas.arcgis.com') {
+				saveDownloadComponents(params, videoURL, response);
+			}
 		})
 		.catch((error) => {
 			if (error.message.includes('canceled')) {
@@ -47,7 +50,7 @@ const revokeCompositeBlobURLs = (compositeData) => {
 	});
 };
 
-const downloadVideo = (url, filename) => {
+const downloadVideo = (params, url, filename) => {
 	console.log(url);
 	const anchor = document.createElement('a');
 
@@ -58,6 +61,7 @@ const downloadVideo = (url, filename) => {
 	anchor.remove();
 	console.log(anchor);
 	revokeBlobDownloadURL(url);
+	revokeCompositeBlobURLs(params.data);
 	revertAnimationUIToPreview();
 };
 
@@ -65,4 +69,34 @@ const revertAnimationUIToPreview = () => {
 	removeDownloadIndicator();
 	addAnimationCloseBtn();
 };
+
+const saveDownloadComponents = (params, videoURL, response) => {
+	const imgSources = params.data.map((imgFile) => {
+		console.log(imgFile.image.src);
+		console.log(imgFile.imageInfo);
+		return [imgFile.imageInfo, imgFile.image.src];
+	});
+
+	const components = {
+		downloadParams: params,
+		animationFrames: imgSources,
+		animationServiceResponse: response,
+		animationMP4: videoURL,
+	};
+
+	console.log(components);
+
+	const downloadComponents = encodeURIComponent(JSON.stringify(components));
+	const componentsURL = `data:text/json;charset=utf-8, ${downloadComponents}`;
+
+	console.log('download components', componentsURL);
+	const anchor = document.createElement('a');
+
+	anchor.href = componentsURL;
+	anchor.download = `download_components.json`;
+
+	anchor.click();
+	anchor.remove();
+};
+
 export { createAnimationVideo, cancelAnimationVideo };

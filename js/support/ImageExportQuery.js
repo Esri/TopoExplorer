@@ -1,5 +1,5 @@
-//import the queryConfig stuff here??
-import { queryConfig } from './QueryConfig.js?v=0.01';
+//import the queryController stuff here??
+import { queryController } from './queryController.js?v=0.01';
 
 let controller = new AbortController();
 
@@ -29,14 +29,14 @@ const getTopoMap = (oid, url) => {
 };
 
 // const prepParams = (oid) => {
-// 	const exportImageSize = queryConfig.mapView.size.join(', ');
+// 	const exportImageSize = queryController.mapView.size.join(', ');
 // 	const exportMosaicRule = JSON.stringify({
 // 		mosaicMethod: 'esriMosaicLockRaster',
 // 		lockRasterIds: [oid],
 // 	});
 
 // 	const params = new URLSearchParams({
-// 		bbox: JSON.stringify(queryConfig.mapView.extent),
+// 		bbox: JSON.stringify(queryController.mapView.extent),
 // 		size: exportImageSize,
 // 		bboxSR: '102100',
 // 		imageSR: '102100',
@@ -56,14 +56,14 @@ const imageExport = async (oid, opacity, isCancelled) => {
 	// 	cancelImageRequest();
 	// }
 	// prepParams();
-	const exportImageSize = queryConfig.mapView.size.join(', ');
+	const exportImageSize = queryController.mapView.size.join(', ');
 	const exportMosaicRule = JSON.stringify({
 		mosaicMethod: 'esriMosaicLockRaster',
 		lockRasterIds: [oid],
 	});
 
 	const params = new URLSearchParams({
-		bbox: JSON.stringify(queryConfig.mapView.extent),
+		bbox: JSON.stringify(queryController.mapView.extent),
 		size: exportImageSize,
 		bboxSR: '102100',
 		imageSR: '102100',
@@ -75,7 +75,7 @@ const imageExport = async (oid, opacity, isCancelled) => {
 
 	return new Promise((resolve, reject) => {
 		axios({
-			url: queryConfig.imageExportEndpoint,
+			url: queryController.imageExportEndpoint,
 			method: 'get',
 			params,
 			signal: controller.signal,
@@ -99,7 +99,7 @@ const imageExport = async (oid, opacity, isCancelled) => {
 			// 	const imageElement = new ImageElement({
 			// 		image: url,
 			// 		georeference: new ExtentAndRotationGeoreference({
-			// 			extent: queryConfig.mapView.extent,
+			// 			extent: queryController.mapView.extent,
 			// 		}),
 			// 	});
 
@@ -108,8 +108,8 @@ const imageExport = async (oid, opacity, isCancelled) => {
 			// 	const mediaLayer = new MediaLayer({
 			// 		source: imageElement,
 			// 	});
-			// 	queryConfig.mapView.map.add(mediaLayer);
-			// 	console.log(queryConfig.mapView);
+			// 	queryController.mapView.map.add(mediaLayer);
+			// 	console.log(queryController.mapView);
 			// });
 
 			// const imgElement = document.createElement('img');

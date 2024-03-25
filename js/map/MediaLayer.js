@@ -1,4 +1,4 @@
-import { queryConfig } from '../support/QueryConfig.js?v=0.01';
+import { queryController } from '../support/queryController.js?v=0.01';
 
 const mediaLayerSourceElementsArray = [];
 let mediaLayer;
@@ -13,9 +13,9 @@ const createMediaLayer = async () => {
 				source: mediaLayerSourceElementsArray,
 				effect: 'drop-shadow(0px, 0px, 8px, black)',
 			});
-			queryConfig.mapView.map.add(
+			queryController.mapView.map.add(
 				mediaLayer,
-				queryConfig.mapView.map.layers.items.length - 2
+				queryController.mapView.map.layers.items.length - 2
 			);
 
 			resolve();
@@ -38,7 +38,7 @@ const createArrayOfImageElements = (array) => {
 };
 
 const removeMediaLayer = () => {
-	queryConfig.mapView.map.remove(mediaLayer);
+	queryController.mapView.map.remove(mediaLayer);
 };
 
 const createImageElementForMediaLayer = async (imageData) => {
@@ -54,7 +54,7 @@ const createImageElementForMediaLayer = async (imageData) => {
 				opacity: 0,
 				// effect: 'drop-shadow(0px, 0px, 8px, black)',
 				georeference: new ExtentAndRotationGeoreference({
-					extent: queryConfig.mapView.extent,
+					extent: queryController.mapView.extent,
 				}),
 			});
 

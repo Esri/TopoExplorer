@@ -4,7 +4,7 @@ import {
 	outdoorBasemapLabels,
 } from '../Basemaps/basemaps.js?v=0.01';
 import { activeExport } from '../../support/HashParams.js?v=0.01';
-import { url } from '../../support/QueryConfig.js?v=0.01';
+import { url } from '../../support/queryController.js?v=0.01';
 
 import {
 	successMessagePrompt,

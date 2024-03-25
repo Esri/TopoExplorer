@@ -5,9 +5,9 @@ import { initMobileHeader } from './UI/MobileMapHeader/mobileMapHeader.js?v=0.01
 import './UI/MobileMapHeader/mobileMapHeader.js?v=0.01';
 import { initView } from './map/View.js?v=0.01';
 import {
-	queryConfig,
+	queryController,
 	isHashedToposForQuery,
-} from './support/QueryConfig.js?v=0.01';
+} from './support/queryController.js?v=0.01';
 
 // import { isScrollAtPageEnd } from './support/eventListeners/ScrollListener.js?v=0.01';
 
@@ -30,9 +30,9 @@ const initApp = async () => {
 		const sliderValues = await getYearsAndScales(view);
 		const getPreviousTopos = await isHashedToposForQuery(view);
 		const initialMapQuery = () => {
-			queryConfig.setGeometry(view.extent);
-			queryConfig.mapView = view;
-			queryConfig.extentQueryCall();
+			queryController.setGeometry(view.extent);
+			queryController.mapView = view;
+			queryController.extentQueryCall();
 		};
 
 		view
@@ -68,9 +68,9 @@ const initApp = async () => {
 								}
 							}
 
-							queryConfig.setGeometry(view.extent);
-							queryConfig.mapView = view;
-							queryConfig.extentQueryCall();
+							queryController.setGeometry(view.extent);
+							queryController.mapView = view;
+							queryController.extentQueryCall();
 							updateHashParams(view);
 
 							prevCenter = view?.center;
@@ -81,9 +81,9 @@ const initApp = async () => {
 						() => [view.stationary, view.zoom],
 						([stationary, zoom]) => {
 							if (stationary && zoom !== currentZoom) {
-								queryConfig.setGeometry(view.extent);
-								queryConfig.mapView = view;
-								queryConfig.extentQueryCall();
+								queryController.setGeometry(view.extent);
+								queryController.mapView = view;
+								queryController.extentQueryCall();
 								updateHashParams(view);
 								currentZoom = zoom;
 							}
@@ -93,7 +93,7 @@ const initApp = async () => {
 			});
 
 		// const isReadyForMoreMaps = (value) =>
-		// 	value ? queryConfig.checkAvailableNumberOfMaps() : null;
+		// 	value ? queryController.checkAvailableNumberOfMaps() : null;
 
 		// isScrollAtPageEnd(isReadyForMoreMaps);
 	} catch (error) {

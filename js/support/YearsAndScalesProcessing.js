@@ -4,8 +4,8 @@ import {
 	getMaxYear,
 	getMinScale,
 	getMaxScale,
-} from './QueryConfig.js?v=0.01';
-import { queryConfig } from './QueryConfig.js?v=0.01';
+} from './queryController.js?v=0.01';
+import { queryController } from './queryController.js?v=0.01';
 import { initDualSlider } from '../UI/DualSlider/DualSlider.js?v=0.01';
 import { sortChoice } from '../UI/Sort/Sort.js?v=0.01';
 
@@ -53,14 +53,14 @@ const getTheYear = (index, value) => {
 	if (parseInt(minYearSlider.value) > parseInt(maxYearSlider.value)) {
 		yearsAndMapScales.updateMinYear(maxYearSlider.value);
 		yearsAndMapScales.updateMaxYear(minYearSlider.value);
-		queryConfig.extentQueryCall();
+		queryController.extentQueryCall();
 		return;
 	}
 
 	if (parseInt(minYearSlider.value) <= parseInt(maxYearSlider.value)) {
 		yearsAndMapScales.updateMaxYear(maxYearSlider.value);
 		yearsAndMapScales.updateMinYear(minYearSlider.value);
-		queryConfig.extentQueryCall();
+		queryController.extentQueryCall();
 		return;
 	}
 };
@@ -72,21 +72,21 @@ const getTheScale = (index, value) => {
 	if (parseInt(minScaleSlider.value) > parseInt(maxScaleSlider.value)) {
 		yearsAndMapScales.updateMinScale(maxScaleSlider.value);
 		yearsAndMapScales.updateMaxScale(minScaleSlider.value);
-		queryConfig.extentQueryCall();
+		queryController.extentQueryCall();
 		return;
 	}
 
 	if (parseInt(minScaleSlider.value) <= parseInt(maxScaleSlider.value)) {
 		yearsAndMapScales.updateMaxScale(maxScaleSlider.value);
 		yearsAndMapScales.updateMinScale(minScaleSlider.value);
-		queryConfig.extentQueryCall();
+		queryController.extentQueryCall();
 		return;
 	}
 };
 
 const setSortOptions = (choiceValue) => {
-	queryConfig.setSortChoice(choiceValue);
-	queryConfig.extentQueryCall();
+	queryController.setSortChoice(choiceValue);
+	queryController.extentQueryCall();
 };
 
 sortChoice(setSortOptions);

@@ -80,7 +80,7 @@ const createAnimationImageElement = (blobURL, topo) => {
 	compositeImage.src = blobURL;
 	const imageObj = {
 		image: compositeImage,
-		name: `${topo.mapName}`,
+		imageInfo: topo.mapName,
 	};
 	// console.log(compositeImage);
 	return imageObj;

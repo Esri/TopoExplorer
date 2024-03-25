@@ -216,7 +216,7 @@ const yearsAndMapScales = {
 
 	setZoomDependentScale: function () {
 		//this is the logic to determine what maps scales are available at certain zoom levels (which determines what slider values are available).
-		const zoomLevel = Math.round(queryConfig.mapView.zoom);
+		const zoomLevel = Math.round(queryController.mapView.zoom);
 		const scaleHeaders = document.querySelector('#scales .headers');
 		minScaleRangeHandle = document.querySelector('#scales .minSlider');
 		maxScaleRangeHandle = document.querySelector('#scales .maxSlider');
@@ -433,10 +433,10 @@ const yearsAndMapScales = {
 };
 
 const updateWhereStatement = () => {
-	queryConfig.where = `${mapYear} >= ${yearsAndMapScales.years.minYear} AND ${mapYear} <= ${yearsAndMapScales.years.maxYear} AND map_scale >= ${yearsAndMapScales.scales.minScale} AND map_scale <= ${yearsAndMapScales.scales.maxScale}`;
+	queryController.where = `${mapYear} >= ${yearsAndMapScales.years.minYear} AND ${mapYear} <= ${yearsAndMapScales.years.maxYear} AND map_scale >= ${yearsAndMapScales.scales.minScale} AND map_scale <= ${yearsAndMapScales.scales.maxScale}`;
 };
 
-const queryConfig = {
+const queryController = {
 	url: `${url}/query`,
 	imageExportEndpoint: `${url}/exportImage`,
 	mapView: '',
@@ -641,7 +641,7 @@ const queryConfig = {
 				},
 			});
 
-			return (queryConfig.geometry = JSON.stringify(polygon));
+			return (queryController.geometry = JSON.stringify(polygon));
 		});
 	},
 	setSortChoice: function (choiceValue) {
@@ -661,12 +661,12 @@ const checkForMapsVisibleWithinExtent = (topo) => {
 	require(['esri/geometry/geometryEngine'], (geometryEngine) => {
 		const topoMapLocation = topo.geometry;
 		const intersectingMaps = geometryEngine.intersect(
-			queryConfig.mapView.extent,
+			queryController.mapView.extent,
 			topoMapLocation
 		);
 		const mapArea = geometryEngine.planarArea(intersectingMaps, 'square-miles');
 		const extentArea = geometryEngine.planarArea(
-			queryConfig.mapView.extent,
+			queryController.mapView.extent,
 			'square-miles'
 		);
 		const percentOfTopoInExtent = Number.parseFloat(
@@ -683,7 +683,7 @@ const checkForMapsVisibleWithinExtent = (topo) => {
 	});
 };
 
-const resetQueryOffsetNumber = () => (queryConfig.resultOffset = 0);
+const resetQueryOffsetNumber = () => (queryController.resultOffset = 0);
 
 const debounce = (func, wait) => {
 	let timer;
@@ -696,14 +696,14 @@ const debounce = (func, wait) => {
 };
 
 const extentQueryCall = debounce((url, totalMapsInExtentParams) => {
-	queryConfig.getNewMaps(url, totalMapsInExtentParams), 1000;
+	queryController.getNewMaps(url, totalMapsInExtentParams), 1000;
 });
 
 const setHashedTopoQueryParams = (oid) => {
 	const params = new URLSearchParams({
 		where: `${objectId} IN (${oid})`,
 		returnGeometry: true,
-		outFields: queryConfig.queryOutfields,
+		outFields: queryController.queryOutfields,
 		f: 'json',
 	});
 
@@ -731,10 +731,10 @@ const dataForTopoExports = async () => {
 	const hashedToposForExport = activeExport();
 	const paramsForExportTopos = setHashedTopoQueryParams(hashedToposForExport);
 
-	queryForHashedTopos(queryConfig.url, paramsForExportTopos)
+	queryForHashedTopos(queryController.url, paramsForExportTopos)
 		.then((topos) => {
 			const toposForExport = topos.data.features;
-			return queryConfig.processMapData(toposForExport);
+			return queryController.processMapData(toposForExport);
 		})
 		.then((exportTopoDetails) => {
 			resumeExportPrompt(exportTopoDetails);
@@ -751,10 +751,10 @@ const getDataForHashedTopos = async (view) => {
 
 	const paramsForHashedTopos = setHashedTopoQueryParams(hashedTopos);
 
-	queryForHashedTopos(queryConfig.url, paramsForHashedTopos)
+	queryForHashedTopos(queryController.url, paramsForHashedTopos)
 		.then((hashedTopoData) => {
 			const hashDataArray = hashedTopoData.data.features;
-			return queryConfig.processMapData(hashDataArray);
+			return queryController.processMapData(hashDataArray);
 		})
 		.then((topoMapData) => {
 			topoMapData.map((mapData) => {
@@ -779,7 +779,7 @@ const styleListenerConfig = { attributes: true };
 const onStyleChange = (mutation, observer) => {
 	if (document.querySelector('#exploreList').innerHTML === '') {
 		showSpinnerIcon();
-		queryConfig.queryMapData();
+		queryController.queryMapData();
 	}
 };
 
@@ -789,7 +789,7 @@ explorerModeObserver.observe(explorerMode, styleListenerConfig);
 
 export {
 	url,
-	queryConfig,
+	queryController,
 	yearsAndMapScales,
 	getMinYear,
 	getMaxYear,

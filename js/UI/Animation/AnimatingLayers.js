@@ -1,5 +1,5 @@
 //NOTE: Rename this module to AnimationControl.
-import { queryConfig } from '../../support/QueryConfig.js?v=0.01';
+import { queryController } from '../../support/queryController.js?v=0.01';
 import {
 	removeAnimationLoadingDiv,
 	addAnimationCloseBtn,
@@ -34,6 +34,7 @@ import {
 import { makeCompositeForAnimationDownload } from '../../support/AnimationComposite.js?v=0.01';
 import { createAnimationVideo } from '../../support/animationDownload.js?v=0.01';
 
+const applicationName = 'Topo Map Explorer';
 const animationSpeedSlider = document.querySelector('.animation-speed-value');
 
 let isCancelled = false;
@@ -67,11 +68,12 @@ const setCancelledStatus = (status) => {
 
 const setAnimationSlider = (animationSpeedSlider, speedArray) => {
 	animationSpeedSlider.max = (speedArray.length - 1) * 10;
-	animationSpeedSlider.value = ((speedArray.length - 1) * 10) / 2;
+	animationSpeedSlider.value = speedArray[((speedArray.length - 1) * 10) / 2];
 };
 
 const setInitialDuration = (speedArray) => {
 	duration = speedArray[(speedArray.length - 1) / 2];
+	console.log(duration);
 };
 
 setAnimationSlider(animationSpeedSlider, speeds);
@@ -151,11 +153,11 @@ const exportingTopoImageAndCreatingImageElement = async () => {
 			card.querySelector('.map-list-item').attributes.geometry.value;
 		const currentOpacity = card.querySelector('.opacity-slider').value / 100;
 		const imageName = `${
-			card.querySelector('.map-list-item .mapSlotHeader').textContent
-		}, `;
+			card.querySelector('.map-list-item .location').textContent
+		} ${card.querySelector('.map-list-item .year').textContent}`;
 		console.log(imageName);
 
-		if (await isIntersecting(cardMapLocation, queryConfig.mapView.extent)) {
+		if (await isIntersecting(cardMapLocation, queryController.mapView.extent)) {
 			console.log('exporting');
 			await imageExport(cardId, currentOpacity, isCancelled).then(
 				(imageData) => {
@@ -230,12 +232,12 @@ const takeScreenshotOfView = () => {
 
 		const options = {
 			format: screenshotFormat,
-			height: (queryConfig.mapView.height * pixelRatio).toFixed(0),
-			width: (queryConfig.mapView.width * pixelRatio).toFixed(0),
+			height: (queryController.mapView.height * pixelRatio).toFixed(0),
+			width: (queryController.mapView.width * pixelRatio).toFixed(0),
 			quality: screenshotQualityValue,
 		};
 
-		queryConfig.mapView.takeScreenshot(options).then(async (screenshot) => {
+		queryController.mapView.takeScreenshot(options).then(async (screenshot) => {
 			const screenshotResponse = await fetch(screenshot.dataUrl);
 			const blob = URL.createObjectURL(await screenshotResponse.blob());
 
@@ -292,10 +294,10 @@ const checkToposIncludedForDownload = async () => {
 	}
 	const animationParams = {
 		data: animationFrames,
-		animationSpeed: animationInterval,
+		animationSpeed: duration,
 		outputWidth: animationDimensions.width,
 		outputHeight: animationDimensions.height,
-		authoringApp: 'Topo Map Explorer',
+		authoringApp: applicationName,
 		abortController: new AbortController(),
 	};
 

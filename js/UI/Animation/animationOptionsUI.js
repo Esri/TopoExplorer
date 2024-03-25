@@ -87,7 +87,6 @@ const findAspectRatio = (dimension) => {
 	//this function receives a value for width and a value for height, then adjusts the size of mapView
 	//dimensions to create a preview for the download area that reflects the aspect ratio from the given dimensions.
 
-	console.log(dimension);
 	const widthOfSideBar = 400;
 	const mapViewWidth = window.innerWidth - widthOfSideBar;
 	const mapViewHeight = window.innerHeight;
@@ -108,17 +107,16 @@ const findAspectRatio = (dimension) => {
 		newHeight = mapViewWidth * (1 / aspectRatio);
 	}
 
-	if (newWidth > previewWidth) {
-		console.log('screen too big');
-		console.log(newWidth, previewWidth);
-		newWidth = previewWidth;
-		newHeight = previewHeight;
-	}
+	// if (newWidth > previewWidth) {
+	// 	console.log('screen too big');
+	// 	console.log(newWidth, previewWidth);
+	// 	newWidth = previewWidth;
+	// 	newHeight = previewHeight;
+	// }
 	previewHighlight.width = `${newWidth}px`;
 	previewHighlight.height = `${newHeight}px`;
 
-	console.log('final dimensions', newWidth, newHeight);
-	return setAnimationDimensions(newWidth, newHeight);
+	return setAnimationDimensions(previewWidth, previewHeight);
 };
 export {
 	animationLoadingHTML,
