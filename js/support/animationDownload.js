@@ -19,9 +19,7 @@ const createAnimationVideo = (params) => {
 	console.log('...downloading');
 	controller = params.abortController;
 	addDownloadCancel();
-	// setTimeout(() => {
-	// 	downloadVideo();
-	// }, 3000);
+
 	images2VideoClient
 		.convertImages2Video(params)
 		.then((response) => {
@@ -54,7 +52,7 @@ const downloadVideo = (url, filename) => {
 	const anchor = document.createElement('a');
 
 	anchor.href = url;
-	anchor.download = `${filename}.mp4`;
+	anchor.download = `${filename}`;
 
 	anchor.click();
 	anchor.remove();
