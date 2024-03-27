@@ -2,7 +2,7 @@ import { queryController } from './queryController.js?v=0.01';
 
 const arrayOfCompositeImages = [];
 
-console.log('loink');
+console.log('lo0nk');
 const makeCompositeForAnimationDownload = async (basemap, topo) => {
 	//will create an image that combines the basemap image and each of the topoMap images present in the imagesForDownload obj.
 	//Once the composite is made, on obj with the image and corresponding information will be stored in the imagesForDownload obj's animationImages array

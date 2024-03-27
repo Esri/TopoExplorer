@@ -72,6 +72,7 @@ sideBar.addEventListener(
 		if (isAnimating) {
 			return;
 		}
+
 		if (event.target.closest('.iconWrapper')) {
 			document.querySelectorAll('.tooltipText').forEach((tooltip) => {
 				if (tooltip.classList.contains('visible')) {
@@ -111,13 +112,21 @@ sideBar.addEventListener(
 
 		if (
 			!event.target.closest('.iconWrapper') ||
-			event.target.classList.contains('tooltipText')
+			event.target.classList.contains('tooltipText') ||
+			!event.target.closest('.mapCard-slider')
 		) {
 			document.querySelectorAll('.tooltipText').forEach((tooltip) => {
 				if (tooltip.classList.contains('visible')) {
 					tooltip.classList.remove('visible');
 				}
 			});
+		}
+
+		if (event.target.closest('.mapCard-slider')) {
+			event.target
+				.closest('.mapCard-slider')
+				.querySelector('.tooltipText')
+				.classList.add('visible');
 		}
 	},
 	true

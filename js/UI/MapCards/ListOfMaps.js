@@ -146,11 +146,7 @@ const createMapSlotItems = (list, view) => {
 
 				const currentlySelectedMapCard = ` 
         <div class='mapCard-container'>
-          <div class ='map-list-item' oid='${currentlySelectedMapId}' geometry='${JSON.stringify(
-					currentlySelectedMapGeometry
-				)}'>
-            ${currentlySelectedMapCardHTML.innerHTML}
-          </div>
+            ${currentlySelectedMapCardHTML}
         </div>
         `;
 
@@ -160,7 +156,7 @@ const createMapSlotItems = (list, view) => {
 			const isCardPinned =
 				topoMap.previousPinnedMap || getPinnedTopoIndex(`${topoMap.OBJECTID}`);
 
-			if (currentlySelectedMapId === topoMap.OBJECTID && isCardPinned) {
+			if (currentlySelectedMapId === topoMap.OBJECTID) {
 				return;
 			}
 
@@ -168,7 +164,7 @@ const createMapSlotItems = (list, view) => {
         <div class='mapCard-container'>
           <div class ='map-list-item' oid='${
 						topoMap.OBJECTID
-					}' geometry='${JSON.stringify(topoMap.mapBoundry)}'>
+					}' geometry=${JSON.stringify(topoMap.mapBoundry)}>
             
           <div class='topRow'>
             <div class='left-margin'>
@@ -279,7 +275,7 @@ const createMapSlotItems = (list, view) => {
                 </div>
                 
                 <div class='mapCard-slider'>
-                <span class='tooltipText hidden' style='top:-60px;'>Cannot pin more than 25 topos</span>
+                <span class='tooltipText hidden' style='top:-60px; left: 60px'>Adjust the transparency of this topo map.</span>
                   <div>
                   <div class='slider-range'>
                     <div class='slider-range-background'></div>
@@ -382,12 +378,7 @@ mapModes.addEventListener('click', (event) => {
 	toggleListVisibility();
 });
 
-const setTopoMapPlaceholder = (
-	oid,
-	mapGeometry,
-	mapCardHTML,
-	isMapCardOpen
-) => {
+const setTopoMapPlaceholder = (oid, mapGeometry, isMapCardOpen) => {
 	//if mobile is active, do not keep track of the most recently opened topo
 
 	if (isMobileFormat()) {
@@ -407,22 +398,26 @@ const setTopoMapPlaceholder = (
 	if (currentlySelectedMapId == oid) {
 		currentlySelectedMapId = 0;
 		gettingTopoID = 0;
+		currentlySelectedMapCardHTML = null;
+		currentlySelectedMapGeometry = null;
 		return;
 	}
 
 	if (!isMapCardOpen) {
 		currentlySelectedMapId = parseInt(oid);
-		currentlySelectedMapCardHTML = mapCardHTML;
+		// currentlySelectedMapCardHTML = mapCardHTML;
 		currentlySelectedMapGeometry = mapGeometry;
 	}
 };
 
 const isTargetPolygonWithExtent = (currentlySelectedMapGeometry) => {
+	//determines wether a specific polygon is within the visible extent of the mapView.
+	//This function deconstructs the rings of a polygon to create a simple extent object containing the xMax,Ymax,xMin,yMin of the polygon.
+	// it then evaluates whether any of those points are withing the extent.
 	const currentlySelectedMapGeometryObj = currentlySelectedMapGeometry
 		? JSON.parse(currentlySelectedMapGeometry)
 		: null;
 
-	console;
 	if (!currentlySelectedMapGeometryObj) {
 		return;
 	}
@@ -462,10 +457,9 @@ const isTargetPolygonWithExtent = (currentlySelectedMapGeometry) => {
 		topoExtent.xmax >= currentView.extent.xmin &&
 		topoExtent.xmin <= currentView.extent.xmax
 	) {
-		console.log("it's in");
 		return true;
 	}
-	console.log('it aint');
+
 	return false;
 };
 
@@ -588,6 +582,7 @@ const isCurrentMapPinned = (targetMapCard, callback) => {
 		const cardHTML = targetMapCard.innerHTML;
 
 		callback(oid, cardHTML);
+		currentlySelectedMapCardHTML = cardHTML;
 		// setTopoMapPlaceholder(oid);
 		return;
 	} else {
@@ -600,7 +595,7 @@ const isCurrentMapPinned = (targetMapCard, callback) => {
 			: null;
 
 		if (oid == currentlySelectedMapId && pinnedCardIDsArray.length >= 1) {
-			setTopoMapPlaceholder(oid, mapCardGeometry, relatedMapCard, true);
+			setTopoMapPlaceholder(oid, mapCardGeometry, true);
 		}
 
 		if (targetMapCard.closest('#pinnedList')) {
@@ -852,6 +847,8 @@ const openMapCard = (target) => {
 		.closest('.map-list-item')
 		.querySelector('.action-container')
 		.classList.add('flex');
+
+	currentlySelectedMapCardHTML = target.closest('.mapCard-container').innerHTML;
 };
 
 const handleOpacityChange = (targetOID, sliderValue) => {
@@ -900,6 +897,7 @@ const isMapCardOpen = (target, targetOID) => {
 	}
 	const targetTopLevel = target.closest('.map-list-item');
 	const targetGeometry = targetTopLevel.attributes.geometry.value;
+	// const cardHTML = target.closest('.mapCard-container').innerHTML;
 
 	if (
 		target.closest('.action-container') ||
@@ -917,11 +915,11 @@ const isMapCardOpen = (target, targetOID) => {
 		addTopoToMap(targetOID, serviceURL);
 		addHalo(targetOID, targetGeometry);
 		openMapCard(target);
-		setTopoMapPlaceholder(targetOID, targetGeometry, targetTopLevel, false);
+		setTopoMapPlaceholder(targetOID, targetGeometry, false);
 		return false;
 	} else {
 		closeMapCard(target);
-		setTopoMapPlaceholder(targetOID, targetGeometry, targetTopLevel, true);
+		setTopoMapPlaceholder(targetOID, targetGeometry, true);
 		removeTopoFromMap(targetOID);
 		return true;
 	}
@@ -1064,6 +1062,11 @@ sideBarElement.addEventListener('input', (event) => {
 	}
 	const eventTarget = event.target;
 	const targetOID = eventTarget.closest('.map-list-item').attributes.oid.value;
+
+	eventTarget
+		.closest('.mapCard-slider')
+		.querySelector('.tooltipText')
+		.classList.remove('visible');
 
 	opacitySliderEvent(eventTarget, targetOID);
 });
