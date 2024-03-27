@@ -1,12 +1,15 @@
-const widthOfSideBar = 400;
+import { queryController } from './queryController.js?v=0.01';
+
 const arrayOfCompositeImages = [];
 
 console.log('loink');
 const makeCompositeForAnimationDownload = async (basemap, topo) => {
-	console.log(topo);
+	//will create an image that combines the basemap image and each of the topoMap images present in the imagesForDownload obj.
+	//Once the composite is made, on obj with the image and corresponding information will be stored in the imagesForDownload obj's animationImages array
+
 	return new Promise(async (resolve, reject) => {
-		const viewWidth = window.innerWidth - widthOfSideBar;
-		const viewHeight = window.innerHeight;
+		const viewWidth = queryController.mapView.width;
+		const viewHeight = queryController.mapView.height;
 
 		const canvas = document.createElement('canvas');
 		canvas.width = viewWidth;
@@ -19,35 +22,14 @@ const makeCompositeForAnimationDownload = async (basemap, topo) => {
 		const canvasBlob = createLinkForCompositeImage(canvas);
 
 		canvasBlob.then((blob) => {
-			console.log('resolved blolb', blob);
 			const url = URL.createObjectURL(blob, 'image/png');
-			// console.log(createAnimationImageElement(url));
+
+			//this is for testing only. Checks the quality of the recently made composite image
+			// downloadCompsiteImages(url);
+
 			resolve(createAnimationImageElement(url, topo));
 		});
 	});
-	//will create an image that combines the basemap image and each of the topoMap images present in the imagesForDownload obj.
-	//Once the composite is made, on obj with the image and corresponding information will be stored in the imagesForDownload obj's animationImages array
-
-	//note: I'm going to remove this hard-coded value. I've included for now just to get the function working properly
-	// const viewWidth = window.innerWidth - widthOfSideBar;
-	// const viewHeight = window.innerHeight;
-
-	// const canvas = document.createElement('canvas');
-	// canvas.width = viewWidth;
-	// canvas.height = viewHeight;
-	// const compositeCanvas = canvas.getContext('2d');
-
-	// await drawBackgroundImg(basemap, compositeCanvas);
-	// await drawTopoMap(topo, compositeCanvas);
-
-	// const canvasBlob = createLinkForCompositeImage(canvas);
-
-	// canvasBlob.then((blob) => {
-	// 	console.log('resolved blolb', blob);
-	// 	const url = URL.createObjectURL(blob, 'image/png');
-	// 	console.log(createAnimationImageElement(url));
-	//   resolve createAnimationImageElement(url)
-	// });
 };
 
 const createLinkForCompositeImage = (canvas, array) => {
@@ -121,7 +103,7 @@ const drawTopoMap = async (topo, compositeCanvas) => {
 	});
 };
 
-const download = (url, canvas) => {
+const downloadCompsiteImages = (url) => {
 	//Create an 'a' element that facilitates the image download using the blob URL. Once the download has been initiated, remove the 'a' element and remove the blob URL from memory.
 	const anchor = document.createElement('a');
 
@@ -130,8 +112,6 @@ const download = (url, canvas) => {
 
 	anchor.click();
 	anchor.remove();
-	console.log(anchor);
-	revokeBlobDownloadURL(url);
 };
 
 const deleteCanvasElement = (canvas) => {

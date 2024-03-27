@@ -124,12 +124,27 @@ const createMapSlotItems = (list, view) => {
 			? true
 			: false;
 
+	const areOtherMapCardsPresent = () => {
+		console.log('checking if list is empty');
+		if (explorerList.querySelectorAll('.map-list-item')[0]) {
+			console.log('true');
+			return true;
+		} else {
+			console.log('flase');
+			return false;
+		}
+	};
+
 	const mapSlot = list
 		.map((topoMap, index) => {
-			if (isCurrentlySelectMapWithinView && index === 0) {
-				console.log('putting currently open card on top');
+			if (
+				isCurrentlySelectMapWithinView &&
+				index === 0 &&
+				!areOtherMapCardsPresent()
+			) {
+				console.log('putting currently open card on the  top');
 
-				return ` 
+				const currentlySelectedMapCard = ` 
         <div class='mapCard-container'>
           <div class ='map-list-item' oid='${currentlySelectedMapId}' geometry='${JSON.stringify(
 					currentlySelectedMapGeometry
@@ -138,14 +153,16 @@ const createMapSlotItems = (list, view) => {
           </div>
         </div>
         `;
-			}
 
-			if (currentlySelectedMapId === topoMap.OBJECTID) {
-				return;
+				return currentlySelectedMapCard;
 			}
 
 			const isCardPinned =
 				topoMap.previousPinnedMap || getPinnedTopoIndex(`${topoMap.OBJECTID}`);
+
+			if (currentlySelectedMapId === topoMap.OBJECTID && isCardPinned) {
+				return;
+			}
 
 			return ` 
         <div class='mapCard-container'>
@@ -201,10 +218,10 @@ const createMapSlotItems = (list, view) => {
               <div class='action-area'>
                 <div class='iconWrapper'>
                   <span class='tooltipText hidden' style='top:-60px;'>Cannot pin more than 25 topos</span>
-                  <span class='tooltipText pinMap hidden' style='top:-27px;'>Pin this topo map</span>
+                  <span class='tooltipText pinMap hidden' style='top:-80px;'>Add this to the "Pinned Topo Maps" tab at the top of this list</span>
                   <span class='tooltipText unpinMap hidden' style='top:-45px;'>Unpin this topo map</span>
                   <div class='icon pushpin ${
-										isMobileFormat() ? 'invisible' : null
+										isMobileFormat() ? 'invisible' : ''
 									}'>
                   
                     <div class="checkmarkBackground ${
@@ -214,7 +231,7 @@ const createMapSlotItems = (list, view) => {
 										}">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M20,0H3.56757A3.56754,3.56754,0,0,0,0,3.56757V20"></path></svg>
                       <div class="checkmark">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="12"viewBox="-3 3 32 32"><path fill="#EAEEF1" d="M11.927 22l-6.882-6.883-3 3L11.927 28 31.204 8.728l-3.001-3.001z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="12"viewBox="-3 3 32 32"><path fill="#637287" d="M11.927 22l-6.882-6.883-3 3L11.927 28 31.204 8.728l-3.001-3.001z"/></svg>
                       </div>
                     </div>
                     <div class="unpinned svgContainer 
@@ -262,6 +279,7 @@ const createMapSlotItems = (list, view) => {
                 </div>
                 
                 <div class='mapCard-slider'>
+                <span class='tooltipText hidden' style='top:-60px;'>Cannot pin more than 25 topos</span>
                   <div>
                   <div class='slider-range'>
                     <div class='slider-range-background'></div>
@@ -395,7 +413,6 @@ const setTopoMapPlaceholder = (
 	if (!isMapCardOpen) {
 		currentlySelectedMapId = parseInt(oid);
 		currentlySelectedMapCardHTML = mapCardHTML;
-		console.log(currentlySelectedMapCardHTML);
 		currentlySelectedMapGeometry = mapGeometry;
 	}
 };
@@ -571,7 +588,7 @@ const isCurrentMapPinned = (targetMapCard, callback) => {
 		const cardHTML = targetMapCard.innerHTML;
 
 		callback(oid, cardHTML);
-		setTopoMapPlaceholder(oid);
+		// setTopoMapPlaceholder(oid);
 		return;
 	} else {
 		const relatedMapCard = explorerList.querySelector(
@@ -619,6 +636,8 @@ const isCurrentMapPinned = (targetMapCard, callback) => {
 const mapPinningAction = (pinIcon, pinCheckmarkIcon, targetMapCard) => {
 	pinIcon.classList.toggle('pinned');
 	pinCheckmarkIcon.classList.toggle('hidden');
+	// console.log('pinContainer?', pinIcon.closest('.pushpin'));
+	// pinIcon.closest('.pushpin').classList.toggle('pinned');
 
 	if (pinIcon.classList.contains('pinned')) {
 		isCurrentMapPinned(targetMapCard, addToPinnedArray);
@@ -767,6 +786,9 @@ const pinEvent = (eventTarget, mapCard, targetOID) => {
 
 	//if the card is in 'pinned list' AND the mapCard exists in the 'explore list' set the icon to the unpinned status.
 	if (mapCard.closest('#pinnedList') && mapCardInExploreModeList) {
+		// mapCardInExploreModeList
+		// 	.querySelector('.icon .unpinned')
+		// 	.classList.toggle('pinned');
 		mapCardInExploreModeList
 			.querySelector('.unpinned')
 			.classList.toggle('pinned');

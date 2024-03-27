@@ -242,19 +242,32 @@ a.icon{
   transform: rotate(45deg);
 }
 
-.icon.pushpin .checkmarkBackground{
+.icon.pushpin .checkmarkBackground svg{
   position: absolute;
+  z-index: 1;
   width: 50%;
+  fill: #F1F4F5;
 }
 
-.icon.pushpin .checkmark{
+.icon.pushpin .checkmark svg{
   position: absolute;
-  top: 0;
+  top: 1px;
+  left: -4px;
 }
 
 .icon.pushpin .pinned{
   transform: rotate(0deg);
 }
+
+.action-area .icon .pinned svg{
+  fill: #F1F4F5;
+}
+
+.icon.pushpin .svgContainer.pinned{
+  background:#637287
+}
+
+
 
 .action-area .tooltipText {
   position: absolute;
@@ -294,6 +307,7 @@ a.icon{
 .action-area .icon svg{
   fill: #637287;
 }
+
 
 #exploreList .action-area .iconWrapper.zoom{
   display: none;

@@ -29,7 +29,7 @@ const createAnimationVideo = (params) => {
 			downloadVideo(params, videoURL, response.filename);
 
 			if (window.location.host !== 'livingatlas.arcgis.com') {
-				saveDownloadComponents(params, videoURL, response);
+				// saveDownloadComponents(params, videoURL, response);
 			}
 		})
 		.catch((error) => {

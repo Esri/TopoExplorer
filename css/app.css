@@ -406,7 +406,7 @@ main .map-list-item.mobile{
   max-width: 500px;
   padding: 0 10px;
   background-color: #e7ebee;
-  z-index: 3;
+  z-index: 4;
 }
 
 .map-mode-container {
@@ -566,7 +566,8 @@ transform: translate(5px, 0px);
 .downloadIndicator{
   padding: 1rem;
   background:#e7ebee;
-  box-shadow: 4px 4px 6px #111111;
+  box-shadow: 0px 0px 6px #111111;
+  border-radius: 0 0 12px 0;
   align-items: center;
 }
 
@@ -814,7 +815,8 @@ font-style: italic;
   top: 0;
   right: 0;
   position: relative;
-  box-shadow: 4px 4px 6px #111111;
+  box-shadow: 0px 0px 6px #111111;
+  border-radius: 0 0 12px 0;
 }
 
 .choice {
@@ -876,7 +878,7 @@ svg{
 .selected {
   background: linear-gradient(0deg, rgba(231,235,238,1) 0%, rgba(241,244,245,1) 100%);
   border-radius: 12px 12px 0 0;
-  box-shadow: inset 0px 1px 1px 1px rgba(255,255,255,1), 0px -8px 8px 4px rgba(219,227,233,1);
+  box-shadow: 0px -8px 8px 4px rgba(219,227,233,1);
 }
 
 @media only screen and (max-width: 366px) {

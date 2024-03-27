@@ -107,15 +107,10 @@ const findAspectRatio = (dimension) => {
 		newHeight = mapViewWidth * (1 / aspectRatio);
 	}
 
-	// if (newWidth > previewWidth) {
-	// 	console.log('screen too big');
-	// 	console.log(newWidth, previewWidth);
-	// 	newWidth = previewWidth;
-	// 	newHeight = previewHeight;
-	// }
 	previewHighlight.width = `${newWidth}px`;
 	previewHighlight.height = `${newHeight}px`;
 
+	console.log('MapView size', mapViewWidth, mapViewHeight);
 	return setAnimationDimensions(previewWidth, previewHeight);
 };
 export {
