@@ -94,6 +94,9 @@ const hashLoD = () => {
 const checkForPreviousTopos = () => {
 	parseHashParams();
 
+	// parsedHashParams.maps.split(',').map((oid) => {
+	// 	console.log(oid);
+	// });
 	return parsedHashParams.maps;
 };
 

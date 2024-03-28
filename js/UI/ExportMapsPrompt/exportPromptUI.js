@@ -35,7 +35,6 @@ const setUserContentURL = (urlKey, urlBase, url) => {
 
 const setWebMapURL = (itemID) => {
 	webMapURL = `${accountURL}/home/item.html?id=${itemID}`;
-	console.log(webMapURL);
 };
 
 const exportFields = `

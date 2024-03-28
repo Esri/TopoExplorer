@@ -2,7 +2,6 @@ import { queryController } from './queryController.js?v=0.01';
 
 const arrayOfCompositeImages = [];
 
-console.log('lo0nk');
 const makeCompositeForAnimationDownload = async (basemap, topo) => {
 	//will create an image that combines the basemap image and each of the topoMap images present in the imagesForDownload obj.
 	//Once the composite is made, on obj with the image and corresponding information will be stored in the imagesForDownload obj's animationImages array
@@ -25,7 +24,7 @@ const makeCompositeForAnimationDownload = async (basemap, topo) => {
 			const url = URL.createObjectURL(blob, 'image/png');
 
 			//this is for testing only. Checks the quality of the recently made composite image
-			// downloadCompsiteImages(url);
+			//downloadCompositeImages(basemap.url);
 
 			resolve(createAnimationImageElement(url, topo));
 		});
@@ -34,10 +33,9 @@ const makeCompositeForAnimationDownload = async (basemap, topo) => {
 
 const createLinkForCompositeImage = (canvas, array) => {
 	//convert the canvas's current image into a URL.
-	// console.log(compositeCanvas);
+
 	return new Promise((resolve) => {
 		canvas.toBlob((blob) => {
-			// // console.log(blob);
 			// const compositeImage = new Image();
 			// const url = URL.createObjectURL(blob, 'image/png');
 
@@ -47,7 +45,7 @@ const createLinkForCompositeImage = (canvas, array) => {
 			// };
 
 			// compositeImage.src = url;
-			// console.log(compositeImage);
+
 			resolve(blob);
 		});
 	}, 'image/jpeg');
@@ -55,16 +53,14 @@ const createLinkForCompositeImage = (canvas, array) => {
 
 const createAnimationImageElement = (blobURL, topo) => {
 	const compositeImage = new Image();
-	compositeImage.onload = () => {
-		// URL.revokeObjectURL(blobURL);
-	};
+	compositeImage.onload = () => {};
 
 	compositeImage.src = blobURL;
 	const imageObj = {
 		image: compositeImage,
 		imageInfo: topo.mapName,
 	};
-	// console.log(compositeImage);
+
 	return imageObj;
 };
 
@@ -83,7 +79,7 @@ const drawBackgroundImg = async (basemap, compositeCanvas) => {
 
 		basemapBackgroundContext.src = basemap.url;
 	}).catch((error) => {
-		reject(console.error('error while drawing basemap image to canvas', error));
+		console.error('error while drawing basemap image to canvas', error);
 	});
 };
 
@@ -103,7 +99,7 @@ const drawTopoMap = async (topo, compositeCanvas) => {
 	});
 };
 
-const downloadCompsiteImages = (url) => {
+const downloadCompositeImages = (url) => {
 	//Create an 'a' element that facilitates the image download using the blob URL. Once the download has been initiated, remove the 'a' element and remove the blob URL from memory.
 	const anchor = document.createElement('a');
 
@@ -115,9 +111,7 @@ const downloadCompsiteImages = (url) => {
 };
 
 const deleteCanvasElement = (canvas) => {
-	console.log(canvas);
 	canvas.remove();
-	console.log(canvas);
 };
 
 const revokeBlobDownloadURL = (downloadURL) => {

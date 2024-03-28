@@ -2,6 +2,7 @@ import {
 	addDownloadCancel,
 	removeDownloadIndicator,
 	addAnimationCloseBtn,
+	addDownloadErrorMessage,
 } from '../UI/Animation/animation.js?v=0.01';
 
 const images2VideoClient =
@@ -10,21 +11,17 @@ const images2VideoClient =
 let controller = null;
 
 const cancelAnimationVideo = () => {
-	console.log('cancelling');
 	controller.abort();
 	revertAnimationUIToPreview();
 };
 
 const createAnimationVideo = (params) => {
-	console.log('...downloading');
 	controller = params.abortController;
 	addDownloadCancel();
 
 	images2VideoClient
 		.convertImages2Video(params)
 		.then((response) => {
-			console.log(response);
-
 			const videoURL = URL.createObjectURL(response.fileContent);
 			downloadVideo(params, videoURL, response.filename);
 
@@ -36,6 +33,10 @@ const createAnimationVideo = (params) => {
 			if (error.message.includes('canceled')) {
 				return;
 			}
+			addDownloadErrorMessage();
+			setTimeout(() => {
+				revertAnimationUIToPreview();
+			}, 2000);
 			console.log(error);
 		});
 };
@@ -51,7 +52,6 @@ const revokeCompositeBlobURLs = (compositeData) => {
 };
 
 const downloadVideo = (params, url, filename) => {
-	console.log(url);
 	const anchor = document.createElement('a');
 
 	anchor.href = url;
@@ -59,7 +59,6 @@ const downloadVideo = (params, url, filename) => {
 
 	anchor.click();
 	anchor.remove();
-	console.log(anchor);
 	revokeBlobDownloadURL(url);
 	revokeCompositeBlobURLs(params.data);
 	revertAnimationUIToPreview();
@@ -70,10 +69,9 @@ const revertAnimationUIToPreview = () => {
 	addAnimationCloseBtn();
 };
 
+//Intended to be used as a debugging function. Downloads a file containing the download information to the user.
 const saveDownloadComponents = (params, videoURL, response) => {
 	const imgSources = params.data.map((imgFile) => {
-		console.log(imgFile.image.src);
-		console.log(imgFile.imageInfo);
 		return [imgFile.imageInfo, imgFile.image.src];
 	});
 
@@ -84,12 +82,9 @@ const saveDownloadComponents = (params, videoURL, response) => {
 		animationMP4: videoURL,
 	};
 
-	console.log(components);
-
 	const downloadComponents = encodeURIComponent(JSON.stringify(components));
 	const componentsURL = `data:text/json;charset=utf-8, ${downloadComponents}`;
 
-	console.log('download components', componentsURL);
 	const anchor = document.createElement('a');
 
 	anchor.href = componentsURL;

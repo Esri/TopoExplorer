@@ -30,11 +30,6 @@ import {
 } from '../support/HashParams.js?v=0.01';
 import { resumeExportPrompt } from '../UI/ExportMaps/ExportMapsPrompt.js?v=0.01';
 import { isMobileFormat } from '../UI/EventsAndSelectors/EventsAndSelectors.js?v=0.01';
-import {
-	generateEnvelopeForTopo,
-	isEnvelopeWithinExtent,
-	evaluateItemsBasedOnVisibilityWithinExtent,
-} from '../support/ViableToposWithinExtent.js?v=0.01';
 
 const setURL = () => {
 	return config.environment.serviceUrls.historicalTopoImageService;
@@ -657,7 +652,6 @@ const queryController = {
 };
 
 const checkForMapsVisibleWithinExtent = (topo) => {
-	console.log('checkForMapsVisibleWithinExtent called');
 	require(['esri/geometry/geometryEngine'], (geometryEngine) => {
 		const topoMapLocation = topo.geometry;
 		const intersectingMaps = geometryEngine.intersect(
@@ -672,12 +666,11 @@ const checkForMapsVisibleWithinExtent = (topo) => {
 		const percentOfTopoInExtent = Number.parseFloat(
 			(mapArea / extentArea) * 100
 		).toFixed(2);
-		console.log(mapArea, 'topo map area');
-		console.log(extentArea, 'extent area');
-		console.log(percentOfTopoInExtent + '%', 'percent of topo in extent');
+		// console.log(mapArea, 'topo map area');
+		// console.log(extentArea, 'extent area');
+		// console.log(percentOfTopoInExtent + '%', 'percent of topo in extent');
 
 		if (percentOfTopoInExtent > 20) {
-			console.log('add it');
 			return true;
 		}
 	});

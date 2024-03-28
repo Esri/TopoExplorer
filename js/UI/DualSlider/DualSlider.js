@@ -82,11 +82,9 @@ const initDualSlider = (
 			return values.length - 2;
 		}
 		if (view.zoom >= 7 && view.zoom < 8) {
-			console.log(values.length - 3);
 			return values.length - 3;
 		}
 		if (view.zoom >= 9) {
-			console.log(values.length);
 			return -1;
 		}
 	};

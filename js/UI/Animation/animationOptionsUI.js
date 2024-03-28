@@ -83,6 +83,11 @@ const creatingDownloadHTML = `
                                 </div>
                               </div>
                              `;
+
+const downloadErrorMessageHTML = `
+                                  <span>Creation of MP4 file failed. Sorry for the inconvenience.</span>
+                              `;
+
 const findAspectRatio = (dimension) => {
 	//this function receives a value for width and a value for height, then adjusts the size of mapView
 	//dimensions to create a preview for the download area that reflects the aspect ratio from the given dimensions.
@@ -118,5 +123,6 @@ export {
 	closeAnimationBtnHTML,
 	animationDownloadAspectRatioPreviewElement,
 	creatingDownloadHTML,
+	downloadErrorMessageHTML,
 	findAspectRatio,
 };

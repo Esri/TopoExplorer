@@ -30,7 +30,6 @@ const exploreList = document.querySelector('#exploreList');
 const preventingMapInteractions = () => {
 	const view = queryController.mapView;
 
-	// console.log('still animating');
 	view.on('drag', (event) => {
 		if (isAnimating) {
 			event.stopPropagation();
@@ -245,10 +244,7 @@ exploreList.addEventListener('scroll', () => {
 });
 
 document.addEventListener('click', (event) => {
-	console.log(event.target);
-
 	if (event.target.closest('.modalClose')) {
-		console.log('close modal');
 		removeInfoModal();
 	}
 });
@@ -279,7 +275,7 @@ document.querySelector('#viewDiv').addEventListener('click', (event) => {
 	if (isAnimating && event.target.closest('.cancelAnimationBtn')) {
 		// endAnimation();
 		event.stopImmediatePropagation();
-		console.log('clicked');
+
 		removeCloseAnimationBtn(event);
 		addCancelTextToAnimationLoading();
 		setCancelledStatus(true);
@@ -288,7 +284,7 @@ document.querySelector('#viewDiv').addEventListener('click', (event) => {
 
 	if (isAnimating && event.target.closest('.downloadAnimationBtn')) {
 		event.stopImmediatePropagation();
-		console.log('downloadBox');
+
 		document
 			.querySelector('.downloadOptionsWrapper')
 			.classList.toggle('invisible');
@@ -298,7 +294,7 @@ document.querySelector('#viewDiv').addEventListener('click', (event) => {
 
 	if (event.target.closest('.choice')) {
 		event.stopImmediatePropagation();
-		console.log('choice click');
+
 		checkToposIncludedForDownload();
 		addDownloadingNotification();
 	}

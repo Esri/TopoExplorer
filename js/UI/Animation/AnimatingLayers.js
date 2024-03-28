@@ -19,6 +19,7 @@ import {
 	findTopoLayer,
 	mapHaloGraphicLayer,
 	currentStateOfPinnedList,
+	isTargetPolygonWithExtent,
 } from '../MapCards/ListOfMaps.js?v=0.01';
 import {
 	imageExport,
@@ -127,19 +128,19 @@ const showTopoLayers = () => {
 	});
 };
 
-const isIntersecting = async (cardMapLocation, mapViewExtent) => {
-	return new Promise((resolve, reject) => {
-		require(['esri/geometry/geometryEngine'], (geometryEngine) => {
-			// const createPolygon = Polygon.getExtent(cardMapLocation);
-			let isTopoInView = geometryEngine.intersects(
-				JSON.parse(cardMapLocation),
-				mapViewExtent
-			);
+// const isIntersecting = async (cardMapLocation, mapViewExtent) => {
+// 	return new Promise((resolve, reject) => {
+// 		require(['esri/geometry/geometryEngine'], (geometryEngine) => {
+// 			// const createPolygon = Polygon.getExtent(cardMapLocation);
+// 			let isTopoInView = geometryEngine.intersects(
+// 				JSON.parse(cardMapLocation),
+// 				mapViewExtent
+// 			);
 
-			resolve(isTopoInView);
-		});
-	});
-};
+// 			resolve(isTopoInView);
+// 		});
+// 	});
+// };
 
 const exportingTopoImageAndCreatingImageElement = async () => {
 	//check to see if the map with the oid and it's geometry are within the geometry of the extent
@@ -155,7 +156,7 @@ const exportingTopoImageAndCreatingImageElement = async () => {
 			card.querySelector('.map-list-item .location').textContent
 		} ${card.querySelector('.map-list-item .year').textContent}`;
 
-		if (await isIntersecting(cardMapLocation, queryController.mapView.extent)) {
+		if (isTargetPolygonWithExtent(cardMapLocation)) {
 			await imageExport(cardId, currentOpacity, isCancelled).then(
 				(imageData) => {
 					imageData.isCheckedForAnimation = true;
@@ -182,6 +183,13 @@ const disableMapCardForAnimation = (cardId) => {
 
 const takeScreenshotOfView = () => {
 	return new Promise((resolve, reject) => {
+		for (const animationTopoImage of arrayOfMapImages) {
+			if (animationTopoImage.opacity !== 0) {
+				takeScreenshotOfView();
+				return;
+			}
+		}
+
 		const screenshotQualityValue = 98;
 		const screenshotFormat = 'jpg';
 
@@ -192,18 +200,26 @@ const takeScreenshotOfView = () => {
 			quality: screenshotQualityValue,
 		};
 
-		queryController.mapView.takeScreenshot(options).then(async (screenshot) => {
-			const screenshotResponse = await fetch(screenshot.dataUrl);
-			const blob = URL.createObjectURL(await screenshotResponse.blob());
+		//not sure why, but the screenshot fires while an animating topoMap is visible on the screen.
+		//I don't like this solution, but the only workaround that seems to consistently work is to
+		//wait a moment before taking the snapshot.
+		setTimeout(() => {
+			queryController.mapView
+				.takeScreenshot(options)
+				.then(async (screenshot) => {
+					// startAnimationInterval();
+					const screenshotResponse = await fetch(screenshot.dataUrl);
+					const blob = URL.createObjectURL(await screenshotResponse.blob());
 
-			const basemapImage = {
-				id: 0,
-				url: blob,
-			};
+					const basemapImage = {
+						id: 0,
+						url: blob,
+					};
 
-			imagesForDownload.basemap = basemapImage;
-			resolve();
-		});
+					imagesForDownload.basemap = basemapImage;
+					resolve();
+				});
+		}, 1000);
 	});
 };
 
@@ -219,8 +235,19 @@ const toggleMapCardDownloadAvailability = (mapCardOID) => {
 	});
 };
 
+const clearBasemap = () => {
+	for (const animationTopoImage of arrayOfMapImages) {
+		animationTopoImage.opacity = 0;
+	}
+};
+
 const checkToposIncludedForDownload = async () => {
 	const animationFrames = [];
+	stopAnimationInterval();
+	clearBasemap();
+
+	await takeScreenshotOfView();
+	// startAnimationInterval();
 
 	for (const mapImageData of imagesForDownload.topoImages) {
 		if (mapImageData.isCheckedForAnimation) {
@@ -232,6 +259,7 @@ const checkToposIncludedForDownload = async () => {
 			});
 		}
 	}
+
 	const animationParams = {
 		data: animationFrames,
 		animationSpeed: duration,
@@ -254,7 +282,7 @@ const animationStart = async () => {
 	await exportingTopoImageAndCreatingImageElement();
 	await createMediaLayer();
 	await getAnimatingImages();
-	await takeScreenshotOfView();
+	// await takeScreenshotOfView();
 	startAnimationInterval();
 	removeAnimationLoadingDiv();
 	checkAnimationLoadStatus();
@@ -284,7 +312,7 @@ const animationEnd = () => {
 	showTopoLayers();
 	removeMediaLayer();
 	revokeTopoMapBlobURLs();
-	revokeBasemapBlobURL();
+	// revokeBasemapBlobURL();
 	removeTopoImageElements();
 	removeAnimatingImages();
 	removeImagesForDownload();
@@ -293,7 +321,7 @@ const animationEnd = () => {
 
 const stopAnimationInterval = () => {
 	clearInterval(animationInterval);
-	animationInterval = null;
+	// animationInterval = null;
 };
 
 const revokeTopoMapBlobURLs = () => {

@@ -125,12 +125,9 @@ const createMapSlotItems = (list, view) => {
 			: false;
 
 	const areOtherMapCardsPresent = () => {
-		console.log('checking if list is empty');
 		if (explorerList.querySelectorAll('.map-list-item')[0]) {
-			console.log('true');
 			return true;
 		} else {
-			console.log('flase');
 			return false;
 		}
 	};
@@ -142,8 +139,6 @@ const createMapSlotItems = (list, view) => {
 				index === 0 &&
 				!areOtherMapCardsPresent()
 			) {
-				console.log('putting currently open card on the  top');
-
 				const currentlySelectedMapCard = ` 
         <div class='mapCard-container'>
             ${currentlySelectedMapCardHTML}
@@ -631,7 +626,7 @@ const isCurrentMapPinned = (targetMapCard, callback) => {
 const mapPinningAction = (pinIcon, pinCheckmarkIcon, targetMapCard) => {
 	pinIcon.classList.toggle('pinned');
 	pinCheckmarkIcon.classList.toggle('hidden');
-	// console.log('pinContainer?', pinIcon.closest('.pushpin'));
+
 	// pinIcon.closest('.pushpin').classList.toggle('pinned');
 
 	if (pinIcon.classList.contains('pinned')) {
@@ -1271,5 +1266,6 @@ export {
 	zoomEvent,
 	findTopoLayer,
 	currentStateOfPinnedList,
+	isTargetPolygonWithExtent,
 	mapHaloGraphicLayer,
 };

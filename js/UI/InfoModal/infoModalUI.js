@@ -37,7 +37,6 @@ const displayInfoModal = () => {
 };
 
 const removeInfoModal = () => {
-	console.log('remove');
 	document.querySelector('.infoModalWrapper').remove();
 };
 

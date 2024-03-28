@@ -14,17 +14,8 @@ const setExtentArea = (extent) => {
 let extentArea;
 
 const isEnvelopeWithinExtent = (listOfToposWithEnvelope, extent) => {
-	console.log(listOfToposWithEnvelope);
-	console.log(extent);
 	setExtentArea(extent);
 	const mapList = listOfToposWithEnvelope.map((topo) => {
-		// console.log(topo);
-		// console.log(topo.envelope[0].minX);
-		// console.log(extent.xmin);
-		// console.log(topo.envelope[0].minX >= extent.xmin);
-		// console.log(topo.envelope[0].minY >= extent.ymin);
-		// console.log(topo.envelope[0].maxX <= extent.xmax);
-		// console.log(topo.envelope[0].maxY <= extent.ymax);
 		if (
 			topo.envelope[0].minX >= extent.xmin &&
 			topo.envelope[0].minY >= extent.ymin &&
@@ -36,36 +27,26 @@ const isEnvelopeWithinExtent = (listOfToposWithEnvelope, extent) => {
 			return createAreaOfTopoAndExtent(topo, extent);
 		}
 		if (topo.envelope[0].minX < extent.xmin) {
-			// console.log('new Xmin');
 			topo.envelope[0].minX = extent.xmin;
-			// topo.envelope[0].isWithinExtent = false;
 		}
 		if (topo.envelope[0].minY < extent.ymin) {
-			// console.log('new Ymin');
 			topo.envelope[0].minY = extent.ymin;
-			// topo.envelope[0].isWithinExtent = false;
 		}
 		if (topo.envelope[0].maxX > extent.xmax) {
-			// console.log('new Xmax');
 			topo.envelope[0].maxX = extent.xmax;
-			// topo.envelope[0].isWithinExtent = false;
 		}
 		if (topo.envelope[0].maxY > extent.ymax) {
-			// console.log('new Ymax');
 			topo.envelope[0].maxY = extent.ymax;
-			// topo.envelope[0].isWithinExtent = false;
 		}
 		topo.envelope[0].isWithinExtent = false;
-		// return topo;
+
 		return createAreaOfTopoAndExtent(topo, extent);
 	});
-	console.log(mapList);
-	console.log(mapList.filter((map) => map !== undefined));
+
 	return mapList.filter((map) => map !== undefined);
 };
 
 const createAreaOfTopoAndExtent = (topo, extent) => {
-	console.log(topo);
 	const arrayOfVisibleTopos = [];
 	if (topo.envelope[0].isWithinExtent) {
 		// arrayOfVisibleTopos.push(topo);
@@ -77,11 +58,10 @@ const createAreaOfTopoAndExtent = (topo, extent) => {
 	const topoArea = topoWidth * topoLength;
 
 	const percentOfTopoInExtent = (topoArea / extentArea) * 100;
-	console.log(percentOfTopoInExtent);
+
 	if (percentOfTopoInExtent >= percentageThreshold) {
 		arrayOfVisibleTopos.push(topo);
 		return topo;
-		// return arrayOfVisibleTopos;
 	}
 };
 
@@ -93,10 +73,7 @@ const generateEnvelopeForTopo = (geometry) => {
 		maxY: 0,
 	};
 
-	// console.log(topoEnvelope);
-
 	geometry.map((coordinatePair, index) => {
-		// console.log(index);
 		if (index === 0) {
 			topoEnvelope.minX = coordinatePair[0];
 			topoEnvelope.minY = coordinatePair[1];
