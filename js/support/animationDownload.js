@@ -25,9 +25,9 @@ const createAnimationVideo = (params) => {
 			const videoURL = URL.createObjectURL(response.fileContent);
 			downloadVideo(params, videoURL, response.filename);
 
-			if (window.location.host !== 'livingatlas.arcgis.com') {
-				// saveDownloadComponents(params, videoURL, response);
-			}
+			// if (window.location.host !== 'livingatlas.arcgis.com') {
+			// 	// saveDownloadComponents(params, videoURL, response);
+			// }
 		})
 		.catch((error) => {
 			if (error.message.includes('canceled')) {

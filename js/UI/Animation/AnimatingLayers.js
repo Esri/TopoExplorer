@@ -160,6 +160,7 @@ const exportingTopoImageAndCreatingImageElement = async () => {
 			await imageExport(cardId, currentOpacity, isCancelled).then(
 				(imageData) => {
 					imageData.isCheckedForAnimation = true;
+					imageData.opacity = currentOpacity;
 					imageData.mapName = imageName;
 
 					arrayOfImageData.push(imageData);
@@ -219,7 +220,7 @@ const takeScreenshotOfView = () => {
 					imagesForDownload.basemap = basemapImage;
 					resolve();
 				});
-		}, 1000);
+		}, 500);
 	});
 };
 
@@ -235,7 +236,7 @@ const toggleMapCardDownloadAvailability = (mapCardOID) => {
 	});
 };
 
-const clearBasemap = () => {
+const clearBasemapOfAnimationFrames = () => {
 	for (const animationTopoImage of arrayOfMapImages) {
 		animationTopoImage.opacity = 0;
 	}
@@ -244,10 +245,10 @@ const clearBasemap = () => {
 const checkToposIncludedForDownload = async () => {
 	const animationFrames = [];
 	stopAnimationInterval();
-	clearBasemap();
+	clearBasemapOfAnimationFrames();
 
 	await takeScreenshotOfView();
-	// startAnimationInterval();
+	startAnimationInterval();
 
 	for (const mapImageData of imagesForDownload.topoImages) {
 		if (mapImageData.isCheckedForAnimation) {
@@ -270,7 +271,7 @@ const checkToposIncludedForDownload = async () => {
 	};
 
 	console.log(animationParams);
-	createAnimationVideo(animationParams);
+	// createAnimationVideo(animationParams);
 };
 
 //NOTE: this is the hub for all animation related data is called. So how would you manage these functions if the animation is cancelled during the load? What is the risk condition?
@@ -282,11 +283,9 @@ const animationStart = async () => {
 	await exportingTopoImageAndCreatingImageElement();
 	await createMediaLayer();
 	await getAnimatingImages();
-	// await takeScreenshotOfView();
 	startAnimationInterval();
 	removeAnimationLoadingDiv();
 	checkAnimationLoadStatus();
-	// checkToposIncludedForDownload();
 	return;
 };
 

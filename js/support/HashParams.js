@@ -1,3 +1,6 @@
+import { beginAnimation } from '../UI/Animation/animation.js?v=0.01';
+import { toggleListVisibility } from '../UI/MapCards/ListOfMaps.js?v=0.01';
+
 let parsedHashParams = null;
 
 const parseHashParams = () => {
@@ -47,9 +50,13 @@ const updateHashParams = (data) => {
 		? `&export=${parsedHashParams.export}`
 		: '';
 
+	const animationParams = parsedHashParams.animation
+		? `&animation=${parsedHashParams.animation}`
+		: '';
+
 	const hashString = `maps=${parsedHashParams.maps || ''}&loc=${
 		parsedHashParams.loc
-	}&LoD=${parsedHashParams.LoD}${exportParams}`;
+	}&LoD=${parsedHashParams.LoD}${exportParams}${animationParams}`;
 
 	//replacing the window location with the new information
 	window.location.hash = hashString;
@@ -69,6 +76,34 @@ const addHashExportPrompt = (mapDetails) => {
 		.join(',');
 
 	window.location.hash += `&export=${mapsForExport}`;
+};
+
+const addAnimateStatusHashParam = () => {
+	const animationStatus = `&animation=true`;
+
+	window.location.hash += animationStatus;
+};
+
+const removeAnimationStatusHashParam = () => {
+	console.log('remove', parsedHashParams);
+
+	parseHashParams;
+
+	parsedHashParams.animation = null;
+
+	const hashString = `maps=${parsedHashParams.maps || ''}&loc=${
+		parsedHashParams.loc
+	}&LoD=${parsedHashParams.LoD}`;
+
+	console.log('the new hash', hashString);
+	window.location.hash = hashString;
+};
+
+const animatingStatus = () => {
+	if (parsedHashParams.animation) {
+		toggleListVisibility();
+		beginAnimation();
+	}
 };
 
 const hashCoordinates = () => {
@@ -122,8 +157,11 @@ export {
 	updateHashParams,
 	invertHashedMapOrder,
 	addHashExportPrompt,
+	addAnimateStatusHashParam,
 	activeExport,
+	animatingStatus,
 	removeExportParam,
+	removeAnimationStatusHashParam,
 	hashCoordinates,
 	checkForPreviousTopos,
 	hashLoD,

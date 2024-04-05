@@ -71,89 +71,86 @@ const sortOptions = {
 //this SHOULD be in it's own module. It's getting too large and generalized to be here.
 //also we're messing with some of the UI elements (which you already know), and that's really cluttering this file/module
 const CheckandAdjustScaleSliderHeaderStyle = (availableScaleIndex) => {
-	if (
-		parseInt(maxScaleRangeHandle.value) > parseInt(minScaleRangeHandle.value)
-	) {
-		if (minScaleRangeHandle.value < availableScaleIndex) {
-			document
-				.querySelectorAll('#scales .sliderBtn span')[0]
-				.classList.add('transparency');
-			document
-				.querySelector('#scales .zoomInHelpText')
-				.classList.remove('hidden');
-		} else {
-			if (
-				document.querySelector('#scales .minSlider').value >=
-				availableScaleIndex
-			) {
-				document
-					.querySelectorAll('#scales .sliderBtn span')[0]
-					.classList.remove('transparency');
-
-				document
-					.querySelector('#scales .zoomInHelpText')
-					.classList.add('hidden');
-			}
-		}
-
-		if (maxScaleRangeHandle.value < availableScaleIndex) {
-			document
-				.querySelectorAll('#scales .sliderBtn span')[1]
-				.classList.add('transparency');
-			document
-				.querySelector('#scales .zoomInHelpText')
-				.classList.remove('hidden');
-		} else {
-			if (
-				document.querySelector('#scales .maxSlider').value >=
-				availableScaleIndex
-			) {
-				document
-					.querySelectorAll('#scales .sliderBtn span')[1]
-					.classList.remove('transparency');
-				document
-					.querySelector('#scales .zoomInHelpText')
-					.classList.add('hidden');
-			}
-		}
-	}
-	if (
-		parseInt(maxScaleRangeHandle.value) <= parseInt(minScaleRangeHandle.value)
-	) {
-		if (maxScaleRangeHandle.value >= availableScaleIndex) {
-			document
-				.querySelectorAll('#scales .sliderBtn span')[0]
-				.classList.remove('transparency');
-			document.querySelector('#scales .zoomInHelpText').classList.add('hidden');
-		} else {
-			if (maxScaleRangeHandle.value < availableScaleIndex) {
-				document
-					.querySelectorAll('#scales .sliderBtn span')[0]
-					.classList.add('transparency');
-				document
-					.querySelector('#scales .zoomInHelpText')
-					.classList.remove('hidden');
-			}
-		}
-
-		if (parseInt(minScaleRangeHandle.value) < availableScaleIndex) {
-			document
-				.querySelectorAll('#scales .sliderBtn span')[1]
-				.classList.add('transparency');
-			document
-				.querySelector('#scales .zoomInHelpText')
-				.classList.remove('hidden');
-		} else {
-			if (minScaleRangeHandle.value >= availableScaleIndex) {
-				document
-					.querySelectorAll('#scales .sliderBtn span')[1]
-					.classList.remove('transparency');
-				document
-					.querySelector('#scales .zoomInHelpText')
-					.classList.add('hidden');
-			}
-		}
-	}
+	// if (
+	// 	parseInt(maxScaleRangeHandle.value) > parseInt(minScaleRangeHandle.value)
+	// ) {
+	// 	if (minScaleRangeHandle.value < availableScaleIndex) {
+	// 		document
+	// 			.querySelectorAll('#scales .sliderBtn span')[0]
+	// 			.classList.add('transparency');
+	// 		document
+	// 			.querySelector('#scales .zoomInHelpText')
+	// 			.classList.remove('hidden');
+	// 	} else {
+	// 		if (
+	// 			document.querySelector('#scales .minSlider').value >=
+	// 			availableScaleIndex
+	// 		) {
+	// 			document
+	// 				.querySelectorAll('#scales .sliderBtn span')[0]
+	// 				.classList.remove('transparency');
+	// 			document
+	// 				.querySelector('#scales .zoomInHelpText')
+	// 				.classList.add('hidden');
+	// 		}
+	// 	}
+	// 	if (maxScaleRangeHandle.value < availableScaleIndex) {
+	// 		document
+	// 			.querySelectorAll('#scales .sliderBtn span')[1]
+	// 			.classList.add('transparency');
+	// 		document
+	// 			.querySelector('#scales .zoomInHelpText')
+	// 			.classList.remove('hidden');
+	// 	} else {
+	// 		if (
+	// 			document.querySelector('#scales .maxSlider').value >=
+	// 			availableScaleIndex
+	// 		) {
+	// 			document
+	// 				.querySelectorAll('#scales .sliderBtn span')[1]
+	// 				.classList.remove('transparency');
+	// 			document
+	// 				.querySelector('#scales .zoomInHelpText')
+	// 				.classList.add('hidden');
+	// 		}
+	// 	}
+	// }
+	// if (
+	// 	parseInt(maxScaleRangeHandle.value) <= parseInt(minScaleRangeHandle.value)
+	// ) {
+	// 	if (maxScaleRangeHandle.value >= availableScaleIndex) {
+	// 		document
+	// 			.querySelectorAll('#scales .sliderBtn span')[0]
+	// 			.classList.remove('transparency');
+	// 		document.querySelector('#scales .zoomInHelpText').classList.add('hidden');
+	// 	} else {
+	// 		if (maxScaleRangeHandle.value < availableScaleIndex) {
+	// 			document
+	// 				.querySelectorAll('#scales .sliderBtn span')[0]
+	// 				.classList.add('transparency');
+	// 			document
+	// 				.querySelector('#scales .zoomInHelpText')
+	// 				.classList.remove('hidden');
+	// 		}
+	// 	}
+	// 	if (parseInt(minScaleRangeHandle.value) < availableScaleIndex) {
+	// 		document
+	// 			.querySelectorAll('#scales .sliderBtn span')[1]
+	// 			.classList.add('transparency');
+	// 		document
+	// 			.querySelector('#scales .zoomInHelpText')
+	// 			.classList.remove('hidden');
+	// 	} else {
+	// 		if (minScaleRangeHandle.value >= availableScaleIndex) {
+	// 			document
+	// 				.querySelectorAll('#scales .sliderBtn span')[1]
+	// 				.classList.remove('transparency');
+	// 			document
+	// 				.querySelector('#scales .zoomInHelpText')
+	// 				.classList.add('hidden');
+	// 		}
+	// 	}
+	// }
 };
 
 const yearsAndMapScales = {
@@ -201,12 +198,14 @@ const yearsAndMapScales = {
 		this.scales.minScaleSliderPositionValue =
 			this.scales.allScales[sliderPosition];
 		resetQueryOffsetNumber();
+		updateWhereStatement();
 	},
 	updateMaxScale: function (sliderPosition) {
 		this.scales.maxScale = this.scales.allScales[sliderPosition];
 		this.scales.maxScaleSliderPositionValue =
 			this.scales.allScales[sliderPosition];
 		resetQueryOffsetNumber();
+		updateWhereStatement();
 	},
 
 	setZoomDependentScale: function () {
@@ -451,13 +450,14 @@ const queryController = {
 	].join(','),
 	sortChoice: sortOptions.onlyYear,
 	resultOffset: 0,
-	resultRecordCount: 25,
+	//the result record count was 25.
+	resultRecordCount: '',
 	totalMaps: 0,
 	totalMapsInExtentParams: function () {
 		return new URLSearchParams({
 			where: this.where,
 			geometry: this.geometry,
-			geometryType: 'esriGeometryPolygon',
+			geometryType: 'esriGeometryPoint',
 			spatialRel: this.spatialRelation,
 			inSR: this.inSR,
 			returnCountOnly: true,
@@ -469,7 +469,7 @@ const queryController = {
 		return new URLSearchParams({
 			where: this.where,
 			geometry: this.geometry,
-			geometryType: 'esriGeometryPolygon',
+			geometryType: 'esriGeometryPoint',
 			spatialRel: this.spatialRelation,
 			inSR: this.inSR,
 			returnExtentOnly: true,
@@ -480,13 +480,13 @@ const queryController = {
 		return new URLSearchParams({
 			where: this.where,
 			geometry: this.geometry,
-			geometryType: 'esriGeometryPolygon',
+			geometryType: 'esriGeometryPoint',
 			spatialRel: this.spatialRelation,
 			returnGeometry: true,
 			inSR: this.inSR,
 			outFields: this.queryOutfields,
 			resultOffset: this.resultOffset,
-			resultRecordCount: this.resultRecordCount,
+			// resultRecordCount: this.resultRecordCount,
 			orderByFields: this.sortChoice,
 			f: 'json',
 		});
@@ -507,12 +507,13 @@ const queryController = {
 			})
 			.then((listOfTopos) => {
 				this.resultOffset = this.resultOffset + this.resultRecordCount;
+				updateMapcount(listOfTopos.length);
 				return this.processMapData(listOfTopos);
 			})
 			.then((mapsList) => {
-				if (yearsAndMapScales.setZoomDependentScale() === -1) {
-					return;
-				}
+				// if (yearsAndMapScales.setZoomDependentScale() === -1) {
+				// 	return;
+				// }
 				createMapSlotItems(mapsList, this.mapView);
 				hideSpinnerIcon();
 			})
@@ -524,31 +525,29 @@ const queryController = {
 	//
 	getNewMaps: function () {
 		this.resultOffset = 0;
-		this.resultRecordCount = 25;
+		this.resultRecordCount = '';
 
-		isQueryInProcess = true;
-		clearMapsList(),
-			showSpinnerIcon(),
-			hideMapCount(),
-			numberOfMapsinView(this.url, this.totalMapsInExtentParams())
-				.then((response) => {
-					isQueryInProcess = false;
-					this.totalMaps = response.data.count;
-				})
-				.then(() => {
-					updateMapcount(this.totalMaps);
-					if (
-						!document
-							.querySelector('.explorer-mode.btn-text')
-							.classList.contains('underline')
-					) {
-						hideSpinnerIcon();
-						return;
-					}
-					this.queryMapData();
-					return;
-				});
-		return;
+		// isQueryInProcess = true;
+		clearMapsList(), showSpinnerIcon(), hideMapCount(), this.queryMapData();
+
+		// numberOfMapsinView(this.url, this.totalMapsInExtentParams())
+		// 	.then((response) => {
+		// 		isQueryInProcess = false;
+		// 		this.totalMaps = response.data.count;
+		// 	})
+		// 	.then(() => {
+		// 		updateMapcount(this.totalMaps);
+		// 		if (
+		// 			!document
+		// 				.querySelector('.explorer-mode.btn-text')
+		// 				.classList.contains('underline')
+		// 		) {
+		// 			hideSpinnerIcon();
+		// 			return;
+		// 		}
+		// 		this.queryMapData();
+		// 		return;
+		// 	});
 	},
 	checkAvailableNumberOfMaps: function () {
 		if (this.resultOffset === 0) {
@@ -592,88 +591,63 @@ const queryController = {
 			'esri/geometry/support/webMercatorUtils',
 			'esri/geometry/Polygon',
 		], (webMercatorUtils, Polygon) => {
-			const createPolygon = Polygon.fromExtent(locationData);
+			// const createPolygon = Polygon.fromExtent(locationData);
 
-			const convertPolygonToWGS =
-				webMercatorUtils.webMercatorToGeographic(createPolygon);
+			// const convertPolygonToWGS =
+			// 	webMercatorUtils.webMercatorToGeographic(createPolygon);
 
 			const geographicAdjustedLocation =
 				webMercatorUtils.webMercatorToGeographic(locationData);
 
-			if (geographicAdjustedLocation.xmin > geographicAdjustedLocation.xmax) {
-				geographicAdjustedLocation.xmin -= 360;
-			}
+			// if (geographicAdjustedLocation.xmin > geographicAdjustedLocation.xmax) {
+			// 	geographicAdjustedLocation.xmin -= 360;
+			// }
 
-			const polygon = new Polygon({
-				hasZ: false,
-				hasM: false,
-				rings: [
-					[
-						[
-							geographicAdjustedLocation.xmin.toFixed(6),
-							geographicAdjustedLocation.ymin.toFixed(6),
-						],
-						[
-							geographicAdjustedLocation.xmin.toFixed(6),
-							geographicAdjustedLocation.ymax.toFixed(6),
-						],
-						[
-							geographicAdjustedLocation.xmax.toFixed(6),
-							geographicAdjustedLocation.ymax.toFixed(6),
-						],
-						[
-							geographicAdjustedLocation.xmax.toFixed(6),
-							geographicAdjustedLocation.ymin.toFixed(6),
-						],
-						[
-							geographicAdjustedLocation.xmin.toFixed(6),
-							geographicAdjustedLocation.ymin.toFixed(6),
-						],
-					],
-				],
-				spatialReference: {
-					wkid: 4326,
-				},
-			});
+			// const polygon = new Polygon({
+			// 	hasZ: false,
+			// 	hasM: false,
+			// 	rings: [
+			// 		[
+			// 			[
+			// 				geographicAdjustedLocation.xmin.toFixed(6),
+			// 				geographicAdjustedLocation.ymin.toFixed(6),
+			// 			],
+			// 			[
+			// 				geographicAdjustedLocation.xmin.toFixed(6),
+			// 				geographicAdjustedLocation.ymax.toFixed(6),
+			// 			],
+			// 			[
+			// 				geographicAdjustedLocation.xmax.toFixed(6),
+			// 				geographicAdjustedLocation.ymax.toFixed(6),
+			// 			],
+			// 			[
+			// 				geographicAdjustedLocation.xmax.toFixed(6),
+			// 				geographicAdjustedLocation.ymin.toFixed(6),
+			// 			],
+			// 			[
+			// 				geographicAdjustedLocation.xmin.toFixed(6),
+			// 				geographicAdjustedLocation.ymin.toFixed(6),
+			// 			],
+			// 		],
+			// 	],
+			// 	spatialReference: {
+			// 		wkid: 4326,
+			// 	},
+			// });
 
-			return (queryController.geometry = JSON.stringify(polygon));
+			return (this.geometry = `${geographicAdjustedLocation.x}, ${geographicAdjustedLocation.y}`);
 		});
 	},
 	setSortChoice: function (choiceValue) {
 		return (this.sortChoice = sortOptions[choiceValue]);
 	},
 	extentQueryCall: function () {
-		if (yearsAndMapScales.setZoomDependentScale() === -1) {
-			hideSpinnerIcon();
-			return;
-		}
+		// if (yearsAndMapScales.setZoomDependentScale() === -1) {
+		// 	hideSpinnerIcon();
+		// 	return;
+		// }
 		extentQueryCall(this.url, this.totalMapsInExtentParams());
 	},
-};
-
-const checkForMapsVisibleWithinExtent = (topo) => {
-	require(['esri/geometry/geometryEngine'], (geometryEngine) => {
-		const topoMapLocation = topo.geometry;
-		const intersectingMaps = geometryEngine.intersect(
-			queryController.mapView.extent,
-			topoMapLocation
-		);
-		const mapArea = geometryEngine.planarArea(intersectingMaps, 'square-miles');
-		const extentArea = geometryEngine.planarArea(
-			queryController.mapView.extent,
-			'square-miles'
-		);
-		const percentOfTopoInExtent = Number.parseFloat(
-			(mapArea / extentArea) * 100
-		).toFixed(2);
-		// console.log(mapArea, 'topo map area');
-		// console.log(extentArea, 'extent area');
-		// console.log(percentOfTopoInExtent + '%', 'percent of topo in extent');
-
-		if (percentOfTopoInExtent > 20) {
-			return true;
-		}
-	});
 };
 
 const resetQueryOffsetNumber = () => (queryController.resultOffset = 0);

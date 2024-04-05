@@ -1,4 +1,5 @@
 import { hashCoordinates, hashLoD } from '../support/HashParams.js?v=0.01';
+// import { CenterCrosshair } from '../../public/image/CenterCrosshair.png';
 import { config } from '../../app-config.js?v=0.01';
 const initView = () => {
 	return new Promise((resolve, reject) => {
@@ -85,4 +86,15 @@ const initView = () => {
 	});
 };
 
-export { initView };
+const addVeiwCrosshairs = () => {
+	const crosshairContainer = document.createElement('div');
+	const crosshair = new Image();
+	crosshairContainer.append(crosshair);
+
+	crosshairContainer.classList.add('crosshairContainer');
+	crosshair.src = './public/images/CenterCrosshair.png';
+
+	document.querySelector('#viewDiv').append(crosshairContainer);
+};
+
+export { initView, addVeiwCrosshairs };

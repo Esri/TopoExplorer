@@ -6,6 +6,7 @@ const makeCompositeForAnimationDownload = async (basemap, topo) => {
 	//will create an image that combines the basemap image and each of the topoMap images present in the imagesForDownload obj.
 	//Once the composite is made, on obj with the image and corresponding information will be stored in the imagesForDownload obj's animationImages array
 
+	console.log(topo);
 	return new Promise(async (resolve, reject) => {
 		const viewWidth = queryController.mapView.width;
 		const viewHeight = queryController.mapView.height;
@@ -24,7 +25,7 @@ const makeCompositeForAnimationDownload = async (basemap, topo) => {
 			const url = URL.createObjectURL(blob, 'image/png');
 
 			//this is for testing only. Checks the quality of the recently made composite image
-			//downloadCompositeImages(basemap.url);
+			// downloadCompositeImages(basemap.url);
 
 			resolve(createAnimationImageElement(url, topo));
 		});
@@ -33,19 +34,9 @@ const makeCompositeForAnimationDownload = async (basemap, topo) => {
 
 const createLinkForCompositeImage = (canvas, array) => {
 	//convert the canvas's current image into a URL.
-
+	//canvas.toBlob is an asynchronous method
 	return new Promise((resolve) => {
 		canvas.toBlob((blob) => {
-			// const compositeImage = new Image();
-			// const url = URL.createObjectURL(blob, 'image/png');
-
-			// compositeImage.onload = () => {
-			// 	URL.revokeObjectURL(url);
-			// 	resolve(compositeImage);
-			// };
-
-			// compositeImage.src = url;
-
 			resolve(blob);
 		});
 	}, 'image/jpeg');
@@ -87,6 +78,7 @@ const drawTopoMap = async (topo, compositeCanvas) => {
 	return new Promise((resolve, reject) => {
 		//create an image element linked to the topo. This image will be placed atop the basemap image on the canvas.
 		const topoMap = new Image();
+
 		topoMap.onload = () => {
 			resolve(compositeCanvas.drawImage(topoMap, 0, 0));
 		};

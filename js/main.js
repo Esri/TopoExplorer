@@ -3,7 +3,7 @@ import { isMobileFormat } from './UI/EventsAndSelectors/EventsAndSelectors.js?v=
 import { initSideBar } from './UI/SideBar/sideBar.js?v=0.01';
 import { initMobileHeader } from './UI/MobileMapHeader/mobileMapHeader.js?v=0.01';
 import './UI/MobileMapHeader/mobileMapHeader.js?v=0.01';
-import { initView } from './map/View.js?v=0.01';
+import { initView, addVeiwCrosshairs } from './map/View.js?v=0.01';
 import {
 	queryController,
 	isHashedToposForQuery,
@@ -22,6 +22,7 @@ import {
 } from './UI/ExportMaps/ExportMapsPrompt.js?v=0.01';
 import { initLayerToggle } from './UI/Basemaps/basemaps.js?v=0.01';
 import { setAccountData } from './support/AddItemRequest.js?v=0.01';
+import { animatingStatus } from './support/HashParams.js?v=0.01';
 
 const initApp = async () => {
 	try {
@@ -30,15 +31,15 @@ const initApp = async () => {
 		const sliderValues = await getYearsAndScales(view);
 		const getPreviousTopos = await isHashedToposForQuery(view);
 		const initialMapQuery = () => {
-			queryController.setGeometry(view.extent);
+			queryController.setGeometry(view.extent.center);
 			queryController.mapView = view;
 			queryController.extentQueryCall();
 		};
 
 		view
 			.when(() => {
+				addVeiwCrosshairs();
 				if (oauthResponse) {
-					console.log('from main', oauthResponse);
 					addAccountImage(oauthResponse);
 					setAccountData(oauthResponse);
 				}
@@ -55,6 +56,9 @@ const initApp = async () => {
 				getPreviousTopos;
 			})
 			.then(() => {
+				animatingStatus();
+			})
+			.then(() => {
 				require(['esri/core/reactiveUtils'], (reactiveUtils) => {
 					let prevCenter;
 					let currentZoom;
@@ -67,8 +71,7 @@ const initApp = async () => {
 									return;
 								}
 							}
-
-							queryController.setGeometry(view.extent);
+							queryController.setGeometry(view.extent.center);
 							queryController.mapView = view;
 							queryController.extentQueryCall();
 							updateHashParams(view);
@@ -81,7 +84,7 @@ const initApp = async () => {
 						() => [view.stationary, view.zoom],
 						([stationary, zoom]) => {
 							if (stationary && zoom !== currentZoom) {
-								queryController.setGeometry(view.extent);
+								queryController.setGeometry(view.extent.center);
 								queryController.mapView = view;
 								queryController.extentQueryCall();
 								updateHashParams(view);

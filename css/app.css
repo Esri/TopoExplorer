@@ -55,7 +55,7 @@ main {
 }
 .esri-view .esri-view-surface--inset-outline:focus::after {
   outline: none;
-}‍‍‍
+}
 
 ::-webkit-scrollbar {
   width: 8px; 
@@ -252,6 +252,19 @@ padding: 0 0 3rem 0
 #viewDiv{
   width: 100%;
   position: relative;
+}
+
+.crosshairContainer {
+  position: absolute;
+    z-index: 3;
+    top: 50%;
+    left: 50%;
+    bottom: 50%;
+    right: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    pointer-events: none;
 }
 
 #viewDiv .esri-ui-top-right{

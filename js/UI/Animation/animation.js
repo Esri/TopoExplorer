@@ -11,6 +11,10 @@ import {
 	creatingDownloadHTML,
 	downloadErrorMessageHTML,
 } from './animationOptionsUI.js?v=0.01';
+import {
+	addAnimateStatusHashParam,
+	removeAnimationStatusHashParam,
+} from '../../support/HashParams.js?v=0.01';
 
 //this variable is used to determine if the button events are disabled during animation
 let isAnimating = false;
@@ -31,6 +35,7 @@ const beginAnimation = () => {
 	addAnimationLoading();
 	disableOpacitySlider();
 	//this last function, it's not a good name. Write something clearer.
+	addAnimateStatusHashParam();
 	animationStart();
 };
 
@@ -47,6 +52,7 @@ const endAnimation = () => {
 	enableOpacitySlider();
 	resetAnimateCheckbox();
 	//this last function, it's not a good name. Write something clearer.
+	removeAnimationStatusHashParam();
 	animationEnd();
 };
 

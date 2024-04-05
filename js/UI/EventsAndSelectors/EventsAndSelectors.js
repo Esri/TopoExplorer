@@ -111,8 +111,7 @@ sideBar.addEventListener(
 
 		if (
 			!event.target.closest('.iconWrapper') ||
-			event.target.classList.contains('tooltipText') ||
-			!event.target.closest('.mapCard-slider')
+			event.target.classList.contains('tooltipText')
 		) {
 			document.querySelectorAll('.tooltipText').forEach((tooltip) => {
 				if (tooltip.classList.contains('visible')) {
@@ -239,7 +238,7 @@ exploreList.addEventListener('scroll', () => {
 	}
 
 	if (scrollPosition() < 1) {
-		queryController.checkAvailableNumberOfMaps();
+		// queryController.checkAvailableNumberOfMaps();
 	}
 });
 

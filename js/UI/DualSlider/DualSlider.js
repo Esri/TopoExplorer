@@ -31,9 +31,7 @@ const initDualSlider = (
 						</span> 
             - <span class="headerSpan">${formatNumbersForSliderHeader(max)}
             </span>
-            <span class="tooltipText hidden">Zoom in to see this ${title
-							.substring(0, title.length - 1)
-							.toLowerCase()}</span>
+            
           </p>
         </div>
       </button>
@@ -104,19 +102,19 @@ const initDualSlider = (
 			debounceInput(handle, value);
 		}
 
-		if (
-			minScaleChoice < zoomDependentSelections() &&
-			maxScaleChoice < zoomDependentSelections()
-		) {
-			const noMapsText = `<div class='helpText'>
-      Change your map extent,
-      or adjust filter selections,
-      to find topo maps.
-      </div>
-      `;
-			document.querySelector('.mapCount').innerHTML = 0;
-			document.querySelector('#exploreList').innerHTML = noMapsText;
-		}
+		// if (
+		// 	minScaleChoice < zoomDependentSelections() &&
+		// 	maxScaleChoice < zoomDependentSelections()
+		// ) {
+		// 	const noMapsText = `<div class='helpText'>
+		//   Change your map extent,
+		//   or adjust filter selections,
+		//   to find topo maps.
+		//   </div>
+		//   `;
+		// 	document.querySelector('.mapCount').innerHTML = 0;
+		// 	document.querySelector('#exploreList').innerHTML = noMapsText;
+		// }
 	};
 
 	const sliderComponents = container.querySelector('.inputs');
@@ -161,11 +159,11 @@ const initDualSlider = (
 		sliderOptionsHTMLStr;
 
 	//This querySelector finds the minValue for the Scale slider's header and adds a transparency effect to it. Because the initial value is outside the available range.
-	if (container.querySelectorAll('#scales .sliderBtn span')[0]) {
-		container
-			.querySelectorAll('#scales .sliderBtn span')[0]
-			.classList.add('transparency');
-	}
+	// if (container.querySelectorAll('#scales .sliderBtn span')[0]) {
+	// 	container
+	// 		.querySelectorAll('#scales .sliderBtn span')[0]
+	// 		.classList.add('transparency');
+	// }
 
 	const udpdateSliderHeading = (handle, value, isAvailable) => {
 		let minHeaderSpan = container.querySelectorAll(`.sliderBtn span`)[0];
@@ -180,19 +178,19 @@ const initDualSlider = (
 				values[minRangeHandle.value]
 			);
 
-			if (container.id === 'scales') {
-				if (parseInt(minRangeHandle.value) < zoomDependentSelections()) {
-					maxHeaderSpan.classList.add('transparency');
-				} else {
-					maxHeaderSpan.classList.remove('transparency');
-				}
+			// if (container.id === 'scales') {
+			// 	if (parseInt(minRangeHandle.value) < zoomDependentSelections()) {
+			// 		maxHeaderSpan.classList.add('transparency');
+			// 	} else {
+			// 		maxHeaderSpan.classList.remove('transparency');
+			// 	}
 
-				if (parseInt(maxRangeHandle.value) < zoomDependentSelections()) {
-					minHeaderSpan.classList.add('transparency');
-				} else {
-					minHeaderSpan.classList.remove('transparency');
-				}
-			}
+			// 	if (parseInt(maxRangeHandle.value) < zoomDependentSelections()) {
+			// 		minHeaderSpan.classList.add('transparency');
+			// 	} else {
+			// 		minHeaderSpan.classList.remove('transparency');
+			// 	}
+			// }
 			return;
 		}
 
@@ -204,19 +202,19 @@ const initDualSlider = (
 				values[minRangeHandle.value]
 			);
 
-			if (container.id === 'scales') {
-				if (parseInt(minRangeHandle.value) < zoomDependentSelections()) {
-					minHeaderSpan.classList.add('transparency');
-				} else {
-					minHeaderSpan.classList.remove('transparency');
-				}
+			// if (container.id === 'scales') {
+			// 	if (parseInt(minRangeHandle.value) < zoomDependentSelections()) {
+			// 		minHeaderSpan.classList.add('transparency');
+			// 	} else {
+			// 		minHeaderSpan.classList.remove('transparency');
+			// 	}
 
-				if (parseInt(maxRangeHandle.value) < zoomDependentSelections()) {
-					maxHeaderSpan.classList.add('transparency');
-				} else {
-					maxHeaderSpan.classList.remove('transparency');
-				}
-			}
+			// 	if (parseInt(maxRangeHandle.value) < zoomDependentSelections()) {
+			// 		maxHeaderSpan.classList.add('transparency');
+			// 	} else {
+			// 		maxHeaderSpan.classList.remove('transparency');
+			// 	}
+			// }
 		}
 	};
 
@@ -267,11 +265,11 @@ const initDualSlider = (
 		const zoomInHelpTextElement = document.querySelector(
 			'#scales .zoomInHelpText'
 		);
-		if (value < zoomDependentSelections()) {
-			zoomInHelpTextElement.classList.remove('hidden');
-		} else {
-			zoomInHelpTextElement.classList.add('hidden');
-		}
+		// if (value < zoomDependentSelections()) {
+		// 	zoomInHelpTextElement.classList.remove('hidden');
+		// } else {
+		// 	zoomInHelpTextElement.classList.add('hidden');
+		// }
 	};
 
 	const debounce = (func, wait) => {

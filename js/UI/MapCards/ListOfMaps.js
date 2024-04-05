@@ -545,6 +545,9 @@ const getPinnedTopoIndex = (oid) => {
 };
 
 const checkPinStatusOfSelectedMap = () => {
+	if (!currentlySelectedMapId) {
+		return;
+	}
 	if (pinnedCardIDsArray.indexOf(`${currentlySelectedMapId}`) === -1) {
 		return removeTopoFromMap(currentlySelectedMapId);
 		// closeSelectedMap(currentlySelectedMapId);
@@ -1267,5 +1270,6 @@ export {
 	findTopoLayer,
 	currentStateOfPinnedList,
 	isTargetPolygonWithExtent,
+	toggleListVisibility,
 	mapHaloGraphicLayer,
 };
