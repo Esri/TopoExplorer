@@ -120,9 +120,6 @@ const newMapCrossHair = async (view, mapPoint) => {
 		'esri/symbols/PictureMarkerSymbol',
 		// 'esri/geometry/SpatialReference',
 	], (Point, Graphic, PictureMarkerSymbol) => {
-		// const
-
-		// console.log(view);
 		console.log('calling newMapCrossHair', mapPoint);
 
 		const crosshairGraphicLayer = view.map.layers.items.find((layer) => {
@@ -137,7 +134,7 @@ const newMapCrossHair = async (view, mapPoint) => {
 		// console.log('crosshairLocation', crosshairLocation);
 
 		const mapPointSymbol = new PictureMarkerSymbol({
-			url: './public/images/Crosshair.png',
+			url: './public/images/CrosshairRed.png',
 			width: '44px',
 			height: '44px',
 		});

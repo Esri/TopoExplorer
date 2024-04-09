@@ -39,7 +39,6 @@ const initApp = async () => {
 
 		view
 			.when(() => {
-				// addVeiwCrosshairs();
 				if (oauthResponse) {
 					addAccountImage(oauthResponse);
 					setAccountData(oauthResponse);
