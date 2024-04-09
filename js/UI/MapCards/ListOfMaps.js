@@ -46,6 +46,8 @@ to find topo maps.
 const serviceURL = config.environment.serviceUrls.historicalTopoImageService;
 
 let currentView;
+//This layer contains the crosshair/mapPoint indicator that highlights the user's selection.
+let crosshairLayer;
 //this is the layer is tied to the outline highlighting the map when you hover over the it's corresponding map card
 let mapFootprintLayer;
 //this layer is the border that envelopes the topo map while it is rendered on the map.
@@ -71,6 +73,14 @@ let gettingTopoID;
 const createMapSlotItems = (list, view) => {
 	if (!currentView) {
 		currentView = view;
+	}
+
+	if (!crosshairLayer && view) {
+		crosshairLayer = view.map.layers.find((layer) => {
+			if (layer.title === 'crosshair') {
+				return layer;
+			}
+		});
 	}
 
 	if (!mapFootprintLayer && view) {
@@ -674,6 +684,10 @@ const addTopoToMap = (target, url) => {
 			basemapTerrainLayer,
 			currentView.map.layers.length - 1
 		);
+		currentView.map.layers.reorder(
+			crosshairLayer,
+			currentView.map.layers.length - 1
+		);
 	});
 };
 
@@ -687,6 +701,10 @@ const addPreviouslyPinnedTopoToMap = (target, serviceURL) => {
 		);
 		currentView.map.layers.reorder(
 			basemapTerrainLayer,
+			currentView.map.layers.length - 1
+		);
+		currentView.map.layers.reorder(
+			crosshairLayer,
 			currentView.map.layers.length - 1
 		);
 
@@ -992,6 +1010,10 @@ const reorderMapLayers = () => {
 	);
 
 	currentView.map.layers.reorder(basemapSatellite, 0);
+	currentView.map.layers.reorder(
+		crosshairLayer,
+		currentView.map.layers.length - 1
+	);
 
 	currentView.map.layers.reorder(basemapLables, 1);
 
@@ -1232,7 +1254,7 @@ const endDrag = (event) => {
 	listOfPinnedIDs.forEach((pinCard, index) => {
 		if (pinCard === movingCardItem.attributes.oid.value) {
 			findTopoLayer(movingCardItem.attributes.oid.value).then((movedMap) => {
-				currentView.map.layers.reorder(movedMap, index + 3);
+				currentView.map.layers.reorder(movedMap, index + 4);
 
 				currentView.map.layers.reorder(
 					mapFootprintLayer,
@@ -1241,6 +1263,11 @@ const endDrag = (event) => {
 
 				currentView.map.layers.reorder(
 					basemapTerrainLayer,
+					currentView.map.layers.length - 1
+				);
+
+				currentView.map.layers.reorder(
+					crosshairLayer,
 					currentView.map.layers.length - 1
 				);
 			});
@@ -1272,4 +1299,5 @@ export {
 	isTargetPolygonWithExtent,
 	toggleListVisibility,
 	mapHaloGraphicLayer,
+	crosshairLayer,
 };

@@ -1,6 +1,24 @@
 import { hashCoordinates, hashLoD } from '../support/HashParams.js?v=0.01';
 // import { CenterCrosshair } from '../../public/image/CenterCrosshair.png';
 import { config } from '../../app-config.js?v=0.01';
+
+// const graphicsLayerElement = () => {
+// 	return new Promise((resolve) => {
+// 		require(['esri/layers/GraphicsLayer'], (GraphicsLayer) => {
+// 			const newLayer = new GraphicsLayer();
+// 			console.log(newLayer);
+// 			resolve(newLayer);
+// 		});
+// 	});
+// };
+
+// const testLayer = () => {
+// 	graphicsLayerElement().then((layer) => {
+// 		layer.id = 'test';
+// 		console.log(layer);
+// 	});
+// };
+
 const initView = () => {
 	return new Promise((resolve, reject) => {
 		require([
@@ -28,6 +46,14 @@ const initView = () => {
 				spatialReference: new SpatialReference(config.spatialReference),
 			});
 
+			const crosshairLayer = new GraphicsLayer({
+				id: 'crosshair',
+				title: 'crosshair',
+				graphics: [],
+				// geometry: mapPointGraphic,
+				// symbol: mapPointSymbol,
+			});
+
 			const map = new WebMap({
 				portalItem: {
 					id: config.environment.webMap.webMapItemId,
@@ -50,8 +76,9 @@ const initView = () => {
 				},
 			});
 
-			map.layers.add(haloLayer, map.layers, 2);
-			map.layers.add(footprintLayer, map.layers.length - 1);
+			map.layers.add(haloLayer, 3);
+			map.layers.add(footprintLayer, map.layers.length - 2);
+			map.layers.add(crosshairLayer, map.layers.length - 1);
 
 			const searchWidget = new Search({
 				view: view,
@@ -86,15 +113,75 @@ const initView = () => {
 	});
 };
 
-const addVeiwCrosshairs = () => {
-	const crosshairContainer = document.createElement('div');
-	const crosshair = new Image();
-	crosshairContainer.append(crosshair);
+const newMapCrossHair = async (view, mapPoint) => {
+	require([
+		'esri/geometry/Point',
+		'esri/Graphic',
+		'esri/symbols/PictureMarkerSymbol',
+		// 'esri/geometry/SpatialReference',
+	], (Point, Graphic, PictureMarkerSymbol) => {
+		// const
 
-	crosshairContainer.classList.add('crosshairContainer');
-	crosshair.src = './public/images/CenterCrosshair.png';
+		// console.log(view);
+		console.log('calling newMapCrossHair', mapPoint);
 
-	document.querySelector('#viewDiv').append(crosshairContainer);
+		const crosshairGraphicLayer = view.map.layers.items.find((layer) => {
+			if (layer.id === 'crosshair') {
+				return layer;
+			}
+		});
+
+		crosshairGraphicLayer.graphics.removeAll();
+
+		// const crosshairLocation = await newLocation(mapPoint);
+		// console.log('crosshairLocation', crosshairLocation);
+
+		const mapPointSymbol = new PictureMarkerSymbol({
+			url: './public/images/Crosshair.png',
+			width: '44px',
+			height: '44px',
+		});
+
+		const mapPointGraphic = new Graphic({
+			// geometry: new Point({
+			// 	latitude: mapPoint.latitude,
+			// 	longitude: mapPoint.longitude,
+			// }),
+			symbol: mapPointSymbol,
+			geometry: new Point({
+				latitude: mapPoint.latitude,
+				longitude: mapPoint.longitude,
+			}),
+		});
+
+		crosshairGraphicLayer.graphics.add(mapPointGraphic);
+	});
 };
 
-export { initView, addVeiwCrosshairs };
+// const newLocation = (mapPoint) => {
+// 	return new Promise((resolve, reject) => {
+// 		require([
+// 			'esri/geometry/Point',
+// 			'esri/Graphic',
+// 			'esri/symbols/PictureMarkerSymbol',
+// 			'esri/geometry/SpatialReference',
+// 		], (Point, Graphic, PictureMarkerSymbol, SpatialReference) => {
+// 			// const
+
+// 			const mapPointSymbol = new PictureMarkerSymbol({
+// 				url: './public/images/Crosshair.png',
+// 				width: '44px',
+// 				height: '44px',
+// 			});
+
+// 			const mapPointGraphic = new Graphic({
+// 				geometry: mapPoint,
+// 				symbol: mapPointSymbol,
+// 			});
+
+// 			resolve(mapPointGraphic);
+// 		});
+// 	});
+// };
+
+export { initView, newMapCrossHair };

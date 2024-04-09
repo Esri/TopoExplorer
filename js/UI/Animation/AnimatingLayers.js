@@ -17,6 +17,7 @@ import {
 } from './animation.js?v=0.01';
 import {
 	findTopoLayer,
+	crosshairLayer,
 	mapHaloGraphicLayer,
 	currentStateOfPinnedList,
 	isTargetPolygonWithExtent,
@@ -100,8 +101,16 @@ const hideMapHalos = () => {
 	mapHaloGraphicLayer.visible = false;
 };
 
+const hideCrosshairLayer = () => {
+	crosshairLayer.visible = false;
+};
+
 const showMapHalos = () => {
 	mapHaloGraphicLayer.visible = true;
+};
+
+const showCrosshairLayer = () => {
+	crosshairLayer.visible = true;
 };
 
 //note:I don't like how this works. there has to be a cleaner method
@@ -271,13 +280,14 @@ const checkToposIncludedForDownload = async () => {
 	};
 
 	console.log(animationParams);
-	// createAnimationVideo(animationParams);
+	createAnimationVideo(animationParams);
 };
 
 //NOTE: this is the hub for all animation related data is called. So how would you manage these functions if the animation is cancelled during the load? What is the risk condition?
 //This section should be refactored, the 'awaits' are unnecessary and confusing. But some of the functions associated with these calls have asynchronous behavior (modules, fetch/server calls)
 const animationStart = async () => {
 	setPinListCurrentOrder();
+	hideCrosshairLayer();
 	hideTopoLayers();
 	hideMapHalos();
 	await exportingTopoImageAndCreatingImageElement();
@@ -309,6 +319,7 @@ const animationEnd = () => {
 	removeHighlight();
 	showMapHalos();
 	showTopoLayers();
+	showCrosshairLayer();
 	removeMediaLayer();
 	revokeTopoMapBlobURLs();
 	// revokeBasemapBlobURL();
