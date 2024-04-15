@@ -126,6 +126,15 @@ sideBar.addEventListener(
 				.querySelector('.tooltipText')
 				.classList.add('visible');
 		}
+
+		if (event.target.closest('.infoIcon')) {
+			console.log('info');
+			console.log(event.target.closest('.infoIcon'));
+			event.target
+				.closest('.infoIcon')
+				.querySelector('.tooltipText')
+				.classList.add('visible');
+		}
 	},
 	true
 );

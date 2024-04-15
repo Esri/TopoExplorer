@@ -2,7 +2,7 @@ const sortBtn = document.querySelector('.sortOrder');
 const sortOptions = sortBtn.querySelector('.sortOptions');
 const sortChoices = sortOptions.querySelectorAll('a');
 
-const sortChoice = (callBack) => {
+const initSortChoice = (setSortChoice, filterList) => {
 	sortBtn.addEventListener('click', (event) => {
 		document.querySelectorAll('.sliderElement').forEach((filterSlider) => {
 			!filterSlider.classList.contains('invisible')
@@ -15,6 +15,16 @@ const sortChoice = (callBack) => {
 			: sortOptions.classList.add('invisible');
 	});
 
+	//this forEach calls and sets the default sort order for the list of map cards.
+	const defaultChoice = sortChoices.forEach((choice) => {
+		console.log(choice.classList.contains('bold'));
+		if (choice.classList.contains('bold')) {
+			console.log(choice.attributes.value.value);
+			const choiceValue = choice.attributes.value.value;
+			setSortChoice(choiceValue);
+		}
+	});
+
 	//selecting a new sort option
 	sortChoices.forEach((choice) => {
 		choice.addEventListener('click', (event) => {
@@ -25,13 +35,14 @@ const sortChoice = (callBack) => {
 			});
 
 			event.target.classList.add('bold');
-
-			callBack(event.target.attributes.value.value);
+			// console.log(event.target.attributes.value.value);
+			setSortChoice(event.target.attributes.value.value);
+			filterList();
 		});
 	});
 };
 
-// if the user clicks anywhere ouside of the sort-choice element, close the sort-choice element
+// if the user clicks anywhere outside of the sort-choice element, close the sort-choice element
 document.addEventListener('click', (event) => {
 	if (!event.target.closest('.sortOrder')) {
 		!sortOptions.classList.contains('invisible')
@@ -40,4 +51,4 @@ document.addEventListener('click', (event) => {
 		return;
 	}
 });
-export { sortChoice };
+export { initSortChoice };

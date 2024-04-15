@@ -351,6 +351,7 @@ border-radius: 0;
 }
 
 #viewDiv .esri-ui-bottom-right.esri-ui-corner #layerToggle {
+  cursor: default;
   height: 2.5rem;
   width: 20rem;
   justify-content: space-evenly;

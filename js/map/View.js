@@ -113,7 +113,7 @@ const initView = () => {
 	});
 };
 
-const newMapCrossHair = async (view, mapPoint) => {
+const newMapCrossHair = (view, mapPoint) => {
 	require([
 		'esri/geometry/Point',
 		'esri/Graphic',
@@ -130,9 +130,6 @@ const newMapCrossHair = async (view, mapPoint) => {
 
 		crosshairGraphicLayer.graphics.removeAll();
 
-		// const crosshairLocation = await newLocation(mapPoint);
-		// console.log('crosshairLocation', crosshairLocation);
-
 		const mapPointSymbol = new PictureMarkerSymbol({
 			url: './public/images/CrosshairRed.png',
 			width: '44px',
@@ -140,10 +137,6 @@ const newMapCrossHair = async (view, mapPoint) => {
 		});
 
 		const mapPointGraphic = new Graphic({
-			// geometry: new Point({
-			// 	latitude: mapPoint.latitude,
-			// 	longitude: mapPoint.longitude,
-			// }),
 			symbol: mapPointSymbol,
 			geometry: new Point({
 				latitude: mapPoint.latitude,
@@ -154,31 +147,5 @@ const newMapCrossHair = async (view, mapPoint) => {
 		crosshairGraphicLayer.graphics.add(mapPointGraphic);
 	});
 };
-
-// const newLocation = (mapPoint) => {
-// 	return new Promise((resolve, reject) => {
-// 		require([
-// 			'esri/geometry/Point',
-// 			'esri/Graphic',
-// 			'esri/symbols/PictureMarkerSymbol',
-// 			'esri/geometry/SpatialReference',
-// 		], (Point, Graphic, PictureMarkerSymbol, SpatialReference) => {
-// 			// const
-
-// 			const mapPointSymbol = new PictureMarkerSymbol({
-// 				url: './public/images/Crosshair.png',
-// 				width: '44px',
-// 				height: '44px',
-// 			});
-
-// 			const mapPointGraphic = new Graphic({
-// 				geometry: mapPoint,
-// 				symbol: mapPointSymbol,
-// 			});
-
-// 			resolve(mapPointGraphic);
-// 		});
-// 	});
-// };
 
 export { initView, newMapCrossHair };

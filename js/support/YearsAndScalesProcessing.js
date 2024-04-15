@@ -1,13 +1,19 @@
 import {
-	yearsAndMapScales,
+	queryController,
 	getMinYear,
 	getMaxYear,
 	getMinScale,
 	getMaxScale,
 } from './queryController.js?v=0.01';
-import { queryController } from './queryController.js?v=0.01';
 import { initDualSlider } from '../UI/DualSlider/DualSlider.js?v=0.01';
-import { sortChoice } from '../UI/Sort/Sort.js?v=0.01';
+import { initSortChoice } from '../UI/Sort/Sort.js?v=0.01';
+import {
+	filterMaps,
+	setFilterValues,
+} from '../UI/MapCards/ListOfMaps.js?v=0.01';
+
+let scaleSelections = null;
+let yearSelections = null;
 
 const allYearChoices = (minMaxYears) => {
 	return new Promise((resolve, reject) => {
@@ -40,84 +46,77 @@ const allScaleChoices = (minMaxScales) => {
 	});
 };
 
-const getMinMaxyears = Promise.all([getMinYear, getMaxYear]);
+const getMinMaxYears = Promise.all([getMinYear, getMaxYear]);
 const getMinMaxScales = Promise.all([getMinScale, getMaxScale]);
 
-const minMaxYears = getMinMaxyears;
+const minMaxYears = getMinMaxYears;
 const minMaxScales = getMinMaxScales;
 
-const getTheYear = (index, value) => {
-	const minYearSlider = document.querySelector('#years .minSlider');
-	const maxYearSlider = document.querySelector('#years .maxSlider');
-
-	if (parseInt(minYearSlider.value) > parseInt(maxYearSlider.value)) {
-		yearsAndMapScales.updateMinYear(maxYearSlider.value);
-		yearsAndMapScales.updateMaxYear(minYearSlider.value);
-		queryController.extentQueryCall();
-		return;
-	}
-
-	if (parseInt(minYearSlider.value) <= parseInt(maxYearSlider.value)) {
-		yearsAndMapScales.updateMaxYear(maxYearSlider.value);
-		yearsAndMapScales.updateMinYear(minYearSlider.value);
-		queryController.extentQueryCall();
-		return;
-	}
+const filterTheYear = (minYear, maxYear) => {
+	console.log('years slider', minYear, maxYear);
+	setYearSelections(minYear, maxYear);
+	const minScale = scaleSelections[0];
+	const maxScale = scaleSelections[1];
+	// console.log('years was called heres the scale', scaleSelections);
+	setFilterValues(minYear, maxYear, minScale, maxScale);
+	filterMaps();
 };
 
-const getTheScale = (index, value) => {
-	const minScaleSlider = document.querySelector('#scales .minSlider');
-	const maxScaleSlider = document.querySelector('#scales .maxSlider');
-
-	if (parseInt(minScaleSlider.value) > parseInt(maxScaleSlider.value)) {
-		yearsAndMapScales.updateMinScale(maxScaleSlider.value);
-		yearsAndMapScales.updateMaxScale(minScaleSlider.value);
-		queryController.extentQueryCall();
-		return;
-	}
-
-	if (parseInt(minScaleSlider.value) <= parseInt(maxScaleSlider.value)) {
-		yearsAndMapScales.updateMaxScale(maxScaleSlider.value);
-		yearsAndMapScales.updateMinScale(minScaleSlider.value);
-		queryController.extentQueryCall();
-		return;
-	}
+const filterTheScale = (minScale, maxScale) => {
+	console.log('scale slider', minScale, maxScale);
+	setScaleSelections(minScale, maxScale);
+	const minYear = yearSelections[0];
+	const maxYear = yearSelections[1];
+	console.log(yearSelections);
+	setFilterValues(minYear, maxYear, minScale, maxScale);
+	filterMaps();
 };
 
-const setSortOptions = (choiceValue) => {
-	queryController.setSortChoice(choiceValue);
-	queryController.extentQueryCall();
+// const setSortOptions = (choiceValue) => {
+// 	// queryController.setSortChoice(choiceValue);
+// 	// queryController.extentQueryCall();
+// 	console.log('sort Callback', choiceValue);
+// };
+
+// initSortChoice(setSortOptions);
+
+const setScaleSelections = (minScale, maxScale) => {
+	scaleSelections = [minScale, maxScale];
 };
 
-sortChoice(setSortOptions);
+const setYearSelections = (minYear, maxYear) => {
+	yearSelections = [minYear, maxYear];
+};
 
 const getYearsAndScales = async (view) => {
 	await minMaxYears.then((minMaxYears) => {
 		allYearChoices(minMaxYears).then((years) => {
-			yearsAndMapScales.setMinMaxYears(years);
+			// yearsAndMapScales.setMinMaxYears(years);
 			initDualSlider(
 				'years',
 				'YEARS',
-				getTheYear,
+				filterTheYear,
 				years,
 				years[0],
 				years[years.length - 1],
 				view
 			);
+			setYearSelections(years[0], years[years.length - 1]);
 		});
 	}),
 		await minMaxScales.then((minMaxScales) => {
 			allScaleChoices(minMaxScales).then((scales) => {
-				yearsAndMapScales.setMinMaxMapScales(scales);
+				// yearsAndMapScales.setMinMaxMapScales(scales);
 				initDualSlider(
 					'scales',
 					'SCALES',
-					getTheScale,
+					filterTheScale,
 					scales,
 					scales[0],
 					scales[scales.length - 1],
 					view
 				);
+				setScaleSelections(scales[0], scales[scales.length - 1]);
 			});
 		});
 };

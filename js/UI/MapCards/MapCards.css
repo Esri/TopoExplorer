@@ -164,7 +164,7 @@ cursor: -webkit-grabbing;
 .map-list-item-title{
   margin: auto 0;
   /* width: 200px; */
-  line-height: 1.5rem;
+  line-height: 1.1rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
