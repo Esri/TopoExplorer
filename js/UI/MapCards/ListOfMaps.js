@@ -646,6 +646,8 @@ const isTargetPolygonWithExtent = (currentlySelectedMapGeometry) => {
 		? JSON.parse(currentlySelectedMapGeometry)
 		: null;
 
+	const currentExtent = currentView.extent.normalize();
+
 	if (!currentlySelectedMapGeometryObj) {
 		return;
 	}
@@ -656,6 +658,10 @@ const isTargetPolygonWithExtent = (currentlySelectedMapGeometry) => {
 		xmin: null,
 		ymin: null,
 	};
+
+	console.log(currentlySelectedMapGeometryObj);
+	console.log(currentView.extent);
+	console.log(currentExtent);
 
 	currentlySelectedMapGeometryObj.rings[0].map((coordinates, index) => {
 		if (index === 0) {
@@ -679,11 +685,20 @@ const isTargetPolygonWithExtent = (currentlySelectedMapGeometry) => {
 		}
 	});
 
+	console.log(topoExtent);
+	console.log(currentExtent[0].xmax);
+	console.log(currentExtent[0].ymax);
+
+	console.log(topoExtent.ymax >= currentExtent[0].ymin);
+	console.log(topoExtent.ymin <= currentExtent[0].ymax);
+	console.log(topoExtent.xmax >= currentExtent[0].xmin);
+	console.log(topoExtent.xmin <= currentExtent[0].xmax);
+
 	if (
-		topoExtent.ymax >= currentView.extent.ymin &&
-		topoExtent.ymin <= currentView.extent.ymax &&
-		topoExtent.xmax >= currentView.extent.xmin &&
-		topoExtent.xmin <= currentView.extent.xmax
+		topoExtent.ymax >= currentExtent[0].ymin &&
+		topoExtent.ymin <= currentExtent[0].ymax &&
+		topoExtent.xmax >= currentExtent[0].xmin &&
+		topoExtent.xmin <= currentExtent[0].xmax
 	) {
 		return true;
 	}

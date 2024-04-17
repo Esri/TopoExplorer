@@ -36,7 +36,11 @@ import {
 import { makeCompositeForAnimationDownload } from '../../support/AnimationComposite.js?v=0.01';
 import { createAnimationVideo } from '../../support/animationDownload.js?v=0.01';
 
-const applicationName = 'Topo Map Explorer';
+let videoExportName;
+
+const setVideoExportName = (string) => {
+	videoExportName = string;
+};
 const animationSpeedSlider = document.querySelector('.animation-speed-value');
 
 let isCancelled = false;
@@ -102,6 +106,12 @@ const hideMapHalos = () => {
 };
 
 const hideCrosshairLayer = () => {
+	if (!crosshairLayer) {
+		setTimeout(() => {
+			hideCrosshairLayer();
+		}, 100);
+		return;
+	}
 	crosshairLayer.visible = false;
 };
 
@@ -275,7 +285,7 @@ const checkToposIncludedForDownload = async () => {
 		animationSpeed: duration,
 		outputWidth: animationDimensions.width,
 		outputHeight: animationDimensions.height,
-		authoringApp: applicationName,
+		authoringApp: videoExportName,
 		abortController: new AbortController(),
 	};
 
@@ -296,6 +306,7 @@ const animationStart = async () => {
 	startAnimationInterval();
 	removeAnimationLoadingDiv();
 	checkAnimationLoadStatus();
+	// console.log('name', getApplicationName());
 	return;
 };
 
@@ -418,4 +429,5 @@ export {
 	toggleMapCardDownloadAvailability,
 	checkToposIncludedForDownload,
 	setAnimationDimensions,
+	setVideoExportName,
 };

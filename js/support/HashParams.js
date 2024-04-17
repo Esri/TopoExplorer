@@ -81,6 +81,9 @@ const addHashExportPrompt = (mapDetails) => {
 };
 
 const addAnimateStatusHashParam = () => {
+	if (parsedHashParams.animation) {
+		return;
+	}
 	const animationStatus = `&animation=true`;
 
 	window.location.hash += animationStatus;

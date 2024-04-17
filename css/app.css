@@ -249,10 +249,28 @@ padding: 0 0 3rem 0
   text-align: right;
 }
 
+.animation-title {
+  width: 100%;
+  height: 2rem;
+  padding: 0.5rem;
+  background-color: #EAEEF1;
+  box-shadow: inset -6px -6px 6px #FFFFFF, inset 6px 6px 8px #B8C2D3;
+  border-radius: 6px;
+  border: none;
+}
+
+.animation-title div {
+  padding: 0.7rem;
+}
+
 #viewDiv{
   width: 100%;
   position: relative;
   cursor: url('../public/images/CrosshairWhite.png') 22 22, crosshair;
+}
+
+#viewDiv .mapAnimationOverlay {
+  cursor: default;
 }
 
 .crosshairContainer {
@@ -320,7 +338,7 @@ padding: 0 0 3rem 0
 }
 
 #viewDiv .esri-ui-corner .esri-component {
-  
+  cursor: default;
   background-color: transparent;
   border-radius: 12px 12px 12px 12px;
   box-shadow: 4px 4px 6px #111111;

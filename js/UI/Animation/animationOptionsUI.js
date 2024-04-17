@@ -57,10 +57,13 @@ const closeAnimationBtnHTML = `
                                     </div>
                                   </div>                                
 <div class='downloadOptionsWrapper invisible'>
-                                  <div class='downloadOptions' style='padding:20px'>
+                                  <div class='downloadOptions' style='padding:10px'>
                                     ${downloadOptionsHTML}
+                                    <div style='padding 1rem 0 0'>
+                                      <label for"animation-title" style='font-size:0.9rem;'> <em>Optional title (45 character max)</em> </label>
+                                      <input class='animation-title' id='animation-title' type='text' placeholder='Topo Map Explorer' minlength="0" maxlength="45"/>
+                                    </div>
                                   </div>
-                                  
                                 </div>
                               `;
 

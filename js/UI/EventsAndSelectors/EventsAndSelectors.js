@@ -12,6 +12,7 @@ import {
 import {
 	setCancelledStatus,
 	checkToposIncludedForDownload,
+	setVideoExportName,
 } from '../Animation/AnimatingLayers.js?v=0.01';
 import { findAspectRatio } from '../Animation/animationOptionsUI.js?v=0.01';
 import {
@@ -303,8 +304,15 @@ document.querySelector('#viewDiv').addEventListener('click', (event) => {
 	if (event.target.closest('.choice')) {
 		event.stopImmediatePropagation();
 
+		const videoName = document.getElementById('animation-title').value
+			? document.getElementById('animation-title').value
+			: 'Topo Map Explorer';
+		console.log(videoName);
+		console.log(document.getElementById('animation-title'));
 		checkToposIncludedForDownload();
 		addDownloadingNotification();
+
+		setVideoExportName(videoName);
 	}
 
 	if (event.target.closest('.mapAnimationOverlay a')) {

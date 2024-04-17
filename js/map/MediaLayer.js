@@ -48,13 +48,16 @@ const createImageElementForMediaLayer = async (imageData) => {
 			'esri/layers/support/ExtentAndRotationGeoreference',
 			'esri/geometry/Extent',
 		], (ImageElement, ExtentAndRotationGeoreference, Extent) => {
+			const mapExtent = queryController.mapView.extent.clone().normalize()[0];
+
+			console.log(mapExtent);
 			const imageElement = new ImageElement({
 				id: imageData.id,
 				image: imageData.url,
 				opacity: 0,
 				// effect: 'drop-shadow(0px, 0px, 8px, black)',
 				georeference: new ExtentAndRotationGeoreference({
-					extent: queryController.mapView.extent,
+					extent: mapExtent,
 				}),
 			});
 
