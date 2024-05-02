@@ -63,7 +63,7 @@ const imageExport = async (oid, opacity, isCancelled) => {
 	});
 
 	const params = new URLSearchParams({
-		bbox: JSON.stringify(queryController.mapView.extent),
+		bbox: JSON.stringify(queryController.mapView.extent.clone().normalize()[0]),
 		size: exportImageSize,
 		bboxSR: '102100',
 		imageSR: '102100',

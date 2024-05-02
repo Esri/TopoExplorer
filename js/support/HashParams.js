@@ -19,7 +19,7 @@ const parseHashParams = () => {
 		}, {});
 };
 
-const updateHashParams = (data) => {
+const updateHashParams = (data, zoomLevel) => {
 	if (Array.isArray(data)) {
 		parsedHashParams.maps = data.join(',');
 
@@ -40,10 +40,12 @@ const updateHashParams = (data) => {
 		);
 		return;
 	} else {
-		parsedHashParams.loc = `${data.center.longitude.toFixed(
+		console.log(data);
+
+		parsedHashParams.loc = `${data.longitude.toFixed(
 			2
-		)},${data.center.latitude.toFixed(2)}`;
-		parsedHashParams.LoD = data.zoom.toFixed(2);
+		)},${data.latitude.toFixed(2)}`;
+		parsedHashParams.LoD = zoomLevel.toFixed(2);
 	}
 
 	const exportParams = parsedHashParams.export
@@ -79,6 +81,9 @@ const addHashExportPrompt = (mapDetails) => {
 };
 
 const addAnimateStatusHashParam = () => {
+	if (parsedHashParams.animation) {
+		return;
+	}
 	const animationStatus = `&animation=true`;
 
 	window.location.hash += animationStatus;
@@ -100,10 +105,12 @@ const removeAnimationStatusHashParam = () => {
 };
 
 const animatingStatus = () => {
+	console.log(parsedHashParams.animation);
 	if (parsedHashParams.animation) {
 		toggleListVisibility();
 		beginAnimation();
 	}
+	return;
 };
 
 const hashCoordinates = () => {

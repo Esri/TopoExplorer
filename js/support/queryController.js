@@ -1,5 +1,5 @@
 //NOTE: This whole file has gotten out of hand, a lot of elements need to be reviewed to make a more effecive refactor..
-//this is cerainly not an ideal layout, but I want to see what other additions I may have to add before I look at refactoring
+//this is certainly not an ideal layout, but I want to see what other additions I may have to add before I look at refactoring
 //At the risk of being redundant: I want to know what this file is doing before I try to refactor it.
 //TIP: this file should have as little involvement as possible with the UI.
 import { config } from '../../app-config.js?v=0.01';
@@ -16,13 +16,17 @@ import {
 } from './Query.js?v=0.01';
 import {
 	hideMapCount,
-	updateMapcount,
+	// updateMapcount,
 	showSpinnerIcon,
 	hideSpinnerIcon,
 } from './MapCount.js?v=0.01';
 import {
 	clearMapsList,
+	// setMapListData,
 	createMapSlotItems,
+	makeCards,
+	setNumberOfPreviousTopos,
+	removeUnpinnedTopo,
 } from '../UI/MapCards/ListOfMaps.js?v=0.01';
 import {
 	checkForPreviousTopos,
@@ -49,14 +53,21 @@ const mapScale = 'Map_Scale';
 const mapCenterX = 'CenterX';
 const mapCenterY = 'CenterY';
 const mapDownloadLink = 'DownloadG';
+const surveyYear = 'Survey_Year';
+const photoYear = 'Aerial_Photo_Year';
+const photoRevisionYear = 'Photo_Revision';
+const fieldCheckYear = 'Field_Check_Year';
+const projection = 'Projection';
+const datum = 'Datum';
+const citation = 'Citation';
 
 //This isn't exactly pretty, but it's a first step in moving this information
 const getMinYear = findMinYear(`${url}/query`);
 const getMaxYear = findMaxYear(`${url}/query`);
 const getMinScale = findMinScale(`${url}/query`);
 const getMaxScale = findMaxScale(`${url}/query`);
-let minScaleRangeHandle;
-let maxScaleRangeHandle;
+// let minScaleRangeHandle;
+// let maxScaleRangeHandle;
 
 const sortOptions = {
 	onlyYear: `${mapYear} ASC`,
@@ -167,273 +178,273 @@ const yearsAndMapScales = {
 		minScaleSliderPositionValue: '',
 	},
 	setMinMaxYears: function (years) {
-		return (
-			(this.years.allYears = years),
-			(this.years.minYear = years[0]),
-			(this.years.maxYear = years[years.length - 1])
-		);
+		// return (
+		// 	(this.years.allYears = years),
+		// 	(this.years.minYear = years[0]),
+		// 	(this.years.maxYear = years[years.length - 1])
+		// );
 	},
 	updateMinYear: function (sliderPosition) {
-		this.years.minYear = this.years.allYears[sliderPosition];
-		updateWhereStatement();
-		resetQueryOffsetNumber();
+		// this.years.minYear = this.years.allYears[sliderPosition];
+		// updateWhereStatement();
+		// resetQueryOffsetNumber();
 	},
 	updateMaxYear: function (sliderPosition) {
-		this.years.maxYear = this.years.allYears[sliderPosition];
-		updateWhereStatement();
-		resetQueryOffsetNumber();
+		// this.years.maxYear = this.years.allYears[sliderPosition];
+		// updateWhereStatement();
+		// resetQueryOffsetNumber();
 	},
 
 	setMinMaxMapScales: function (mapScales) {
-		return (
-			(this.scales.allScales = mapScales),
-			(this.scales.minScale = mapScales[0]),
-			(this.scales.maxScale = mapScales[mapScales.length - 1]),
-			(this.scales.minScaleSliderPositionValue = this.scales.minScale),
-			(this.scales.maxScaleSliderPositionValue = this.scales.maxScale)
-		);
+		// return (
+		// 	(this.scales.allScales = mapScales),
+		// 	(this.scales.minScale = mapScales[0]),
+		// 	(this.scales.maxScale = mapScales[mapScales.length - 1]),
+		// 	(this.scales.minScaleSliderPositionValue = this.scales.minScale),
+		// 	(this.scales.maxScaleSliderPositionValue = this.scales.maxScale)
+		// );
 	},
 	updateMinScale: function (sliderPosition) {
-		this.scales.minScale = this.scales.allScales[sliderPosition];
-		this.scales.minScaleSliderPositionValue =
-			this.scales.allScales[sliderPosition];
-		resetQueryOffsetNumber();
-		updateWhereStatement();
+		// this.scales.minScale = this.scales.allScales[sliderPosition];
+		// this.scales.minScaleSliderPositionValue =
+		// 	this.scales.allScales[sliderPosition];
+		// resetQueryOffsetNumber();
+		// updateWhereStatement();
 	},
 	updateMaxScale: function (sliderPosition) {
-		this.scales.maxScale = this.scales.allScales[sliderPosition];
-		this.scales.maxScaleSliderPositionValue =
-			this.scales.allScales[sliderPosition];
-		resetQueryOffsetNumber();
-		updateWhereStatement();
-	},
-
-	setZoomDependentScale: function () {
-		//this is the logic to determine what maps scales are available at certain zoom levels (which determines what slider values are available).
-		const zoomLevel = Math.round(queryController.mapView.zoom);
-		const scaleHeaders = document.querySelector('#scales .headers');
-		minScaleRangeHandle = document.querySelector('#scales .minSlider');
-		maxScaleRangeHandle = document.querySelector('#scales .maxSlider');
-		const scaleTicks = document.querySelectorAll('#scales .tick');
-		const scaleNumber = document.querySelector('#scales .minSliderValue');
-
-		//no restrictions on zoom level -- all scales (and all slider choices are available)
-		if (zoomLevel >= 9) {
-			scaleNumber.classList.remove('transparency');
-			scaleTicks.forEach((tickMark) =>
-				tickMark.classList.remove('transparency')
-			);
-
-			if (
-				parseInt(maxScaleRangeHandle.value) <
-				parseInt(minScaleRangeHandle.value)
-			) {
-				this.scales.maxScale = this.scales.allScales[minScaleRangeHandle.value];
-				this.scales.minScale = this.scales.allScales[maxScaleRangeHandle.value];
-			}
-
-			if (
-				parseInt(maxScaleRangeHandle.value) >
-				parseInt(minScaleRangeHandle.value)
-			) {
-				this.scales.maxScale = this.scales.allScales[maxScaleRangeHandle.value];
-				this.scales.minScale = this.scales.allScales[minScaleRangeHandle.value];
-			}
-
-			CheckandAdjustScaleSliderHeaderStyle(0);
-			updateWhereStatement();
-		}
-		//if zoom-level is between 7 & 8, map scales from 1:65k-1:250k are available
-		if (zoomLevel === 7 || zoomLevel === 8) {
-			//sets the transparency style for the tick marks, tooltip and numbers
-
-			scaleNumber.classList.add('transparency');
-			scaleTicks.forEach((tickMark, index) => {
-				if (index < scaleTicks.length - 3) {
-					tickMark.classList.add('transparency');
-				} else {
-					tickMark.classList.remove('transparency');
-				}
-			});
-
-			if (
-				parseInt(maxScaleRangeHandle.value) <
-				parseInt(minScaleRangeHandle.value)
-			) {
-				this.scales.maxScale = this.scales.allScales[minScaleRangeHandle.value];
-				this.scales.minScale = this.scales.allScales[maxScaleRangeHandle.value];
-			}
-
-			if (
-				parseInt(maxScaleRangeHandle.value) >
-				parseInt(minScaleRangeHandle.value)
-			) {
-				this.scales.maxScale = this.scales.allScales[maxScaleRangeHandle.value];
-				this.scales.minScale = this.scales.allScales[minScaleRangeHandle.value];
-			}
-
-			if (
-				this.scales.allScales[maxScaleRangeHandle.value] <
-					this.scales.allScales[2] &&
-				this.scales.allScales[minScaleRangeHandle.value] <
-					this.scales.allScales[2]
-			) {
-				updateWhereStatement();
-				const noMapsText = `<div class='helpText'>
-      Change your map extent,
-      or adjust filter selections,
-      to find topo maps.
-      </div>
-      `;
-				CheckandAdjustScaleSliderHeaderStyle(2);
-
-				document.querySelector('.mapCount').innerHTML = 0;
-				document.querySelector('#exploreList').innerHTML = noMapsText;
-				return -1;
-			}
-
-			//this ternary is checking to see if the min/max values of the scale slider's selections fall within the appropriate range
-			//if the values of the selected scales don't pass the threshold, the minimum threshold will be used instead.
-			this.scales.maxScale =
-				this.scales.maxScale < this.scales.allScales[2]
-					? this.scales.allScales[2]
-					: this.scales.maxScale;
-			this.scales.minScale =
-				this.scales.minScale < this.scales.allScales[2]
-					? this.scales.allScales[2]
-					: this.scales.minScale;
-			CheckandAdjustScaleSliderHeaderStyle(2);
-			updateWhereStatement();
-		}
-		if (zoomLevel === 5 || zoomLevel === 6) {
-			scaleNumber.classList.add('transparency');
-			scaleTicks.forEach((tickMark, index) => {
-				if (index < scaleTicks.length - 2) {
-					tickMark.classList.add('transparency');
-				} else {
-					tickMark.classList.remove('transparency');
-				}
-			});
-
-			if (
-				parseInt(maxScaleRangeHandle.value) <
-				parseInt(minScaleRangeHandle.value)
-			) {
-				this.scales.maxScale = this.scales.allScales[minScaleRangeHandle.value];
-				this.scales.minScale = this.scales.allScales[maxScaleRangeHandle.value];
-			}
-
-			if (
-				parseInt(maxScaleRangeHandle.value) >
-				parseInt(minScaleRangeHandle.value)
-			) {
-				this.scales.maxScale = this.scales.allScales[maxScaleRangeHandle.value];
-				this.scales.minScale = this.scales.allScales[minScaleRangeHandle.value];
-			}
-
-			if (
-				this.scales.allScales[maxScaleRangeHandle.value] <
-					this.scales.allScales[3] &&
-				this.scales.allScales[minScaleRangeHandle.value] <
-					this.scales.allScales[3]
-			) {
-				updateWhereStatement();
-				const noMapsText = `<div class='helpText'>
-      Change your map extent,
-      or adjust filter selections,
-      to find topo maps.
-      </div>
-      `;
-				CheckandAdjustScaleSliderHeaderStyle(3);
-				document.querySelector('.mapCount').innerHTML = 0;
-				document.querySelector('#exploreList').innerHTML = noMapsText;
-				return -1;
-			}
-
-			this.scales.maxScale =
-				this.scales.maxScale < this.scales.allScales[3]
-					? this.scales.allScales[3]
-					: this.scales.maxScale;
-			this.scales.minScale =
-				this.scales.minScale < this.scales.allScales[3]
-					? this.scales.allScales[3]
-					: this.scales.minScale;
-
-			CheckandAdjustScaleSliderHeaderStyle(3);
-			updateWhereStatement();
-		}
-		if (zoomLevel === 4) {
-			scaleTicks.forEach((tickMark, index) => {
-				if (index < scaleTicks.length - 1) {
-					tickMark.classList.add('transparency');
-				} else {
-					tickMark.classList.remove('transparency');
-				}
-			});
-
-			scaleNumber.classList.add('transparency');
-
-			if (
-				parseInt(maxScaleRangeHandle.value) <
-				parseInt(minScaleRangeHandle.value)
-			) {
-				this.scales.maxScale = this.scales.allScales[minScaleRangeHandle.value];
-				this.scales.minScale = this.scales.allScales[maxScaleRangeHandle.value];
-			}
-
-			if (
-				parseInt(maxScaleRangeHandle.value) >
-				parseInt(minScaleRangeHandle.value)
-			) {
-				this.scales.maxScale = this.scales.allScales[maxScaleRangeHandle.value];
-				this.scales.minScale = this.scales.allScales[minScaleRangeHandle.value];
-			}
-
-			if (
-				this.scales.allScales[maxScaleRangeHandle.value] <
-					this.scales.allScales[this.scales.allScales.length - 1] &&
-				this.scales.allScales[minScaleRangeHandle.value] <
-					this.scales.allScales[this.scales.allScales.length - 1]
-			) {
-				const noMapsText = `<div class='helpText'>
-      Change your map extent,
-      or adjust filter selections,
-      to find topo maps.
-      </div>
-      `;
-				document.querySelector('.mapCount').innerHTML = 0;
-				document.querySelector('#exploreList').innerHTML = noMapsText;
-				CheckandAdjustScaleSliderHeaderStyle(4);
-				updateWhereStatement();
-				return -1;
-			}
-
-			//only the maximum available map scale is able to be viewed at this zoom level.
-			this.scales.maxScale =
-				this.scales.maxScale <
-				this.scales.allScales[this.scales.allScales.length - 1]
-					? this.scales.allScales[this.scales.allScales.length - 1]
-					: this.scales.maxScale;
-			this.scales.minScale =
-				this.scales.maxScale <
-				this.scales.allScales[this.scales.allScales.length - 1]
-					? this.scales.allScales[3]
-					: this.scales.maxScale;
-
-			CheckandAdjustScaleSliderHeaderStyle(4);
-			updateWhereStatement();
-		}
+		// this.scales.maxScale = this.scales.allScales[sliderPosition];
+		// this.scales.maxScaleSliderPositionValue =
+		// 	this.scales.allScales[sliderPosition];
+		// resetQueryOffsetNumber();
+		// updateWhereStatement();
 	},
 };
+// 	setZoomDependentScale: function () {
+// 		//this is the logic to determine what maps scales are available at certain zoom levels (which determines what slider values are available).
+// 		const zoomLevel = Math.round(queryController.mapView.zoom);
+// 		const scaleHeaders = document.querySelector('#scales .headers');
+// 		minScaleRangeHandle = document.querySelector('#scales .minSlider');
+// 		maxScaleRangeHandle = document.querySelector('#scales .maxSlider');
+// 		const scaleTicks = document.querySelectorAll('#scales .tick');
+// 		const scaleNumber = document.querySelector('#scales .minSliderValue');
 
-const updateWhereStatement = () => {
-	queryController.where = `${mapYear} >= ${yearsAndMapScales.years.minYear} AND ${mapYear} <= ${yearsAndMapScales.years.maxYear} AND map_scale >= ${yearsAndMapScales.scales.minScale} AND map_scale <= ${yearsAndMapScales.scales.maxScale}`;
-};
+// 		//no restrictions on zoom level -- all scales (and all slider choices are available)
+// 		if (zoomLevel >= 9) {
+// 			scaleNumber.classList.remove('transparency');
+// 			scaleTicks.forEach((tickMark) =>
+// 				tickMark.classList.remove('transparency')
+// 			);
+
+// 			if (
+// 				parseInt(maxScaleRangeHandle.value) <
+// 				parseInt(minScaleRangeHandle.value)
+// 			) {
+// 				this.scales.maxScale = this.scales.allScales[minScaleRangeHandle.value];
+// 				this.scales.minScale = this.scales.allScales[maxScaleRangeHandle.value];
+// 			}
+
+// 			if (
+// 				parseInt(maxScaleRangeHandle.value) >
+// 				parseInt(minScaleRangeHandle.value)
+// 			) {
+// 				this.scales.maxScale = this.scales.allScales[maxScaleRangeHandle.value];
+// 				this.scales.minScale = this.scales.allScales[minScaleRangeHandle.value];
+// 			}
+
+// 			CheckandAdjustScaleSliderHeaderStyle(0);
+// 			updateWhereStatement();
+// 		}
+// 		//if zoom-level is between 7 & 8, map scales from 1:65k-1:250k are available
+// 		if (zoomLevel === 7 || zoomLevel === 8) {
+// 			//sets the transparency style for the tick marks, tooltip and numbers
+
+// 			scaleNumber.classList.add('transparency');
+// 			scaleTicks.forEach((tickMark, index) => {
+// 				if (index < scaleTicks.length - 3) {
+// 					tickMark.classList.add('transparency');
+// 				} else {
+// 					tickMark.classList.remove('transparency');
+// 				}
+// 			});
+
+// 			if (
+// 				parseInt(maxScaleRangeHandle.value) <
+// 				parseInt(minScaleRangeHandle.value)
+// 			) {
+// 				this.scales.maxScale = this.scales.allScales[minScaleRangeHandle.value];
+// 				this.scales.minScale = this.scales.allScales[maxScaleRangeHandle.value];
+// 			}
+
+// 			if (
+// 				parseInt(maxScaleRangeHandle.value) >
+// 				parseInt(minScaleRangeHandle.value)
+// 			) {
+// 				this.scales.maxScale = this.scales.allScales[maxScaleRangeHandle.value];
+// 				this.scales.minScale = this.scales.allScales[minScaleRangeHandle.value];
+// 			}
+
+// 			if (
+// 				this.scales.allScales[maxScaleRangeHandle.value] <
+// 					this.scales.allScales[2] &&
+// 				this.scales.allScales[minScaleRangeHandle.value] <
+// 					this.scales.allScales[2]
+// 			) {
+// 				updateWhereStatement();
+// 				const noMapsText = `<div class='helpText'>
+//       Change your map extent,
+//       or adjust filter selections,
+//       to find topo maps.
+//       </div>
+//       `;
+// 				CheckandAdjustScaleSliderHeaderStyle(2);
+
+// 				document.querySelector('.mapCount').innerHTML = 0;
+// 				document.querySelector('#exploreList').innerHTML = noMapsText;
+// 				return -1;
+// 			}
+
+// 			//this ternary is checking to see if the min/max values of the scale slider's selections fall within the appropriate range
+// 			//if the values of the selected scales don't pass the threshold, the minimum threshold will be used instead.
+// 			this.scales.maxScale =
+// 				this.scales.maxScale < this.scales.allScales[2]
+// 					? this.scales.allScales[2]
+// 					: this.scales.maxScale;
+// 			this.scales.minScale =
+// 				this.scales.minScale < this.scales.allScales[2]
+// 					? this.scales.allScales[2]
+// 					: this.scales.minScale;
+// 			CheckandAdjustScaleSliderHeaderStyle(2);
+// 			updateWhereStatement();
+// 		}
+// 		if (zoomLevel === 5 || zoomLevel === 6) {
+// 			scaleNumber.classList.add('transparency');
+// 			scaleTicks.forEach((tickMark, index) => {
+// 				if (index < scaleTicks.length - 2) {
+// 					tickMark.classList.add('transparency');
+// 				} else {
+// 					tickMark.classList.remove('transparency');
+// 				}
+// 			});
+
+// 			if (
+// 				parseInt(maxScaleRangeHandle.value) <
+// 				parseInt(minScaleRangeHandle.value)
+// 			) {
+// 				this.scales.maxScale = this.scales.allScales[minScaleRangeHandle.value];
+// 				this.scales.minScale = this.scales.allScales[maxScaleRangeHandle.value];
+// 			}
+
+// 			if (
+// 				parseInt(maxScaleRangeHandle.value) >
+// 				parseInt(minScaleRangeHandle.value)
+// 			) {
+// 				this.scales.maxScale = this.scales.allScales[maxScaleRangeHandle.value];
+// 				this.scales.minScale = this.scales.allScales[minScaleRangeHandle.value];
+// 			}
+
+// 			if (
+// 				this.scales.allScales[maxScaleRangeHandle.value] <
+// 					this.scales.allScales[3] &&
+// 				this.scales.allScales[minScaleRangeHandle.value] <
+// 					this.scales.allScales[3]
+// 			) {
+// 				updateWhereStatement();
+// 				const noMapsText = `<div class='helpText'>
+//       Change your map extent,
+//       or adjust filter selections,
+//       to find topo maps.
+//       </div>
+//       `;
+// 				CheckandAdjustScaleSliderHeaderStyle(3);
+// 				document.querySelector('.mapCount').innerHTML = 0;
+// 				document.querySelector('#exploreList').innerHTML = noMapsText;
+// 				return -1;
+// 			}
+
+// 			this.scales.maxScale =
+// 				this.scales.maxScale < this.scales.allScales[3]
+// 					? this.scales.allScales[3]
+// 					: this.scales.maxScale;
+// 			this.scales.minScale =
+// 				this.scales.minScale < this.scales.allScales[3]
+// 					? this.scales.allScales[3]
+// 					: this.scales.minScale;
+
+// 			CheckandAdjustScaleSliderHeaderStyle(3);
+// 			updateWhereStatement();
+// 		}
+// 		if (zoomLevel === 4) {
+// 			scaleTicks.forEach((tickMark, index) => {
+// 				if (index < scaleTicks.length - 1) {
+// 					tickMark.classList.add('transparency');
+// 				} else {
+// 					tickMark.classList.remove('transparency');
+// 				}
+// 			});
+
+// 			scaleNumber.classList.add('transparency');
+
+// 			if (
+// 				parseInt(maxScaleRangeHandle.value) <
+// 				parseInt(minScaleRangeHandle.value)
+// 			) {
+// 				this.scales.maxScale = this.scales.allScales[minScaleRangeHandle.value];
+// 				this.scales.minScale = this.scales.allScales[maxScaleRangeHandle.value];
+// 			}
+
+// 			if (
+// 				parseInt(maxScaleRangeHandle.value) >
+// 				parseInt(minScaleRangeHandle.value)
+// 			) {
+// 				this.scales.maxScale = this.scales.allScales[maxScaleRangeHandle.value];
+// 				this.scales.minScale = this.scales.allScales[minScaleRangeHandle.value];
+// 			}
+
+// 			if (
+// 				this.scales.allScales[maxScaleRangeHandle.value] <
+// 					this.scales.allScales[this.scales.allScales.length - 1] &&
+// 				this.scales.allScales[minScaleRangeHandle.value] <
+// 					this.scales.allScales[this.scales.allScales.length - 1]
+// 			) {
+// 				const noMapsText = `<div class='helpText'>
+//       Change your map extent,
+//       or adjust filter selections,
+//       to find topo maps.
+//       </div>
+//       `;
+// 				document.querySelector('.mapCount').innerHTML = 0;
+// 				document.querySelector('#exploreList').innerHTML = noMapsText;
+// 				CheckandAdjustScaleSliderHeaderStyle(4);
+// 				updateWhereStatement();
+// 				return -1;
+// 			}
+
+// 			//only the maximum available map scale is able to be viewed at this zoom level.
+// 			this.scales.maxScale =
+// 				this.scales.maxScale <
+// 				this.scales.allScales[this.scales.allScales.length - 1]
+// 					? this.scales.allScales[this.scales.allScales.length - 1]
+// 					: this.scales.maxScale;
+// 			this.scales.minScale =
+// 				this.scales.maxScale <
+// 				this.scales.allScales[this.scales.allScales.length - 1]
+// 					? this.scales.allScales[3]
+// 					: this.scales.maxScale;
+
+// 			CheckandAdjustScaleSliderHeaderStyle(4);
+// 			updateWhereStatement();
+// 		}
+// 	},
+// };
+
+// const updateWhereStatement = () => {
+// 	queryController.where = `${mapYear} >= ${yearsAndMapScales.years.minYear} AND ${mapYear} <= ${yearsAndMapScales.years.maxYear} AND map_scale >= ${yearsAndMapScales.scales.minScale} AND map_scale <= ${yearsAndMapScales.scales.maxScale}`;
+// };
 
 const queryController = {
 	url: `${url}/query`,
 	imageExportEndpoint: `${url}/exportImage`,
-	mapView: '',
+	mapView: null,
 	where: whereStatement,
 	geometry: '',
 	spatialRelation: 'esriSpatialRelIntersects',
@@ -447,6 +458,13 @@ const queryController = {
 		mapCenterX,
 		mapCenterY,
 		mapDownloadLink,
+		surveyYear,
+		photoYear,
+		photoRevisionYear,
+		fieldCheckYear,
+		projection,
+		datum,
+		citation,
 	].join(','),
 	sortChoice: sortOptions.onlyYear,
 	resultOffset: 0,
@@ -487,7 +505,7 @@ const queryController = {
 			outFields: this.queryOutfields,
 			resultOffset: this.resultOffset,
 			// resultRecordCount: this.resultRecordCount,
-			orderByFields: this.sortChoice,
+			// orderByFields: this.sortChoice,
 			f: 'json',
 		});
 	},
@@ -507,13 +525,11 @@ const queryController = {
 			})
 			.then((listOfTopos) => {
 				this.resultOffset = this.resultOffset + this.resultRecordCount;
-				updateMapcount(listOfTopos.length);
+				// updateMapcount(listOfTopos.length);
 				return this.processMapData(listOfTopos);
 			})
 			.then((mapsList) => {
-				// if (yearsAndMapScales.setZoomDependentScale() === -1) {
-				// 	return;
-				// }
+				// setMapListData(mapsList);
 				createMapSlotItems(mapsList, this.mapView);
 				hideSpinnerIcon();
 			})
@@ -528,7 +544,11 @@ const queryController = {
 		this.resultRecordCount = '';
 
 		// isQueryInProcess = true;
-		clearMapsList(), showSpinnerIcon(), hideMapCount(), this.queryMapData();
+		removeUnpinnedTopo(),
+			clearMapsList(),
+			showSpinnerIcon(),
+			hideMapCount(),
+			this.queryMapData();
 
 		// numberOfMapsinView(this.url, this.totalMapsInExtentParams())
 		// 	.then((response) => {
@@ -584,6 +604,7 @@ const queryController = {
 			mapCenterGeographyY: topo.attributes.CenterY,
 			downloadLink: topo.attributes.DownloadG,
 			mapBoundry: topo.geometry,
+			previousPinnedMap: false,
 		}));
 	},
 	setGeometry: function (locationData) {
@@ -596,8 +617,8 @@ const queryController = {
 			// const convertPolygonToWGS =
 			// 	webMercatorUtils.webMercatorToGeographic(createPolygon);
 
-			const geographicAdjustedLocation =
-				webMercatorUtils.webMercatorToGeographic(locationData);
+			// const geographicAdjustedLocation =
+			// 	webMercatorUtils.webMercatorToGeographic(locationData);
 
 			// if (geographicAdjustedLocation.xmin > geographicAdjustedLocation.xmax) {
 			// 	geographicAdjustedLocation.xmin -= 360;
@@ -634,8 +655,8 @@ const queryController = {
 			// 		wkid: 4326,
 			// 	},
 			// });
-
-			return (this.geometry = `${geographicAdjustedLocation.x}, ${geographicAdjustedLocation.y}`);
+			console.log('mappoint', locationData);
+			return (this.geometry = `${locationData.longitude}, ${locationData.latitude}`);
 		});
 	},
 	setSortChoice: function (choiceValue) {
@@ -686,7 +707,9 @@ const isHashedToposForQuery = async (view) => {
 		await dataForTopoExports();
 	}
 
-	if (checkForPreviousTopos()) {
+	const previousTopos = checkForPreviousTopos();
+
+	if (previousTopos) {
 		await getDataForHashedTopos(view);
 	}
 };
@@ -715,6 +738,8 @@ const getDataForHashedTopos = async (view) => {
 
 	const hashedTopos = checkForPreviousTopos();
 	const originalOrderHashedTopos = checkForPreviousTopos().split(',');
+	const numberOfPreviousTopos = originalOrderHashedTopos.length;
+	setNumberOfPreviousTopos(numberOfPreviousTopos);
 
 	const paramsForHashedTopos = setHashedTopoQueryParams(hashedTopos);
 
@@ -733,26 +758,35 @@ const getDataForHashedTopos = async (view) => {
 
 			originalOrderHashedTopos.map((singleMap) => {
 				singleMap.previousPinnedMap = true;
+				//I should really call 'makeCards()' here, but there's an existing race condition I'll need to deal with
+				//the ListOfMaps File is still declaring some variables that makeCards() needs.
 				createMapSlotItems([singleMap], view);
 			});
 			return originalOrderHashedTopos;
 		});
 };
 
-const explorerMode = document.querySelector('.explorer-mode');
-
-const styleListenerConfig = { attributes: true };
-
-const onStyleChange = (mutation, observer) => {
-	if (document.querySelector('#exploreList').innerHTML === '') {
-		showSpinnerIcon();
-		queryController.queryMapData();
-	}
+const getView = () => {
+	return queryController.mapView;
 };
 
-const explorerModeObserver = new MutationObserver(onStyleChange);
+const setView = (view) => {
+	queryController.mapView = view;
+};
+// const explorerMode = document.querySelector('.explorer-mode');
 
-explorerModeObserver.observe(explorerMode, styleListenerConfig);
+// const styleListenerConfig = { attributes: true };
+
+// const onStyleChange = (mutation, observer) => {
+// 	if (document.querySelector('#exploreList').innerHTML === '') {
+// 		showSpinnerIcon();
+// 		queryController.queryMapData();
+// 	}
+// };
+
+// const explorerModeObserver = new MutationObserver(onStyleChange);
+
+// explorerModeObserver.observe(explorerMode, styleListenerConfig);
 
 export {
 	url,
@@ -763,4 +797,6 @@ export {
 	getMinScale,
 	getMaxScale,
 	isHashedToposForQuery,
+	getView,
+	setView,
 };

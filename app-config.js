@@ -54,9 +54,9 @@ const config = {
 	defaultMapSettings: {
 		center: [-98.5357, 40.1549],
 		zoom: 4,
-		constraints: {
-			minZoom: 4,
-		},
+		// constraints: {
+		// 	minZoom: 4,
+		// },
 	},
 	spatialRefernce: {
 		wkid: 102100,

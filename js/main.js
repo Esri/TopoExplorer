@@ -3,10 +3,11 @@ import { isMobileFormat } from './UI/EventsAndSelectors/EventsAndSelectors.js?v=
 import { initSideBar } from './UI/SideBar/sideBar.js?v=0.01';
 import { initMobileHeader } from './UI/MobileMapHeader/mobileMapHeader.js?v=0.01';
 import './UI/MobileMapHeader/mobileMapHeader.js?v=0.01';
-import { initView, addVeiwCrosshairs } from './map/View.js?v=0.01';
+import { initView, newMapCrossHair } from './map/View.js?v=0.01';
 import {
 	queryController,
 	isHashedToposForQuery,
+	setView,
 } from './support/queryController.js?v=0.01';
 
 // import { isScrollAtPageEnd } from './support/eventListeners/ScrollListener.js?v=0.01';
@@ -29,23 +30,25 @@ const initApp = async () => {
 		const oauthResponse = await authorization();
 		const view = await initView();
 		const sliderValues = await getYearsAndScales(view);
-		const getPreviousTopos = await isHashedToposForQuery(view);
+		// const getPreviousTopos = await isHashedToposForQuery(view);
 		const initialMapQuery = () => {
 			queryController.setGeometry(view.extent.center);
 			queryController.mapView = view;
+			// setView(view);
 			queryController.extentQueryCall();
+			newMapCrossHair(view, view.center);
 		};
 
 		view
 			.when(() => {
-				addVeiwCrosshairs();
+				// setView(view);
+				// queryController.mapView = view;
 				if (oauthResponse) {
 					addAccountImage(oauthResponse);
 					setAccountData(oauthResponse);
 				}
 
 				sliderValues;
-				initialMapQuery();
 			})
 			.then(() => {
 				initLayerToggle(view);
@@ -53,45 +56,63 @@ const initApp = async () => {
 				setViewInfo(view);
 			})
 			.then(() => {
-				getPreviousTopos;
-			})
-			.then(() => {
-				animatingStatus();
-			})
-			.then(() => {
+				isHashedToposForQuery(view);
+				initialMapQuery();
+				console.log(view);
+
+				view.on('click', (event) => {
+					const zoomLevel = view.zoom;
+					newMapCrossHair(view, event.mapPoint);
+					queryController.setGeometry(event.mapPoint);
+					queryController.extentQueryCall();
+					updateHashParams(event.mapPoint, zoomLevel);
+				});
+
 				require(['esri/core/reactiveUtils'], (reactiveUtils) => {
 					let prevCenter;
 					let currentZoom;
 
 					reactiveUtils.when(
-						() => view?.stationary === true,
-						async () => {
-							if (prevCenter) {
-								if (prevCenter.x === view.center.x) {
-									return;
-								}
-							}
-							queryController.setGeometry(view.extent.center);
-							queryController.mapView = view;
-							queryController.extentQueryCall();
-							updateHashParams(view);
-
-							prevCenter = view?.center;
+						() => view?.updating === false,
+						() => {
+							console.log('done building layers');
+							initialMapQuery();
+							animatingStatus();
+						},
+						{
+							once: true,
 						}
 					);
 
-					reactiveUtils.watch(
-						() => [view.stationary, view.zoom],
-						([stationary, zoom]) => {
-							if (stationary && zoom !== currentZoom) {
-								queryController.setGeometry(view.extent.center);
-								queryController.mapView = view;
-								queryController.extentQueryCall();
-								updateHashParams(view);
-								currentZoom = zoom;
-							}
-						}
-					);
+					// 	reactiveUtils.when(
+					// 		() => view?.stationary === true,
+					// 		async () => {
+					// 			if (prevCenter) {
+					// 				if (prevCenter.x === view.center.x) {
+					// 					return;
+					// 				}
+					// 			}
+					// 			queryController.setGeometry(view.extent.center);
+					// 			queryController.mapView = view;
+					// 			queryController.extentQueryCall();
+					// 			updateHashParams(view);
+
+					// 			prevCenter = view?.center;
+					// 		}
+					// 	);
+
+					// 	reactiveUtils.watch(
+					// 		() => [view.stationary, view.zoom],
+					// 		([stationary, zoom]) => {
+					// 			if (stationary && zoom !== currentZoom) {
+					// 				// queryController.setGeometry(view.extent.center);
+					// 				// queryController.mapView = view;
+					// 				// queryController.extentQueryCall();
+					// 				// updateHashParams(view.extent.center);
+					// 				currentZoom = zoom;
+					// 			}
+					// 		}
+					// 	);
 				});
 			});
 

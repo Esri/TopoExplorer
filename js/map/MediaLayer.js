@@ -15,22 +15,18 @@ const createMediaLayer = async () => {
 			});
 			queryController.mapView.map.add(
 				mediaLayer,
-				queryController.mapView.map.layers.items.length - 2
+				queryController.mapView.map.layers.items.length - 3
 			);
 
-			resolve();
+			resolve(mediaLayer);
 		});
 	});
 };
 
 const createArrayOfImageElements = (array) => {
-	// const imageElementsArray = [];
-	// console.log(mediaLayer);
-	// mediaLayer.source.elements.items.forEach((imageElement) => {
-	// 	array.push(imageElement);
-	// });
-
+	console.log('the media layer source', mediaLayer.source.elements.items);
 	for (const topoImage of mediaLayer.source.elements.items) {
+		console.log('generating image for animation', topoImage);
 		array.push(topoImage);
 	}
 
@@ -42,6 +38,10 @@ const removeMediaLayer = () => {
 };
 
 const createImageElementForMediaLayer = async (imageData) => {
+	if (!imageData) {
+		return;
+	}
+	console.log('creating image element');
 	return await new Promise((resolve) => {
 		require([
 			'esri/layers/support/ImageElement',
@@ -54,10 +54,11 @@ const createImageElementForMediaLayer = async (imageData) => {
 				opacity: 0,
 				// effect: 'drop-shadow(0px, 0px, 8px, black)',
 				georeference: new ExtentAndRotationGeoreference({
-					extent: queryController.mapView.extent,
+					extent: queryController.mapView.extent.clone().normalize()[0],
 				}),
 			});
 
+			console.log(imageElement);
 			mediaLayerSourceElementsArray.push(imageElement);
 		});
 		resolve();

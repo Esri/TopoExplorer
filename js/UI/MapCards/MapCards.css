@@ -118,11 +118,24 @@ cursor: -webkit-grabbing;
   inset 2px 2px 1px #B8C2D3;
 }
 
-  /* NOTE: I was using this in the event for the drag-ability of the pinned map-cards*/
-  /* .map-list-item.selected {
-    cursor:move 
-  } */
-  
+.infoIcon svg path {
+  pointer-events: none;
+}
+
+.infoIcon .tooltipText {
+  position: absolute;
+  width: auto;
+  background-color: #637287;
+  color: #fff;
+  line-height:20px;
+  text-align: left;
+  text-wrap: balance;
+  border-radius: 6px;
+  padding: 10px;
+  z-index: 3;
+  opacity: 0.9;
+}
+
 .title-and-thumbnail {
   display: flex;
   flex: auto;
@@ -164,7 +177,7 @@ cursor: -webkit-grabbing;
 .map-list-item-title{
   margin: auto 0;
   /* width: 200px; */
-  line-height: 1.5rem;
+  line-height: 1.1rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -267,13 +280,11 @@ a.icon{
   background:#637287
 }
 
-
-
 .action-area .tooltipText {
   position: absolute;
   left: 18px;
   width: 100px;
-  background-color: #555;
+  background-color: #637287;
   color: #fff;
   text-align: center;
   border-radius: 6px;
@@ -281,7 +292,7 @@ a.icon{
   z-index: 1;
   top: -20px;
   margin-left: -60px;
-  /* opacity: 0; */
+  opacity: 0.9;
   transition: opacity 0.3s;
 }
 /* 
@@ -308,10 +319,10 @@ a.icon{
   fill: #637287;
 }
 
-
+/* 
 #exploreList .action-area .iconWrapper.zoom{
   display: none;
-}
+} */
 
 .mapCard-slider {
   position: relative;

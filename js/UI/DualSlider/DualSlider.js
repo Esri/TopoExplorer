@@ -72,54 +72,9 @@ const initDualSlider = (
   </div>
 `;
 
-	const zoomDependentSelections = () => {
-		if (view.zoom >= 4 && view.zoom < 5) {
-			return values.length - 1;
-		}
-		if (view.zoom >= 5 && view.zoom < 7) {
-			return values.length - 2;
-		}
-		if (view.zoom >= 7 && view.zoom < 8) {
-			return values.length - 3;
-		}
-		if (view.zoom >= 9) {
-			return -1;
-		}
-	};
-
-	const isScaleValueWithinAvailableRange = (handle, value) => {
-		const maxScaleChoice = sliderComponents.querySelector('.maxSlider').value;
-		const minScaleChoice = sliderComponents.querySelector('.minSlider').value;
-
-		let isAvailable = false;
-		if (value < zoomDependentSelections()) {
-			isAvailable = false;
-			udpdateSliderHeading(handle, value, isAvailable);
-			debounceInput(handle, value);
-		} else {
-			isAvailable = true;
-			udpdateSliderHeading(handle, value, isAvailable);
-			debounceInput(handle, value);
-		}
-
-		// if (
-		// 	minScaleChoice < zoomDependentSelections() &&
-		// 	maxScaleChoice < zoomDependentSelections()
-		// ) {
-		// 	const noMapsText = `<div class='helpText'>
-		//   Change your map extent,
-		//   or adjust filter selections,
-		//   to find topo maps.
-		//   </div>
-		//   `;
-		// 	document.querySelector('.mapCount').innerHTML = 0;
-		// 	document.querySelector('#exploreList').innerHTML = noMapsText;
-		// }
-	};
-
 	const sliderComponents = container.querySelector('.inputs');
 
-	//creating the slider sections on the track. Highlighting the change of slection whn the handles move
+	//creating the slider sections on the track. Highlighting the change of selection whn the handles move
 	const sliderBar = values
 		.map((sections) => {
 			return `
@@ -158,63 +113,22 @@ const initDualSlider = (
 	container.querySelector('.tickmarks-container').innerHTML =
 		sliderOptionsHTMLStr;
 
-	//This querySelector finds the minValue for the Scale slider's header and adds a transparency effect to it. Because the initial value is outside the available range.
-	// if (container.querySelectorAll('#scales .sliderBtn span')[0]) {
-	// 	container
-	// 		.querySelectorAll('#scales .sliderBtn span')[0]
-	// 		.classList.add('transparency');
-	// }
-
-	const udpdateSliderHeading = (handle, value, isAvailable) => {
+	const updateSliderHeading = (minValue, maxValue) => {
 		let minHeaderSpan = container.querySelectorAll(`.sliderBtn span`)[0];
 
 		let maxHeaderSpan = container.querySelectorAll(`.sliderBtn span`)[1];
 
-		if (parseInt(maxRangeHandle.value) < parseInt(minRangeHandle.value)) {
-			minHeaderSpan.innerHTML = formatNumbersForSliderHeader(
-				values[maxRangeHandle.value]
-			);
-			maxHeaderSpan.innerHTML = formatNumbersForSliderHeader(
-				values[minRangeHandle.value]
-			);
-
-			// if (container.id === 'scales') {
-			// 	if (parseInt(minRangeHandle.value) < zoomDependentSelections()) {
-			// 		maxHeaderSpan.classList.add('transparency');
-			// 	} else {
-			// 		maxHeaderSpan.classList.remove('transparency');
-			// 	}
-
-			// 	if (parseInt(maxRangeHandle.value) < zoomDependentSelections()) {
-			// 		minHeaderSpan.classList.add('transparency');
-			// 	} else {
-			// 		minHeaderSpan.classList.remove('transparency');
-			// 	}
-			// }
+		if (parseInt(maxValue) < parseInt(minValue)) {
+			minHeaderSpan.innerHTML = formatNumbersForSliderHeader(maxValue);
+			maxHeaderSpan.innerHTML = formatNumbersForSliderHeader(minValue);
+			onChangeHandler(maxValue, minValue);
 			return;
 		}
 
-		if (parseInt(minRangeHandle.value) <= parseInt(maxRangeHandle.value)) {
-			maxHeaderSpan.innerHTML = formatNumbersForSliderHeader(
-				values[maxRangeHandle.value]
-			);
-			minHeaderSpan.innerHTML = formatNumbersForSliderHeader(
-				values[minRangeHandle.value]
-			);
-
-			// if (container.id === 'scales') {
-			// 	if (parseInt(minRangeHandle.value) < zoomDependentSelections()) {
-			// 		minHeaderSpan.classList.add('transparency');
-			// 	} else {
-			// 		minHeaderSpan.classList.remove('transparency');
-			// 	}
-
-			// 	if (parseInt(maxRangeHandle.value) < zoomDependentSelections()) {
-			// 		maxHeaderSpan.classList.add('transparency');
-			// 	} else {
-			// 		maxHeaderSpan.classList.remove('transparency');
-			// 	}
-			// }
+		if (parseInt(minValue) <= parseInt(maxValue)) {
+			maxHeaderSpan.innerHTML = formatNumbersForSliderHeader(maxValue);
+			minHeaderSpan.innerHTML = formatNumbersForSliderHeader(minValue);
+			onChangeHandler(minValue, maxValue);
 		}
 	};
 
@@ -261,38 +175,35 @@ const initDualSlider = (
 		});
 	};
 
-	const unavailbleScalesToolTip = (value) => {
-		const zoomInHelpTextElement = document.querySelector(
-			'#scales .zoomInHelpText'
-		);
-		// if (value < zoomDependentSelections()) {
-		// 	zoomInHelpTextElement.classList.remove('hidden');
-		// } else {
-		// 	zoomInHelpTextElement.classList.add('hidden');
-		// }
-	};
+	// const debounce = (func, wait) => {
+	// 	let timer;
 
-	const debounce = (func, wait) => {
-		let timer;
+	// 	return (...args) => {
+	// 		clearTimeout(timer);
 
-		return (...args) => {
-			clearTimeout(timer);
+	// 		return new Promise((resolve) => {
+	// 			timer = setTimeout(() => resolve(func(...args)), wait);
+	// 		});
+	// 	};
+	// };
 
-			return new Promise((resolve) => {
-				timer = setTimeout(() => resolve(func(...args)), wait);
-			});
-		};
-	};
-
-	const debounceInput = debounce(
-		(index, value) => onChangeHandler(index, value),
-		1000
-	);
+	// const debounceInput = debounce(
+	// 	(index, value) => onChangeHandler(index, value),
+	// 	1000
+	// );
 
 	//ADDING EVENT LISTENERS
 	const minRangeHandle = sliderComponents.querySelector('.minSlider');
 	const maxRangeHandle = sliderComponents.querySelector('.maxSlider');
 	let isSelecting = false;
+
+	const getMinValue = () => {
+		return values[minRangeHandle.value];
+	};
+
+	const getMaxValue = () => {
+		return values[maxRangeHandle.value];
+	};
 
 	window.addEventListener('mouseup', () => {
 		if (isSelecting) {
@@ -302,14 +213,10 @@ const initDualSlider = (
 	});
 
 	sliderComponents.querySelectorAll('input').forEach((input) => {
-		//updating the color of the selected range AND controling the interaction between the min & max slider handles
+		//updating the color of the selected range AND controlling the interaction between the min & max slider handles
 
 		input.addEventListener('input', (e) => {
-			if (e.target.closest('#scales')) {
-				unavailbleScalesToolTip(e.target.valueAsNumber);
-			}
-
-			adjustSliderTrackSelection(e.target, e.target.valueAsNumber);
+			adjustSliderTrackSelection();
 		});
 
 		input.addEventListener('input', (e) => {
@@ -325,212 +232,152 @@ const initDualSlider = (
 		area.addEventListener('click', (e) => {
 			let currentSelection = e.target.attributes.value.value;
 
-			let minHandleDiffernce = Math.abs(
+			let minHandleDifference = Math.abs(
 				currentSelection - minRangeHandle.value
 			);
-			let maxHandleDiffernce = Math.abs(
+			let maxHandleDifference = Math.abs(
 				currentSelection - maxRangeHandle.value
 			);
 
 			if (parseInt(maxRangeHandle.value) < parseInt(minRangeHandle.value)) {
-				if (minHandleDiffernce < maxHandleDiffernce) {
+				if (minHandleDifference < maxHandleDifference) {
 					minRangeHandle.value = currentSelection;
+					const minValue = getMinValue();
+					const maxValue = getMaxValue();
 					adjustSliderTrackSelection();
-					if (e.target.closest('#scales')) {
-						isScaleValueWithinAvailableRange(0, minRangeHandle.value);
-						unavailbleScalesToolTip(minRangeHandle.value);
-						return;
-					}
 
-					debounceInput(0, minRangeHandle.value);
-					udpdateSliderHeading(0, minRangeHandle.value, true);
+					// debounceInput(0, minRangeHandle.value);
+					updateSliderHeading(minValue, maxValue);
 					return;
 				}
 
-				if (maxHandleDiffernce < minHandleDiffernce) {
+				if (maxHandleDifference < minHandleDifference) {
 					maxRangeHandle.value = currentSelection;
+					const minValue = getMinValue();
+					const maxValue = getMaxValue();
 					adjustSliderTrackSelection();
 
-					if (e.target.closest('#scales')) {
-						isScaleValueWithinAvailableRange(1, maxRangeHandle.value);
-						unavailbleScalesToolTip(minRangeHandle.value);
-						return;
-					}
-
-					debounceInput(1, maxRangeHandle.value);
-					udpdateSliderHeading(1, maxRangeHandle.value, true);
+					// debounceInput(0, minRangeHandle.value);
+					updateSliderHeading(minValue, maxValue);
 					return;
 				}
 
 				if (currentSelection > parseInt(maxRangeHandle.value)) {
 					maxRangeHandle.value = currentSelection;
 					adjustSliderTrackSelection();
+					const minValue = getMinValue();
+					const maxValue = getMaxValue();
 
-					if (e.target.closest('#scales')) {
-						isScaleValueWithinAvailableRange(1, maxRangeHandle.value);
-						unavailbleScalesToolTip(minRangeHandle.value);
-						return;
-					}
-
-					debounceInput(1, maxRangeHandle.value);
-					udpdateSliderHeading(1, maxRangeHandle.value, true);
+					updateSliderHeading(minValue, maxValue);
 					return;
 				}
 
 				if (currentSelection < parseInt(minRangeHandle.value)) {
 					minRangeHandle.value = currentSelection;
 					adjustSliderTrackSelection();
-					if (e.target.closest('#scales')) {
-						isScaleValueWithinAvailableRange(0, minRangeHandle.value);
-						unavailbleScalesToolTip(minRangeHandle.value);
-						return;
-					}
+					const minValue = getMinValue();
+					const maxValue = getMaxValue();
 
-					debounceInput(0, minRangeHandle.value);
-					udpdateSliderHeading(0, minRangeHandle.value, true);
+					updateSliderHeading(minValue, maxValue);
 					return;
 				}
 			}
 
-			if (minHandleDiffernce === maxHandleDiffernce) {
+			if (minHandleDifference === maxHandleDifference) {
 				if (currentSelection - maxRangeHandle.value > 0) {
 					maxRangeHandle.value = currentSelection;
-					adjustSliderTrackSelection(maxRangeHandle, maxRangeHandle.value);
+					adjustSliderTrackSelection();
+					const minValue = getMinValue();
+					const maxValue = getMaxValue();
 
-					if (e.target.closest('#scales')) {
-						isScaleValueWithinAvailableRange(1, maxRangeHandle.value);
-						unavailbleScalesToolTip(minRangeHandle.value);
-						return;
-					}
-
-					debounceInput(1, maxRangeHandle.value);
-					udpdateSliderHeading(1, maxRangeHandle.value, true);
+					updateSliderHeading(minValue, maxValue);
 					return;
 				}
 
 				if (currentSelection - minRangeHandle.value < 0) {
 					minRangeHandle.value = currentSelection;
-					adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
-					if (e.target.closest('#scales')) {
-						isScaleValueWithinAvailableRange(0, minRangeHandle.value);
-						unavailbleScalesToolTip(minRangeHandle.value);
-						return;
-					}
+					adjustSliderTrackSelection();
+					const minValue = getMinValue();
+					const maxValue = getMaxValue();
 
-					debounceInput(0, minRangeHandle.value);
-					udpdateSliderHeading(0, minRangeHandle.value, true);
+					updateSliderHeading(minValue, maxValue);
 					return;
 				}
 
 				//if these handles are not overlapping move the minimum handle
 				minRangeHandle.value = currentSelection;
-				adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
+				adjustSliderTrackSelection();
+				const minValue = getMinValue();
+				const maxValue = getMaxValue();
 
-				if (e.target.closest('#scales')) {
-					isScaleValueWithinAvailableRange(0, minRangeHandle.value);
-					unavailbleScalesToolTip(minRangeHandle.value);
-				}
-
-				debounceInput(0, minRangeHandle.value);
-				udpdateSliderHeading(0, minRangeHandle.value, true);
+				updateSliderHeading(minValue, maxValue);
 
 				return;
 			}
 
 			if (
 				currentSelection < minRangeHandle.value &&
-				minHandleDiffernce < maxHandleDiffernce
+				minHandleDifference < maxHandleDifference
 			) {
 				minRangeHandle.value = currentSelection;
-				adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
-				if (e.target.closest('#scales')) {
-					isScaleValueWithinAvailableRange(0, minRangeHandle.value);
-					unavailbleScalesToolTip(minRangeHandle.value);
-					return;
-				}
+				adjustSliderTrackSelection();
+				const minValue = getMinValue();
+				const maxValue = getMaxValue();
 
-				debounceInput(0, minRangeHandle.value);
-				udpdateSliderHeading(0, minRangeHandle.value, true);
+				updateSliderHeading(minValue, maxValue);
 			}
 
 			if (
 				currentSelection > maxRangeHandle.value &&
-				minHandleDiffernce > maxHandleDiffernce
+				minHandleDifference > maxHandleDifference
 			) {
 				maxRangeHandle.value = currentSelection;
-				adjustSliderTrackSelection(maxRangeHandle, maxRangeHandle.value);
-				if (e.target.closest('#scales')) {
-					isScaleValueWithinAvailableRange(1, maxRangeHandle.value);
-					unavailbleScalesToolTip(maxRangeHandle.value);
-					return;
-				}
+				adjustSliderTrackSelection();
+				const minValue = getMinValue();
+				const maxValue = getMaxValue();
 
-				debounceInput(1, maxRangeHandle.value);
-				udpdateSliderHeading(1, maxRangeHandle.value, true);
+				updateSliderHeading(minValue, maxValue);
 			}
 
 			if (
 				currentSelection > minRangeHandle.value &&
-				minHandleDiffernce < maxHandleDiffernce
+				minHandleDifference < maxHandleDifference
 			) {
 				minRangeHandle.value = currentSelection;
-				adjustSliderTrackSelection(minRangeHandle, minRangeHandle.value);
-				if (e.target.closest('#scales')) {
-					isScaleValueWithinAvailableRange(0, minRangeHandle.value);
-					unavailbleScalesToolTip(minRangeHandle.value);
-					return;
-				}
+				adjustSliderTrackSelection();
+				const minValue = getMinValue();
+				const maxValue = getMaxValue();
 
-				debounceInput(0, minRangeHandle.value);
-				udpdateSliderHeading(0, minRangeHandle.value, true);
+				updateSliderHeading(minValue, maxValue);
 			}
 
 			if (
 				currentSelection < maxRangeHandle.value &&
-				minHandleDiffernce > maxHandleDiffernce
+				minHandleDifference > maxHandleDifference
 			) {
 				maxRangeHandle.value = currentSelection;
-				adjustSliderTrackSelection(maxRangeHandle, maxRangeHandle.value);
-				if (e.target.closest('#scales')) {
-					isScaleValueWithinAvailableRange(1, maxRangeHandle.value);
-					unavailbleScalesToolTip(maxRangeHandle.value);
-					return;
-				}
+				adjustSliderTrackSelection();
+				const minValue = getMinValue();
+				const maxValue = getMaxValue();
 
-				debounceInput(1, maxRangeHandle.value);
-				udpdateSliderHeading(1, maxRangeHandle.value, true);
+				updateSliderHeading(minValue, maxValue);
 			}
 		});
 	});
 
 	//Listener that will updating the slider's header and the values
 	container.querySelector('.minSlider').addEventListener('change', (event) => {
-		let minVal = event.target.value;
-		let sliderHandle;
+		let minVal = values[event.target.value];
+		let maxVal = getMaxValue();
 
-		sliderHandle = 0;
-
-		if (event.target.closest('#scales')) {
-			isScaleValueWithinAvailableRange(sliderHandle, minVal);
-
-			return;
-		}
-		debounceInput(0, minVal);
-		udpdateSliderHeading(0, minVal, true);
+		updateSliderHeading(minVal, maxVal);
 	});
 
 	container.querySelector('.maxSlider').addEventListener('change', (event) => {
-		let maxVal = event.target.value;
-		let sliderHandle = 1;
+		let maxVal = values[event.target.value];
+		let minVal = getMinValue();
 
-		if (event.target.closest('#scales')) {
-			isScaleValueWithinAvailableRange(sliderHandle, maxVal);
-
-			return;
-		}
-
-		debounceInput(1, maxVal);
-		udpdateSliderHeading(1, maxVal, true);
+		updateSliderHeading(minVal, maxVal);
 	});
 
 	//Listener to toggle the slider container and sort choice container visibility

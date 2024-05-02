@@ -249,9 +249,28 @@ padding: 0 0 3rem 0
   text-align: right;
 }
 
+.animation-title {
+  width: 100%;
+  height: 2rem;
+  padding: 0.5rem;
+  background-color: #EAEEF1;
+  box-shadow: inset -6px -6px 6px #FFFFFF, inset 6px 6px 8px #B8C2D3;
+  border-radius: 6px;
+  border: none;
+}
+
+.animation-title div {
+  padding: 0.7rem;
+}
+
 #viewDiv{
   width: 100%;
   position: relative;
+  cursor: url('../public/images/CrosshairWhite.png') 22 22, crosshair;
+}
+
+#viewDiv .mapAnimationOverlay {
+  cursor: default;
 }
 
 .crosshairContainer {
@@ -319,7 +338,7 @@ padding: 0 0 3rem 0
 }
 
 #viewDiv .esri-ui-corner .esri-component {
-  
+  cursor: default;
   background-color: transparent;
   border-radius: 12px 12px 12px 12px;
   box-shadow: 4px 4px 6px #111111;
@@ -350,6 +369,7 @@ border-radius: 0;
 }
 
 #viewDiv .esri-ui-bottom-right.esri-ui-corner #layerToggle {
+  cursor: default;
   height: 2.5rem;
   width: 20rem;
   justify-content: space-evenly;
@@ -556,10 +576,11 @@ transform: translate(5px, 0px);
 }
 
 .pinned-mode-sub-section .iconWrapper .tooltipText{
+  pointer-events: none;
   position: absolute;
   left: 18px;
   width: 100px;
-  background-color: #555;
+  background-color: #637287;
   color: #fff;
   text-align: center;
   border-radius: 6px;
@@ -567,6 +588,7 @@ transform: translate(5px, 0px);
   z-index: 1;
   top: -20px;
   margin-left: -60px;
+  opacity: 0.9;
   transition: opacity 0.3s;
 }
 

@@ -16,6 +16,7 @@ const cancelAnimationVideo = () => {
 };
 
 const createAnimationVideo = (params) => {
+	console.log(params);
 	controller = params.abortController;
 	addDownloadCancel();
 
@@ -23,8 +24,12 @@ const createAnimationVideo = (params) => {
 		.convertImages2Video(params)
 		.then((response) => {
 			const videoURL = URL.createObjectURL(response.fileContent);
+			console.log(response);
+			console.log(videoURL);
+
 			downloadVideo(params, videoURL, response.filename);
 
+			//this commented out section is intended for debugging practices
 			// if (window.location.host !== 'livingatlas.arcgis.com') {
 			// 	// saveDownloadComponents(params, videoURL, response);
 			// }

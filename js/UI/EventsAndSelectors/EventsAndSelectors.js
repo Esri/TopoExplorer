@@ -1,5 +1,8 @@
 import { getCredentials, logOutTry } from '../../support/OAuth.js?v=0.01';
-import { queryController } from '../../support/queryController.js?v=0.01';
+import {
+	queryController,
+	getView,
+} from '../../support/queryController.js?v=0.01';
 import {
 	addCancelTextToAnimationLoading,
 	addDownloadingNotification,
@@ -12,6 +15,7 @@ import {
 import {
 	setCancelledStatus,
 	checkToposIncludedForDownload,
+	setVideoExportName,
 } from '../Animation/AnimatingLayers.js?v=0.01';
 import { findAspectRatio } from '../Animation/animationOptionsUI.js?v=0.01';
 import {
@@ -28,8 +32,9 @@ const sideBar = document.querySelector('#sideBar');
 const exploreList = document.querySelector('#exploreList');
 
 const preventingMapInteractions = () => {
-	const view = queryController.mapView;
+	const view = getView();
 
+	console.log(view);
 	view.on('drag', (event) => {
 		if (isAnimating) {
 			event.stopPropagation();
@@ -125,6 +130,47 @@ sideBar.addEventListener(
 				.closest('.mapCard-slider')
 				.querySelector('.tooltipText')
 				.classList.add('visible');
+		}
+
+		if (event.target.closest('.infoIcon')) {
+			event.preventDefault();
+			console.log('info', event.target);
+			// console.log('info', event.target.element);
+			console.log(event.target.closest('.infoIcon'));
+			// console.log(
+			// 	event.target.closest('.infoIcon').querySelector('.tooltipText')
+			// );
+			if (
+				event.target
+					.closest('.infoIcon')
+					.querySelector('.tooltipText')
+					.classList.contains('visible')
+			) {
+				return;
+			}
+			event.target
+				.closest('.infoIcon')
+				.querySelector('.tooltipText')
+				.classList.add('visible');
+
+			event.target
+				.closest('.infoIcon')
+				.querySelector('.tooltipText').style.top = `${event.clientY - 194}px`;
+
+			event.target
+				.closest('.infoIcon')
+				.querySelector('.tooltipText').style.left = `${event.clientX + 20}px`;
+		}
+
+		if (
+			!event.target.closest('.infoIcon') &&
+			event.target.classList.contains('tooltipText')
+		) {
+			document.querySelectorAll('.tooltipText').forEach((tooltip) => {
+				if (tooltip.classList.contains('visible')) {
+					tooltip.classList.remove('visible');
+				}
+			});
 		}
 	},
 	true
@@ -294,8 +340,15 @@ document.querySelector('#viewDiv').addEventListener('click', (event) => {
 	if (event.target.closest('.choice')) {
 		event.stopImmediatePropagation();
 
+		const videoName = document.getElementById('animation-title').value
+			? document.getElementById('animation-title').value
+			: 'Topo Map Explorer';
+		console.log(videoName);
+		console.log(document.getElementById('animation-title'));
 		checkToposIncludedForDownload();
 		addDownloadingNotification();
+
+		setVideoExportName(videoName);
 	}
 
 	if (event.target.closest('.mapAnimationOverlay a')) {
