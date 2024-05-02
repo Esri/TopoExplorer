@@ -56,17 +56,14 @@ const imageExport = async (oid, opacity, isCancelled) => {
 	// 	cancelImageRequest();
 	// }
 	// prepParams();
-	const mapExtent = queryController.mapView.extent.clone().normalize()[0];
-	console.log(mapExtent);
 	const exportImageSize = queryController.mapView.size.join(', ');
 	const exportMosaicRule = JSON.stringify({
 		mosaicMethod: 'esriMosaicLockRaster',
 		lockRasterIds: [oid],
 	});
 
-	console.log();
 	const params = new URLSearchParams({
-		bbox: JSON.stringify(mapExtent),
+		bbox: JSON.stringify(queryController.mapView.extent.clone().normalize()[0]),
 		size: exportImageSize,
 		bboxSR: '102100',
 		imageSR: '102100',

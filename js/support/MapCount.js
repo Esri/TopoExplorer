@@ -38,7 +38,9 @@ const hideSpinnerIcon = () => {
 		document
 			.querySelector('.mobile-header .queryIndicator')
 			.classList.add('hidden');
-		document.querySelector('.notificationMessage').remove();
+		if (document.querySelector('.notificationMessage')) {
+			document.querySelector('.notificationMessage').remove();
+		}
 	}
 
 	spinnerIcon.classList.add('hidden');

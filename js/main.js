@@ -7,6 +7,7 @@ import { initView, newMapCrossHair } from './map/View.js?v=0.01';
 import {
 	queryController,
 	isHashedToposForQuery,
+	setView,
 } from './support/queryController.js?v=0.01';
 
 // import { isScrollAtPageEnd } from './support/eventListeners/ScrollListener.js?v=0.01';
@@ -22,23 +23,26 @@ import {
 } from './UI/ExportMaps/ExportMapsPrompt.js?v=0.01';
 import { initLayerToggle } from './UI/Basemaps/basemaps.js?v=0.01';
 import { setAccountData } from './support/AddItemRequest.js?v=0.01';
-import { animatingStatus } from './support/HashParams.js?v=0.01';
+// import { animatingStatus } from './support/HashParams.js?v=0.01';
 
 const initApp = async () => {
 	try {
 		const oauthResponse = await authorization();
 		const view = await initView();
 		const sliderValues = await getYearsAndScales(view);
-		const getPreviousTopos = await isHashedToposForQuery(view);
+		// const getPreviousTopos = await isHashedToposForQuery(view);
 		const initialMapQuery = () => {
 			queryController.setGeometry(view.extent.center);
 			queryController.mapView = view;
+			// setView(view);
 			queryController.extentQueryCall();
 			newMapCrossHair(view, view.center);
 		};
 
 		view
 			.when(() => {
+				// setView(view);
+				// queryController.mapView = view;
 				if (oauthResponse) {
 					addAccountImage(oauthResponse);
 					setAccountData(oauthResponse);
@@ -53,15 +57,10 @@ const initApp = async () => {
 				setViewInfo(view);
 			})
 			.then(() => {
-				getPreviousTopos;
-			})
-			.then(() => {
-				animatingStatus();
-			})
-			.then(() => {
+				isHashedToposForQuery(view);
 				console.log(view);
+
 				view.on('click', (event) => {
-					console.log('click', event.mapPoint);
 					const zoomLevel = view.zoom;
 					newMapCrossHair(view, event.mapPoint);
 					queryController.setGeometry(event.mapPoint);
@@ -69,40 +68,40 @@ const initApp = async () => {
 					updateHashParams(event.mapPoint, zoomLevel);
 				});
 
-				// require(['esri/core/reactiveUtils'], (reactiveUtils) => {
-				// 	let prevCenter;
-				// 	let currentZoom;
+				require(['esri/core/reactiveUtils'], (reactiveUtils) => {
+					let prevCenter;
+					let currentZoom;
 
-				// 	reactiveUtils.when(
-				// 		() => view?.stationary === true,
-				// 		async () => {
-				// 			if (prevCenter) {
-				// 				if (prevCenter.x === view.center.x) {
-				// 					return;
-				// 				}
-				// 			}
-				// 			queryController.setGeometry(view.extent.center);
-				// 			queryController.mapView = view;
-				// 			queryController.extentQueryCall();
-				// 			updateHashParams(view);
+					// 	reactiveUtils.when(
+					// 		() => view?.stationary === true,
+					// 		async () => {
+					// 			if (prevCenter) {
+					// 				if (prevCenter.x === view.center.x) {
+					// 					return;
+					// 				}
+					// 			}
+					// 			queryController.setGeometry(view.extent.center);
+					// 			queryController.mapView = view;
+					// 			queryController.extentQueryCall();
+					// 			updateHashParams(view);
 
-				// 			prevCenter = view?.center;
-				// 		}
-				// 	);
+					// 			prevCenter = view?.center;
+					// 		}
+					// 	);
 
-				// 	reactiveUtils.watch(
-				// 		() => [view.stationary, view.zoom],
-				// 		([stationary, zoom]) => {
-				// 			if (stationary && zoom !== currentZoom) {
-				// 				queryController.setGeometry(view.extent.center);
-				// 				queryController.mapView = view;
-				// 				queryController.extentQueryCall();
-				// 				updateHashParams(view);
-				// 				currentZoom = zoom;
-				// 			}
-				// 		}
-				// 	);
-				// });
+					// 	reactiveUtils.watch(
+					// 		() => [view.stationary, view.zoom],
+					// 		([stationary, zoom]) => {
+					// 			if (stationary && zoom !== currentZoom) {
+					// 				// queryController.setGeometry(view.extent.center);
+					// 				// queryController.mapView = view;
+					// 				// queryController.extentQueryCall();
+					// 				// updateHashParams(view.extent.center);
+					// 				currentZoom = zoom;
+					// 			}
+					// 		}
+					// 	);
+				});
 			});
 
 		// const isReadyForMoreMaps = (value) =>

@@ -12,7 +12,7 @@ import {
 	downloadErrorMessageHTML,
 } from './animationOptionsUI.js?v=0.01';
 import {
-	addAnimateStatusHashParam,
+	// addAnimateStatusHashParam,
 	removeAnimationStatusHashParam,
 } from '../../support/HashParams.js?v=0.01';
 
@@ -35,7 +35,7 @@ const beginAnimation = () => {
 	addAnimationLoading();
 	disableOpacitySlider();
 	//this last function, it's not a good name. Write something clearer.
-	addAnimateStatusHashParam();
+	// addAnimateStatusHashParam();
 	animationStart();
 };
 

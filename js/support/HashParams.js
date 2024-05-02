@@ -80,14 +80,14 @@ const addHashExportPrompt = (mapDetails) => {
 	window.location.hash += `&export=${mapsForExport}`;
 };
 
-const addAnimateStatusHashParam = () => {
-	if (parsedHashParams.animation) {
-		return;
-	}
-	const animationStatus = `&animation=true`;
+// const addAnimateStatusHashParam = () => {
+// 	if (parsedHashParams.animation) {
+// 		return;
+// 	}
+// 	const animationStatus = `&animation=true`;
 
-	window.location.hash += animationStatus;
-};
+// 	window.location.hash += animationStatus;
+// };
 
 const removeAnimationStatusHashParam = () => {
 	console.log('remove', parsedHashParams);
@@ -104,12 +104,14 @@ const removeAnimationStatusHashParam = () => {
 	window.location.hash = hashString;
 };
 
-const animatingStatus = () => {
-	if (parsedHashParams.animation) {
-		toggleListVisibility();
-		beginAnimation();
-	}
-};
+// const animatingStatus = () => {
+// 	console.log(parsedHashParams.animation);
+// 	if (parsedHashParams.animation) {
+// 		toggleListVisibility();
+// 		beginAnimation();
+// 	}
+// 	return;
+// };
 
 const hashCoordinates = () => {
 	parseHashParams();
@@ -162,9 +164,9 @@ export {
 	updateHashParams,
 	invertHashedMapOrder,
 	addHashExportPrompt,
-	addAnimateStatusHashParam,
+	// addAnimateStatusHashParam,
 	activeExport,
-	animatingStatus,
+	// animatingStatus,
 	removeExportParam,
 	removeAnimationStatusHashParam,
 	hashCoordinates,

@@ -20,7 +20,8 @@ import {
 	crosshairLayer,
 	mapHaloGraphicLayer,
 	currentStateOfPinnedList,
-	isTargetPolygonWithExtent,
+	isTargetPolygonWithinExtent,
+	getPinnedTopoGeometry,
 } from '../MapCards/ListOfMaps.js?v=0.01';
 import {
 	imageExport,
@@ -35,6 +36,8 @@ import {
 } from '../../map/MediaLayer.js?v=0.01';
 import { makeCompositeForAnimationDownload } from '../../support/AnimationComposite.js?v=0.01';
 import { createAnimationVideo } from '../../support/animationDownload.js?v=0.01';
+
+let mediaLayer;
 
 let videoExportName;
 
@@ -86,6 +89,7 @@ setInitialDuration(speeds);
 
 const setPinListCurrentOrder = () => {
 	pinListCurrentOrder = currentStateOfPinnedList();
+	console.log('the pinned maps to loop over', pinListCurrentOrder);
 };
 
 const getAnimatingImages = async () => {
@@ -106,12 +110,6 @@ const hideMapHalos = () => {
 };
 
 const hideCrosshairLayer = () => {
-	if (!crosshairLayer) {
-		setTimeout(() => {
-			hideCrosshairLayer();
-		}, 100);
-		return;
-	}
 	crosshairLayer.visible = false;
 };
 
@@ -147,52 +145,84 @@ const showTopoLayers = () => {
 	});
 };
 
-// const isIntersecting = async (cardMapLocation, mapViewExtent) => {
-// 	return new Promise((resolve, reject) => {
-// 		require(['esri/geometry/geometryEngine'], (geometryEngine) => {
-// 			// const createPolygon = Polygon.getExtent(cardMapLocation);
-// 			let isTopoInView = geometryEngine.intersects(
-// 				JSON.parse(cardMapLocation),
-// 				mapViewExtent
-// 			);
-
-// 			resolve(isTopoInView);
-// 		});
-// 	});
-// };
-
 const exportingTopoImageAndCreatingImageElement = async () => {
 	//check to see if the map with the oid and it's geometry are within the geometry of the extent
 	//if the geometry is within the extent, proceed with this map to the next steps
 	//if not, move to the next one.
 
-	for (const card of pinListCurrentOrder) {
-		const cardId = card.querySelector('.map-list-item').attributes.oid.value;
-		const cardMapLocation =
-			card.querySelector('.map-list-item').attributes.geometry.value;
-		const currentOpacity = card.querySelector('.opacity-slider').value / 100;
-		const imageName = `${
-			card.querySelector('.map-list-item .location').textContent
-		} ${card.querySelector('.map-list-item .year').textContent}`;
+	const processCardIntoImage = (card) => {
+		return new Promise((resolve) => {
+			console.log(card);
+			const cardId = card.querySelector('.map-list-item').attributes.oid.value;
+			// const cardMapLocation =
+			// 	card.querySelector('.map-list-item').attributes.geometry.value;
+			const currentOpacity = card.querySelector('.opacity-slider').value / 100;
+			const imageName = `${
+				card.querySelector('.map-list-item .location').textContent
+			} ${card.querySelector('.map-list-item .year').textContent}`;
 
-		if (isTargetPolygonWithExtent(cardMapLocation)) {
-			await imageExport(cardId, currentOpacity, isCancelled).then(
-				(imageData) => {
-					imageData.isCheckedForAnimation = true;
-					imageData.opacity = currentOpacity;
-					imageData.mapName = imageName;
+			getPinnedTopoGeometry(cardId).then((pinnedTopoMapGeometry) => {
+				if (isTargetPolygonWithinExtent(pinnedTopoMapGeometry)) {
+					imageExport(cardId, currentOpacity, isCancelled).then((imageData) => {
+						imageData.isCheckedForAnimation = true;
+						imageData.opacity = currentOpacity;
+						imageData.mapName = imageName;
 
-					arrayOfImageData.push(imageData);
-					imagesForDownload.topoImages.push(imageData);
+						arrayOfImageData.push(imageData);
+						imagesForDownload.topoImages.push(imageData);
 
-					createImageElementForMediaLayer(imageData);
-					showAvailableTopoCheckbox(cardId);
+						showAvailableTopoCheckbox(cardId);
+						resolve(imageData);
+					});
+					// .then(async (imageData) => {
+					// 	console.log(imageData);
+					// 	resolve(
+					// 		await Promise.resolve(
+					// 			createImageElementForMediaLayer(imageData)
+					// 		)
+					// 	);
+					// });
+				} else {
+					disableMapCardForAnimation(cardId);
+					resolve(false);
 				}
-			);
-		} else {
-			disableMapCardForAnimation(cardId);
-		}
+			});
+		});
+	};
+
+	const promiseArray = [];
+
+	for (const card of pinListCurrentOrder) {
+		// const cardId = card.querySelector('.map-list-item').attributes.oid.value;
+		// const cardMapLocation =
+		// 	card.querySelector('.map-list-item').attributes.geometry.value;
+		// currentOpacity = card.querySelector('.opacity-slider').value / 100;
+		// imageName = `${
+		// 	card.querySelector('.map-list-item .location').textContent
+		// } ${card.querySelector('.map-list-item .year').textContent}`;
+
+		promiseArray.push(processCardIntoImage(card));
 	}
+
+	// arrayOfImageData =
+	await Promise.all(promiseArray);
+
+	// arrayOfImageData = arrayOfImageData.filter((image) => !(image === false));
+	console.log(arrayOfImageData);
+};
+
+const addImageElementToMediaLayer = async () => {
+	const promiseArray = [];
+	console.log(arrayOfImageData);
+	for (const imageData of arrayOfImageData) {
+		console.log(imageData);
+		imagesForDownload.topoImages.push(imageData);
+		promiseArray.push(createImageElementForMediaLayer(imageData));
+	}
+
+	await Promise.all(promiseArray);
+
+	// console.log(arrayOfMapImages);
 };
 
 const disableMapCardForAnimation = (cardId) => {
@@ -203,12 +233,19 @@ const disableMapCardForAnimation = (cardId) => {
 
 const takeScreenshotOfView = () => {
 	return new Promise((resolve, reject) => {
-		for (const animationTopoImage of arrayOfMapImages) {
-			if (animationTopoImage.opacity !== 0) {
-				takeScreenshotOfView();
-				return;
-			}
-		}
+		// for (const animationTopoImage of arrayOfMapImages) {
+		// 	console.log(animationTopoImage);
+		// 	if (animationTopoImage.visible !== false) {
+		// 		takeScreenshotOfView();
+		// 		return;
+		// 	}
+		// }
+		// if (mediaLayer.visible === true) {
+		// 	console.log('media layer visible', mediaLayer);
+		// 	mediaLayer.visible === false;
+		// 	takeScreenshotOfView();
+		// 	return;
+		// }
 
 		const screenshotQualityValue = 98;
 		const screenshotFormat = 'jpg';
@@ -220,26 +257,20 @@ const takeScreenshotOfView = () => {
 			quality: screenshotQualityValue,
 		};
 
-		//not sure why, but the screenshot fires while an animating topoMap is visible on the screen.
-		//I don't like this solution, but the only workaround that seems to consistently work is to
-		//wait a moment before taking the snapshot.
-		setTimeout(() => {
-			queryController.mapView
-				.takeScreenshot(options)
-				.then(async (screenshot) => {
-					// startAnimationInterval();
-					const screenshotResponse = await fetch(screenshot.dataUrl);
-					const blob = URL.createObjectURL(await screenshotResponse.blob());
+		queryController.mapView.takeScreenshot(options).then(async (screenshot) => {
+			// startAnimationInterval();
+			const screenshotResponse = await fetch(screenshot.dataUrl);
+			const blob = URL.createObjectURL(await screenshotResponse.blob());
 
-					const basemapImage = {
-						id: 0,
-						url: blob,
-					};
+			const basemapImage = {
+				id: 0,
+				url: blob,
+			};
 
-					imagesForDownload.basemap = basemapImage;
-					resolve();
-				});
-		}, 500);
+			console.log(basemapImage);
+			// imagesForDownload.basemap = basemapImage;
+			resolve((imagesForDownload.basemap = basemapImage));
+		});
 	});
 };
 
@@ -257,40 +288,64 @@ const toggleMapCardDownloadAvailability = (mapCardOID) => {
 
 const clearBasemapOfAnimationFrames = () => {
 	for (const animationTopoImage of arrayOfMapImages) {
-		animationTopoImage.opacity = 0;
+		return (animationTopoImage.visible = false);
 	}
 };
 
+//this should be in another module
+const hideMediaLayer = () => {
+	return new Promise((resolve, reject) => {
+		// mediaLayer.visible = false;
+
+		queryController.mapView.map.remove(mediaLayer);
+
+		resolve();
+	});
+};
 const checkToposIncludedForDownload = async () => {
-	const animationFrames = [];
 	stopAnimationInterval();
-	clearBasemapOfAnimationFrames();
+	hideMediaLayer().then(async () => {
+		takeScreenshotOfView()
+			.then(() => {
+				//this should be in another module (the mediaLayer module) and called something like showMediaLayer
+				queryController.mapView.map.add(
+					mediaLayer,
+					queryController.mapView.map.layers.items.length - 2
+				);
+				startAnimationInterval();
+			})
+			.then(async () => {
+				try {
+					const processImages = imagesForDownload.topoImages.map(
+						async (topoMapImage) => {
+							return await Promise.resolve(
+								makeCompositeForAnimationDownload(
+									imagesForDownload.basemap,
+									topoMapImage
+								)
+							);
+						}
+					);
+					console.log('processImages', processImages);
 
-	await takeScreenshotOfView();
-	startAnimationInterval();
+					const topoAnimationComposite = await Promise.all(processImages);
 
-	for (const mapImageData of imagesForDownload.topoImages) {
-		if (mapImageData.isCheckedForAnimation) {
-			await makeCompositeForAnimationDownload(
-				imagesForDownload.basemap,
-				mapImageData
-			).then((image) => {
-				animationFrames.push(image);
+					const animationParams = {
+						data: topoAnimationComposite,
+						animationSpeed: duration,
+						outputWidth: animationDimensions.width,
+						outputHeight: animationDimensions.height,
+						authoringApp: videoExportName,
+						abortController: new AbortController(),
+					};
+
+					console.log(animationParams);
+					createAnimationVideo(animationParams);
+				} catch (e) {
+					console.error('error during image processing', e);
+				}
 			});
-		}
-	}
-
-	const animationParams = {
-		data: animationFrames,
-		animationSpeed: duration,
-		outputWidth: animationDimensions.width,
-		outputHeight: animationDimensions.height,
-		authoringApp: videoExportName,
-		abortController: new AbortController(),
-	};
-
-	console.log(animationParams);
-	createAnimationVideo(animationParams);
+	});
 };
 
 //NOTE: this is the hub for all animation related data is called. So how would you manage these functions if the animation is cancelled during the load? What is the risk condition?
@@ -301,13 +356,22 @@ const animationStart = async () => {
 	hideTopoLayers();
 	hideMapHalos();
 	await exportingTopoImageAndCreatingImageElement();
-	await createMediaLayer();
-	await getAnimatingImages();
+	await addImageElementToMediaLayer();
+	mediaLayer = await createMediaLayer();
+	getAnimatingImages();
+	getAnimationOrderForPinnedMapsUI();
 	startAnimationInterval();
 	removeAnimationLoadingDiv();
 	checkAnimationLoadStatus();
-	// console.log('name', getApplicationName());
 	return;
+};
+
+const getAnimationOrderForPinnedMapsUI = () => {
+	pinListCurrentOrder = pinListCurrentOrder.filter(
+		(pinnedCard) =>
+			!pinnedCard.firstElementChild.classList.contains('transparency')
+	);
+	console.log(pinListCurrentOrder);
 };
 
 const checkAnimationLoadStatus = () => {

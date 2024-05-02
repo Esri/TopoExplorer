@@ -22,9 +22,10 @@ import {
 } from './MapCount.js?v=0.01';
 import {
 	clearMapsList,
-	setMapListData,
+	// setMapListData,
 	createMapSlotItems,
 	makeCards,
+	setNumberOfPreviousTopos,
 } from '../UI/MapCards/ListOfMaps.js?v=0.01';
 import {
 	checkForPreviousTopos,
@@ -442,7 +443,7 @@ const yearsAndMapScales = {
 const queryController = {
 	url: `${url}/query`,
 	imageExportEndpoint: `${url}/exportImage`,
-	mapView: '',
+	mapView: null,
 	where: whereStatement,
 	geometry: '',
 	spatialRelation: 'esriSpatialRelIntersects',
@@ -611,8 +612,8 @@ const queryController = {
 			// const convertPolygonToWGS =
 			// 	webMercatorUtils.webMercatorToGeographic(createPolygon);
 
-			const geographicAdjustedLocation =
-				webMercatorUtils.webMercatorToGeographic(locationData);
+			// const geographicAdjustedLocation =
+			// 	webMercatorUtils.webMercatorToGeographic(locationData);
 
 			// if (geographicAdjustedLocation.xmin > geographicAdjustedLocation.xmax) {
 			// 	geographicAdjustedLocation.xmin -= 360;
@@ -649,8 +650,8 @@ const queryController = {
 			// 		wkid: 4326,
 			// 	},
 			// });
-
-			return (this.geometry = `${geographicAdjustedLocation.x}, ${geographicAdjustedLocation.y}`);
+			console.log('mappoint', locationData);
+			return (this.geometry = `${locationData.longitude}, ${locationData.latitude}`);
 		});
 	},
 	setSortChoice: function (choiceValue) {
@@ -701,7 +702,9 @@ const isHashedToposForQuery = async (view) => {
 		await dataForTopoExports();
 	}
 
-	if (checkForPreviousTopos()) {
+	const previousTopos = checkForPreviousTopos();
+
+	if (previousTopos) {
 		await getDataForHashedTopos(view);
 	}
 };
@@ -730,6 +733,8 @@ const getDataForHashedTopos = async (view) => {
 
 	const hashedTopos = checkForPreviousTopos();
 	const originalOrderHashedTopos = checkForPreviousTopos().split(',');
+	const numberOfPreviousTopos = originalOrderHashedTopos.length;
+	setNumberOfPreviousTopos(numberOfPreviousTopos);
 
 	const paramsForHashedTopos = setHashedTopoQueryParams(hashedTopos);
 
@@ -756,6 +761,13 @@ const getDataForHashedTopos = async (view) => {
 		});
 };
 
+const getView = () => {
+	return queryController.mapView;
+};
+
+const setView = (view) => {
+	queryController.mapView = view;
+};
 // const explorerMode = document.querySelector('.explorer-mode');
 
 // const styleListenerConfig = { attributes: true };
@@ -780,4 +792,6 @@ export {
 	getMinScale,
 	getMaxScale,
 	isHashedToposForQuery,
+	getView,
+	setView,
 };

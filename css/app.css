@@ -576,10 +576,11 @@ transform: translate(5px, 0px);
 }
 
 .pinned-mode-sub-section .iconWrapper .tooltipText{
+  pointer-events: none;
   position: absolute;
   left: 18px;
   width: 100px;
-  background-color: #555;
+  background-color: #637287;
   color: #fff;
   text-align: center;
   border-radius: 6px;

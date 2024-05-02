@@ -118,11 +118,24 @@ cursor: -webkit-grabbing;
   inset 2px 2px 1px #B8C2D3;
 }
 
-  /* NOTE: I was using this in the event for the drag-ability of the pinned map-cards*/
-  /* .map-list-item.selected {
-    cursor:move 
-  } */
-  
+.infoIcon svg path {
+  pointer-events: none;
+}
+
+.infoIcon .tooltipText {
+  position: absolute;
+  width: auto;
+  background-color: #637287;
+  color: #fff;
+  line-height:20px;
+  text-align: left;
+  text-wrap: balance;
+  border-radius: 6px;
+  padding: 10px;
+  z-index: 3;
+  opacity: 0.9;
+}
+
 .title-and-thumbnail {
   display: flex;
   flex: auto;
@@ -266,8 +279,6 @@ a.icon{
 .icon.pushpin .svgContainer.pinned{
   background:#637287
 }
-
-
 
 .action-area .tooltipText {
   position: absolute;

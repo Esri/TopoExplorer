@@ -3,6 +3,7 @@ import {
 	updateHashParams,
 	addHashExportPrompt,
 	invertHashedMapOrder,
+	// animatingStatus,
 } from '../../support/HashParams.js?v=0.01';
 import {
 	mapFootprint,
@@ -30,6 +31,8 @@ const topoMapDataArray = [];
 // const mapListDetails = [];
 const currentStateOfPinnedList = () =>
 	Array.from(pinList.querySelectorAll('.mapCard-container'));
+const topoGeometriesArray = [];
+const pinnedTopoGeometriesArray = [];
 
 const pinnedCardIDsArray = [];
 const pinnedCardHTMLArray = [];
@@ -50,6 +53,7 @@ const serviceURL = config.environment.serviceUrls.historicalTopoImageService;
 
 let currentView;
 //This layer contains the crosshair/mapPoint indicator that highlights the user's selection.
+let numberOfPreviousTopos;
 let crosshairLayer;
 //this is the layer is tied to the outline highlighting the map when you hover over the it's corresponding map card
 let mapFootprintLayer;
@@ -73,16 +77,34 @@ let currentlySelectedMapGeometry;
 let arrayFromPinListHTML;
 let gettingTopoID;
 
-const setMapListData = (list) => {
+const setTopoGeometriesArray = (list) => {
+	topoGeometriesArray.length = 0;
+	list.map((topoMap) => {
+		const topoMapGeometry = [topoMap.OBJECTID, topoMap.mapBoundry];
+
+		topoGeometriesArray.push(topoMapGeometry);
+	});
+};
+
+const addToPinnedTopoGeometriesArray = (oid, topoMapGeometry) => {
+	const pinnedTopoGeometry = [oid, topoMapGeometry];
+	pinnedTopoGeometriesArray.push(pinnedTopoGeometry);
+};
+
+const setMapDataArray = (list) => {
 	topoMapDataArray.length = 0;
 	list.map((topoData) => topoMapDataArray.push(topoData));
 };
 
+const setNumberOfPreviousTopos = (number) => {
+	numberOfPreviousTopos = number;
+};
+
 //This older function needs to be refactored. The reason for it being here is no longer applicable.
 const createMapSlotItems = (list, view) => {
-	setMapListData(list);
+	setMapDataArray(list);
+	setTopoGeometriesArray(list);
 
-	mapsList.innerHTML = noMapsHelpText;
 	if (!currentView) {
 		currentView = view;
 	}
@@ -137,13 +159,13 @@ const createMapSlotItems = (list, view) => {
 
 	if (list.length === 0) {
 		updateMapCount(list.length);
-
+		mapsList.innerHTML = noMapsHelpText;
 		return;
 	}
 
 	const isCurrentlySelectMapWithinView =
 		currentlySelectedMapId &&
-		isTargetPolygonWithExtent(currentlySelectedMapGeometry)
+		isTargetPolygonWithinExtent(currentlySelectedMapGeometry)
 			? true
 			: false;
 
@@ -154,231 +176,24 @@ const createMapSlotItems = (list, view) => {
 			return false;
 		}
 	};
-	// makeCards(list);
 
 	if (list[0].previousPinnedMap) {
 		makeCards(list);
 		return;
 	}
 	filterMaps();
-	// sortListByChoice(list, sortOption);
-
-	// const mapSlot = list
-	// 	.map((topoMap, index) => {
-	// 		// const topoViewData = {
-	// 		// 	oid: topoMap.OBJECTID,
-	// 		// 	geography: topoMap.mapBoundry,
-	// 		// };
-	// 		// topoMapDataArray.push(topoMap);
-
-	// 		if (
-	// 			isCurrentlySelectMapWithinView &&
-	// 			index === 0 &&
-	// 			!areOtherMapCardsPresent()
-	// 		) {
-	// 			const currentlySelectedMapCard = `
-	//       <div class='mapCard-container'>
-	//           ${currentlySelectedMapCardHTML}
-	//       </div>
-	//       `;
-
-	// 			return currentlySelectedMapCard;
-	// 		}
-
-	// 		const isCardPinned =
-	// 			topoMap.previousPinnedMap || getPinnedTopoIndex(`${topoMap.OBJECTID}`);
-
-	// 		// if (currentlySelectedMapId === topoMap.OBJECTID) {
-	// 		// 	return;
-	// 		// }
-
-	// 		return `
-	//       <div class='mapCard-container'>
-	//         <div class ='map-list-item' oid='${
-	// 					topoMap.OBJECTID
-	// 				}' geometry=${JSON.stringify(topoMap.mapBoundry)}>
-
-	//         <div class='topRow'>
-	//           <div class='left-margin'>
-
-	//             <div class="animate checkbox hidden">
-	//               <svg xmlns="http://www.w3.org/2000/svg" viewBox="1 0 20 20" height="16" width="16">
-	//                 <path class="checkmark" d="M5.5 12L2 8.689l.637-.636L5.5 10.727l8.022-7.87.637.637z"></path>
-	//               </svg>
-	//             </div>
-
-	//             <div class='drag-grip' draggable=true>
-	//               <div class='grip-dot'></div>
-	//               <div class='grip-dot'></div>
-	//               <div class='grip-dot'></div>
-	//             </div>
-
-	//           </div>
-
-	//           <div class="title-and-thumbnail">
-	//             <div class ='map-list-item-title'>
-	//               <div style="display:flex">
-	//                 <span class='infoIcon'>
-	//                   <span class='tooltipText hidden' style='top:-60px;'>Map Meta</span>
-	//                   <svg viewBox="1 1 26 26" xmlns="http://www.w3.org/2000/svg" height="18" width="18"><path d="M12.5 7.5a1 1 0 1 1 1-1 1.002 1.002 0 0 1-1 1zM13 18V9h-2v1h1v8h-1v1h3v-1zm9.8-5.5A10.3 10.3 0 1 1 12.5 2.2a10.297 10.297 0 0 1 10.3 10.3zm-1 0a9.3 9.3 0 1 0-9.3 9.3 9.31 9.31 0 0 0 9.3-9.3z"></path></svg>
-	//                 </span>
-	//                 <p class="mapSlotHeader"> <span class="year">${
-	// 									topoMap.date
-	// 								}</span> | <span class="name">${topoMap.mapName}</span>
-	//                 </p>
-	//               </div>
-	//               <p class ="mapSlotSub-title"> <span class="scale">${
-	// 								topoMap.mapScale
-	// 							}</span> | <span class="location">${topoMap.location}</span>
-	// 		</p>
-	//             </div>
-
-	//             <div class="img-cover">
-	//               <div class="frame">
-	//               </div>
-	//               <img src=${topoMap.thumbnail}>
-	//             </div>
-
-	//           </div>
-
-	//             </div>
-
-	//           <div class='action-container ${
-	// 						topoMap.OBJECTID == currentlySelectedMapId || isCardPinned !== -1
-	// 							? 'flex'
-	// 							: 'invisible'
-	// 					}'>
-	//             <div class='action-area'>
-	//               <div class='iconWrapper'>
-	//                 <span class='tooltipText hidden' style='top:-60px;'>Cannot pin more than 25 topos</span>
-	//                 <span class='tooltipText pinMap hidden' style='top:-80px;'>Add this to the "Pinned Topo Maps" tab at the top of this list</span>
-	//                 <span class='tooltipText unpinMap hidden' style='top:-45px;'>Unpin this topo map</span>
-	//                 <div class='icon pushpin ${
-	// 									isMobileFormat() ? 'invisible' : ''
-	// 								}'>
-
-	//                   <div class="checkmarkBackground ${
-	// 										isCardPinned === true || isCardPinned !== -1
-	// 											? ''
-	// 											: 'hidden'
-	// 									}">
-	//                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M20,0H3.56757A3.56754,3.56754,0,0,0,0,3.56757V20"></path></svg>
-	//                     <div class="checkmark">
-	//                       <svg xmlns="http://www.w3.org/2000/svg" width="10" height="12"viewBox="-3 3 32 32"><path fill="#637287" d="M11.927 22l-6.882-6.883-3 3L11.927 28 31.204 8.728l-3.001-3.001z"/></svg>
-	//                     </div>
-	//                   </div>
-	//                   <div class="unpinned svgContainer
-	//                   ${
-	// 										isCardPinned === true || isCardPinned !== -1
-	// 											? 'pinned'
-	// 											: ''
-	// 									}
-	//                   ${
-	// 										pinnedCardIDsArray.length === 25 && isCardPinned === -1
-	// 											? 'transparency'
-	// 											: ''
-	// 									}
-	//                   ">
-
-	//                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6 28 28"><path d="M5 0h7v1.417l-1 .581v6l1 .502v1.498H9v6l-.5 1-.5-1v-6H5V8.5l1-.502v-6L5 1.5V0z"/></svg>
-	//                   </div>
-	//                 </div>
-	//               </div>
-	//               <div class='iconWrapper zoom'>
-	//                 <span class='tooltipText hidden' style='top:-60px;'>Zoom to the extent of this topo map</span>
-	//                 <div class='icon' location='${topoMap.mapCenterGeographyX}, ${
-	// 			topoMap.mapCenterGeographyY
-	// 		}'>
-	//                 <svg class="zoomToExtent" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 16H2v6h6v-1H3zM16 3h5v5h1V2h-6zm5 18h-5v1h6v-6h-1zM8 2H2v6h1V3h5z"/><path fill="none" d="M0 0h24v24H0z"/>
-	//                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="-9 -8 36 36"><path d="M15.805 13.918l-3.067-3.068a.668.668 0 0 0-.943 0l-.124.124-1.108-1.108A5.279 5.279 0 1 0 6.5 11.8a5.251 5.251 0 0 0 3.373-1.244l1.108 1.108-.13.129a.667.667 0 0 0 0 .943l3.068 3.067a.665.665 0 0 0 .943 0l.943-.942a.666.666 0 0 0 0-.943zM6.5 10.8a4.3 4.3 0 1 1 4.3-4.3 4.304 4.304 0 0 1-4.3 4.3zm7.89 4.06l-2.596-2.595.473-.473 2.595 2.598z"/><path fill="none" d="M0 0h16v16H0z"/></svg>
-	//                 </svg>
-	//                 </div>
-	//               </div>
-	//               <div class='iconWrapper'>
-	//               <span class='tooltipText hidden' style='top:-77px;'>Save this topo map to a new ArcGIS Online web map</span>
-	//                 <div class='icon save'>
-	//                   <svg class="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2 2h11v1H3v18h18V11h1v11H2zm20 6V2h-6v1h4.3l-8.41 8.403.707.707L21 3.714V8z"/><path fill="none" d="M0 0h24v24H0z"/></svg>
-	//                 </div>
-	//               </div>
-	//               <div class='iconWrapper'>
-	//                 <span class='tooltipText hidden' style='top:-60px;'>Download this topo map as a GeoTIFF</span>
-	//                 <a class='icon download' href="${
-	// 									topoMap.downloadLink
-	// 								}" download="${topoMap.location}, ${topoMap.date}, ${
-	// 			topoMap.mapScale
-	// 		}">
-	//                   <svg class="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 3v12.294l2.647-2.647.707.707-3.853 3.854-3.854-3.854.707-.707L12 15.292V3zM6 21h13v-1H6z"/><path fill="none" d="M0 0h24v24H0z"/></svg>
-	//                 </a>
-	//               </div>
-
-	//               <div class='mapCard-slider'>
-	//               <span class='tooltipText hidden' style='top:-60px; left: 60px'>Adjust the transparency of this topo map.</span>
-	//                 <div>
-	//                 <div class='slider-range'>
-	//                   <div class='slider-range-background'></div>
-	//                   <div class='slider-range-color' style= "width: ${
-	// 										topoMap.OBJECTID == currentlySelectedMapId ||
-	// 										isCardPinned !== -1
-	// 											? setTopoOpacity(topoMap.OBJECTID)
-	// 											: 100
-	// 									}%;"></div>
-	//                 </div>
-	//                 <input class="opacity-slider" type="range" list="" value=100
-	//                     min="0" max="100">
-	//                 </input>
-	//                 </div>
-	//               </div>
-	//             </div>
-	//           </div>
-	//         </div>
-	//       </div>`;
-	// 	})
-	// 	.join(' ');
-
-	// if (list[0].previousPinnedMap) {
-	// 	const mapCardContainingDiv = document.createElement('div');
-	// 	mapCardContainingDiv.innerHTML = mapSlot;
-	// 	const containingItem =
-	// 		mapCardContainingDiv.querySelector('.mapCard-container');
-
-	// 	addHalo(list[0].OBJECTID, JSON.stringify(list[0].mapBoundry));
-	// 	isCurrentMapPinned(containingItem, addToPinnedArray);
-	// 	addPreviouslyPinnedTopoToMap(list[0].OBJECTID, serviceURL);
-	// 	return;
-	// }
-	// console.log('topo data in list', topoMapDataArray);
-	// console.log(list);
-	// updateMapCount(list.length);
-	// mapsList.innerHTML = mapSlot;
-
-	// mapListItems = document.querySelectorAll('.map-list-item');
 }; //end of the mapCard Generator
 
 const makeCards = (list) => {
 	console.log('make the cards?', list);
-	// sortListByChoice(list);
+	if (list.length === 0) {
+		updateMapCount(list.length);
+		mapsList.innerHTML = noMapsHelpText;
+		return;
+	}
+
 	const mapSlot = list
 		.map((topoMap, index) => {
-			// const topoViewData = {
-			// 	oid: topoMap.OBJECTID,
-			// 	geography: topoMap.mapBoundry,
-			// };
-			// topoMapDataArray.push(topoMap);
-
-			// if (
-			// 	isCurrentlySelectMapWithinView &&
-			// 	index === 0 &&
-			// 	!areOtherMapCardsPresent()
-			// ) {
-			// 	const currentlySelectedMapCard = `
-			//   <div class='mapCard-container'>
-			//       ${currentlySelectedMapCardHTML}
-			//   </div>
-			//   `;
-
-			// 	return currentlySelectedMapCard;
-			// }
-
 			const isCardPinned =
 				topoMap.previousPinnedMap || getPinnedTopoIndex(`${topoMap.OBJECTID}`);
 
@@ -408,15 +223,43 @@ const makeCards = (list) => {
             <div class="title-and-thumbnail">
               <div class ='map-list-item-title'>
                 <div style="display:flex">
-                  <span class='infoIcon'>
-                    <span class='tooltipText hidden' style='top:-60px;'>Map Meta</span>
-                    <svg viewBox="1 1 26 26" xmlns="http://www.w3.org/2000/svg" height="18" width="18"><path d="M12.5 7.5a1 1 0 1 1 1-1 1.002 1.002 0 0 1-1 1zM13 18V9h-2v1h1v8h-1v1h3v-1zm9.8-5.5A10.3 10.3 0 1 1 12.5 2.2a10.297 10.297 0 0 1 10.3 10.3zm-1 0a9.3 9.3 0 1 0-9.3 9.3 9.31 9.31 0 0 0 9.3-9.3z"></path></svg>
-                  </span>
-                  <p class="mapSlotHeader"> <span class="year">${
-										topoMap.date
-									}</span> | <span class="name">${topoMap.mapName}</span>
-                  </p>
-                </div>
+                    
+                  <div class='infoIcon' >
+                    <div>
+                    <svg class='svg' xmlns="http://www.w3.org/2000/svg" viewBox="1 -1 21 21" height="16" width="16"><path d="M8.5 6.5a1 1 0 1 1 1-1 1.002 1.002 0 0 1-1 1zM8 13h1V8H8zm2-1H7v1h3zm5.8-3.5a7.3 7.3 0 1 1-7.3-7.3 7.3 7.3 0 0 1 7.3 7.3zm-1 0a6.3 6.3 0 1 0-6.3 6.3 6.307 6.307 0 0 0 6.3-6.3z"></path></svg>
+                    </div>  
+                    <div class='tooltipText hidden''>
+                      <p>Survey year: ${
+												topoMap.topo.attributes.Survey_Year || 'unavailable'
+											}</p>
+                      <p>Photo Year: ${
+												topoMap.topo.attributes.Aerial_Photo_Year ||
+												'unavailable'
+											}</p>
+                      <p>Photo Revision Year: ${
+												topoMap.topo.attributes.Photo_Revision || 'unavailable'
+											}</p>
+                      <p>Field Check Year: ${
+												topoMap.topo.attributes.Field_Check_Year ||
+												'unavailable'
+											}</p>
+                      <p>Projection: ${
+												topoMap.topo.attributes.Projection || 'unavailable'
+											}</p>
+                      <p>Datum: ${
+												topoMap.topo.attributes.Datum || 'unavailable'
+											}</p>
+                      <p>Citation: ${
+												topoMap.topo.attributes.Citation || 'unavailable'
+											}</p>
+                    </div>
+                    
+                  </div>
+                    <p class="mapSlotHeader"> <span class="year">${
+											topoMap.date
+										}</span> | <span class="name">${topoMap.mapName}</span>
+                    </p>
+                  </div>
                 <p class ="mapSlotSub-title"> <span class="scale">${
 									topoMap.mapScale
 								}</span> | <span class="location">${topoMap.location}</span>
@@ -531,12 +374,17 @@ const makeCards = (list) => {
 			mapCardContainingDiv.querySelector('.mapCard-container');
 
 		addHalo(list[0].OBJECTID, JSON.stringify(list[0].mapBoundry));
-		isCurrentMapPinned(containingItem, addToPinnedArray);
+		isCurrentMapPinned(
+			containingItem,
+			JSON.stringify(list[0].mapBoundry),
+			addToPinnedArray
+		);
 		addPreviouslyPinnedTopoToMap(list[0].OBJECTID, serviceURL);
+
 		return;
 	}
 	console.log('topo data in list', topoMapDataArray);
-	console.log(list);
+	console.log(topoGeometriesArray);
 	updateMapCount(list.length);
 	mapsList.innerHTML = mapSlot;
 
@@ -638,7 +486,7 @@ const setTopoMapPlaceholder = (oid, mapGeometry, isMapCardOpen) => {
 	}
 };
 
-const isTargetPolygonWithExtent = (currentlySelectedMapGeometry) => {
+const isTargetPolygonWithinExtent = (currentlySelectedMapGeometry) => {
 	//determines wether a specific polygon is within the visible extent of the mapView.
 	//This function deconstructs the rings of a polygon to create a simple extent object containing the xMax,Ymax,xMin,yMin of the polygon.
 	// it then evaluates whether any of those points are withing the extent.
@@ -646,11 +494,12 @@ const isTargetPolygonWithExtent = (currentlySelectedMapGeometry) => {
 		? JSON.parse(currentlySelectedMapGeometry)
 		: null;
 
-	const currentExtent = currentView.extent.normalize();
-
 	if (!currentlySelectedMapGeometryObj) {
 		return;
 	}
+
+	const extent = currentView.extent.clone().normalize()[0];
+	console.log(extent);
 
 	const topoExtent = {
 		xmax: null,
@@ -660,8 +509,7 @@ const isTargetPolygonWithExtent = (currentlySelectedMapGeometry) => {
 	};
 
 	console.log(currentlySelectedMapGeometryObj);
-	console.log(currentView.extent);
-	console.log(currentExtent);
+	console.log(currentView);
 
 	currentlySelectedMapGeometryObj.rings[0].map((coordinates, index) => {
 		if (index === 0) {
@@ -685,20 +533,11 @@ const isTargetPolygonWithExtent = (currentlySelectedMapGeometry) => {
 		}
 	});
 
-	console.log(topoExtent);
-	console.log(currentExtent[0].xmax);
-	console.log(currentExtent[0].ymax);
-
-	console.log(topoExtent.ymax >= currentExtent[0].ymin);
-	console.log(topoExtent.ymin <= currentExtent[0].ymax);
-	console.log(topoExtent.xmax >= currentExtent[0].xmin);
-	console.log(topoExtent.xmin <= currentExtent[0].xmax);
-
 	if (
-		topoExtent.ymax >= currentExtent[0].ymin &&
-		topoExtent.ymin <= currentExtent[0].ymax &&
-		topoExtent.xmax >= currentExtent[0].xmin &&
-		topoExtent.xmin <= currentExtent[0].xmax
+		topoExtent.ymax >= extent.ymin &&
+		topoExtent.ymin <= extent.ymax &&
+		topoExtent.xmax >= extent.xmin &&
+		topoExtent.xmin <= extent.xmax
 	) {
 		return true;
 	}
@@ -755,9 +594,9 @@ const formatPinnedListMapCard = (targetOID, targetMapCard) => {
 	updatePinnedListHTML(mapObj);
 };
 
-const addToPinnedArray = (oid, targetMapCard) => {
+const addToPinnedArray = (oid, targetMapCard, topoMapGeometry) => {
 	pinnedCardIDsArray.push(`${oid}`);
-
+	addToPinnedTopoGeometriesArray(oid, topoMapGeometry);
 	formatPinnedListMapCard(oid, targetMapCard);
 	updatePinnedNumberHeader();
 	updateHashParams(pinnedCardIDsArray);
@@ -765,6 +604,13 @@ const addToPinnedArray = (oid, targetMapCard) => {
 	if (pinnedCardIDsArray.length === 25) {
 		pinBtnUnavailable();
 	}
+
+	// if (pinnedCardIDsArray.length === numberOfPreviousTopos) {
+	// 	console.log('check ani');
+	// 	animatingStatus();
+	// }
+
+	return;
 };
 
 const removePinnedCardFromHTML = (oid) => {
@@ -776,6 +622,7 @@ const removePinnedCardFromHTML = (oid) => {
 
 const removePinnedTopo = (index, oid) => {
 	removePinnedCardFromHTML(oid);
+	removeFromPinnedGeometriesArray(oid);
 	pinnedCardIDsArray.splice(index, 1);
 	pinnedCardHTMLArray.splice(index, 1);
 	mapFootprintLayer.graphics.removeAll();
@@ -813,7 +660,8 @@ const closeSelectedMap = (currentlySelectedMapId) => {
 	// }
 };
 
-const isCurrentMapPinned = (targetMapCard, callback) => {
+const isCurrentMapPinned = (targetMapCard, topoMapGeometry, callback) => {
+	console.log('pinnedCheck');
 	const oid =
 		targetMapCard.querySelector('.map-list-item').attributes.oid.value;
 
@@ -827,7 +675,7 @@ const isCurrentMapPinned = (targetMapCard, callback) => {
 
 		const cardHTML = targetMapCard.innerHTML;
 
-		callback(oid, cardHTML);
+		callback(oid, cardHTML, topoMapGeometry);
 		currentlySelectedMapCardHTML = cardHTML;
 		// setTopoMapPlaceholder(oid);
 		return;
@@ -838,7 +686,7 @@ const isCurrentMapPinned = (targetMapCard, callback) => {
 
 		const mapCardGeometry = relatedMapCard
 			? relatedMapCard.attributes.geometry.value
-			: null;
+			: getPinnedTopoGeometry(oid);
 
 		if (oid == currentlySelectedMapId && pinnedCardIDsArray.length >= 1) {
 			setTopoMapPlaceholder(oid, mapCardGeometry, true);
@@ -877,14 +725,25 @@ const isCurrentMapPinned = (targetMapCard, callback) => {
 const mapPinningAction = (pinIcon, pinCheckmarkIcon, targetMapCard) => {
 	pinIcon.classList.toggle('pinned');
 	pinCheckmarkIcon.classList.toggle('hidden');
+	const objectId =
+		targetMapCard.querySelector('.map-list-item').attributes.oid.value;
 
 	// pinIcon.closest('.pushpin').classList.toggle('pinned');
-
-	if (pinIcon.classList.contains('pinned')) {
-		isCurrentMapPinned(targetMapCard, addToPinnedArray);
-	} else {
-		isCurrentMapPinned(targetMapCard, removeTopoFromMap);
+	if (!pinIcon.classList.contains('pinned')) {
+		getPinnedTopoGeometry(objectId).then((topoMapGeometry) => {
+			isCurrentMapPinned(targetMapCard, topoMapGeometry, removeTopoFromMap);
+		});
 	}
+
+	getTopoGeometry(objectId).then((topoMapGeometry) => {
+		if (pinIcon.classList.contains('pinned')) {
+			isCurrentMapPinned(targetMapCard, topoMapGeometry, addToPinnedArray);
+		}
+		//This conditional may no longer be necessary
+		//   else {
+		// 		isCurrentMapPinned(targetMapCard, topoMapGeometry, removeTopoFromMap);
+		// 	}
+	});
 };
 
 const findTopoLayer = (oid) => {
@@ -1067,11 +926,22 @@ const zoomEvent = (eventTarget, oid) => {
 	if (!eventTarget.closest('.zoom')) {
 		return;
 	}
-	const targetGeometry =
-		eventTarget.closest('.map-list-item').attributes.geometry.value;
+	// const targetGeometry =
+	// 	eventTarget.closest('.map-list-item').attributes.geometry.value;
 
-	mapFootprint(oid, targetGeometry).then((specificTopo) => {
-		zoomToTopo(specificTopo.geometry);
+	if (!eventTarget.closest('#pinnedList')) {
+		getTopoGeometry(oid).then((topoGeometryData) => {
+			mapFootprint(oid, topoGeometryData).then((specificTopo) => {
+				zoomToTopo(specificTopo.geometry);
+			});
+		});
+		return;
+	}
+
+	getPinnedTopoGeometry(oid).then((topoGeometryData) => {
+		mapFootprint(oid, topoGeometryData).then((specificTopo) => {
+			zoomToTopo(specificTopo.geometry);
+		});
 	});
 };
 
@@ -1155,7 +1025,7 @@ const isMapCardOpen = (target, targetOID) => {
 		removeTopoFromMap(targetOID);
 	}
 	const targetTopLevel = target.closest('.map-list-item');
-	const targetGeometry = targetTopLevel.attributes.geometry.value;
+	// const targetGeometry = targetTopLevel.attributes.geometry.value;
 	// const cardHTML = target.closest('.mapCard-container').innerHTML;
 
 	if (
@@ -1169,19 +1039,21 @@ const isMapCardOpen = (target, targetOID) => {
 		.querySelector('.action-container')
 		.classList.contains('invisible');
 
-	if (targetInvisability) {
-		checkAnyOpenMapCards(targetOID);
-		addTopoToMap(targetOID, serviceURL);
-		addHalo(targetOID, targetGeometry);
-		openMapCard(target);
-		setTopoMapPlaceholder(targetOID, targetGeometry, false);
-		return false;
-	} else {
-		closeMapCard(target);
-		setTopoMapPlaceholder(targetOID, targetGeometry, true);
-		removeTopoFromMap(targetOID);
-		return true;
-	}
+	getTopoGeometry(targetOID).then((targetGeometry) => {
+		if (targetInvisability) {
+			checkAnyOpenMapCards(targetOID);
+			addTopoToMap(targetOID, serviceURL);
+			addHalo(targetOID, targetGeometry);
+			openMapCard(target);
+			setTopoMapPlaceholder(targetOID, targetGeometry, false);
+			return false;
+		} else {
+			closeMapCard(target);
+			setTopoMapPlaceholder(targetOID, targetGeometry, true);
+			removeTopoFromMap(targetOID);
+			return true;
+		}
+	});
 };
 
 const reorderPinListEvent = (event) => {
@@ -1310,7 +1182,9 @@ sideBarElement.addEventListener('click', (event) => {
 });
 
 const toggleAnimateCheckbox = (eventTarget) => {
-	const checkmark = eventTarget.querySelector('path');
+	const checkmark = eventTarget.classList.contains('checkmark')
+		? eventTarget
+		: eventTarget.querySelector('path');
 	checkmark.classList.toggle('hidden');
 };
 
@@ -1362,11 +1236,22 @@ sideBarElement.addEventListener(
 			let mapItem = event.target;
 
 			const mapCardID = mapItem.attributes.oid.value;
-			const mapCardGeometry = mapItem.attributes.geometry.value;
 
-			mapFootprint(mapCardID, mapCardGeometry).then((topoOutline) => {
-				mapGeometry = topoOutline;
-				mapFootprintLayer.graphics.add(mapGeometry);
+			if (!event.target.closest('#pinnedList')) {
+				getTopoGeometry(mapCardID).then((topoGeometryData) => {
+					mapFootprint(mapCardID, topoGeometryData).then((topoOutline) => {
+						mapGeometry = topoOutline;
+						mapFootprintLayer.graphics.add(mapGeometry);
+					});
+				});
+				return;
+			}
+
+			getPinnedTopoGeometry(mapCardID).then((topoGeometryData) => {
+				mapFootprint(mapCardID, topoGeometryData).then((topoOutline) => {
+					mapGeometry = topoOutline;
+					mapFootprintLayer.graphics.add(mapGeometry);
+				});
 			});
 		}
 	},
@@ -1538,70 +1423,32 @@ const setFilterValues = (minYear, maxYear, minScale, maxScale) => {
 	filterValues.maxYear = maxYear;
 	filterValues.minScale = minScale;
 	filterValues.maxScale = maxScale;
-
-	console.log(filterValues);
 };
 
 const filterMaps = () => {
-	console.log(filterValues);
-	// console.log('the values', minYear, maxYear, minScale, maxScale);
 	if (!filterValues.minYear) {
 		sortListByChoice(topoMapDataArray);
 		return;
 	}
 
 	const isWithinYearValues = (map, view) => {
-		// console.log(map.topo.attributes.Map_Scale);
-
-		// console.log(minYear);
-		// console.log(maxYear);
 		if (
 			map.date >= filterValues.minYear &&
 			map.date <= filterValues.maxYear &&
 			map.topo.attributes.Map_Scale >= filterValues.minScale &&
 			map.topo.attributes.Map_Scale <= filterValues.maxScale
 		) {
-			// console.log('this a good map', map);
 			return true;
 		}
 		return false;
 	};
 
 	const filteredList = topoMapDataArray.filter(isWithinYearValues);
-	console.log(topoMapDataArray);
-	console.log(filteredList);
-	// sortListByChoice(filteredList, sortOption);
+
 	sortListByChoice(filteredList);
 };
 
-// const filterMapsByScale = (minScale, maxScale) => {
-// 	console.log(topoMapDataArray);
-// 	console.log('the values', minScale, maxScale);
-// 	const isWithinScaleValues = (map) => {
-// 		// console.log('scale for this one is...', map.topo.attributes);
-
-// 		console.log(minScale);
-// 		console.log(maxScale);
-// 		if (
-// 			map.topo.attributes.Map_Scale >= minScale &&
-// 			map.topo.attributes.Map_Scale <= maxScale
-// 		) {
-// 			console.log('this one okay', map);
-// 			return true;
-// 		}
-// 		return false;
-// 	};
-
-// 	const filteredList = topoMapDataArray.filter(isWithinScaleValues);
-// 	console.log(topoMapDataArray);
-// 	console.log(filteredList);
-
-// 	createMapSlotItems(filteredList);
-// };
-
 const sortListByChoice = (list) => {
-	console.log(list);
-	console.log(sortOption);
 	if (sortOption === 'yearAsc') {
 		list.sort((a, b) => a.date - b.date);
 	}
@@ -1656,34 +1503,60 @@ const sortListByChoice = (list) => {
 };
 
 const setSortOptions = (choiceValue) => {
-	// queryController.setSortChoice(choiceValue);
-	// queryController.extentQueryCall();
 	console.log('sort is', choiceValue);
 	//if the choiceValue picked is the same as the pre-existing sort option, end the function
 	if (sortOption === choiceValue) {
-		console.log('smae choice?', sortOption, choiceValue);
 		return;
 	}
 	sortOption = choiceValue;
+};
 
-	// console.log('this choice is set to', choiceValue);
+const getTopoGeometry = (objectId) => {
+	return new Promise((resolve) => {
+		topoGeometriesArray.find((topoMap) => {
+			// console.log(topoMap);
+			if (topoMap[0] == objectId) {
+				// console.log(topoMap);
+				resolve(JSON.stringify(topoMap[1]));
+			}
+		});
+	});
+};
+
+const getPinnedTopoGeometry = (objectId) => {
+	return new Promise((resolve) => {
+		pinnedTopoGeometriesArray.find((pinnedTopoMap) => {
+			if (pinnedTopoMap[0] == objectId) {
+				resolve(pinnedTopoMap[1]);
+			}
+		});
+	});
+};
+
+const removeFromPinnedGeometriesArray = (objectId) => {
+	const pinnedTopoIndex = pinnedCardIDsArray
+		.map((topoID) => topoID)
+		.indexOf(objectId);
+
+	pinnedTopoGeometriesArray.splice(pinnedTopoIndex, 1);
 };
 
 initSortChoice(setSortOptions, filterMaps);
 
 export {
 	clearMapsList,
-	setMapListData,
+	setMapDataArray,
 	setFilterValues,
-	// sortListByChoice,
 	createMapSlotItems,
+	setNumberOfPreviousTopos,
 	makeCards,
 	opacitySliderEvent,
 	zoomEvent,
 	findTopoLayer,
 	currentStateOfPinnedList,
-	isTargetPolygonWithExtent,
+	isTargetPolygonWithinExtent,
 	toggleListVisibility,
+	getPinnedTopoGeometry,
 	mapHaloGraphicLayer,
 	crosshairLayer,
 	filterMaps,
