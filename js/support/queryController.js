@@ -26,6 +26,7 @@ import {
 	createMapSlotItems,
 	makeCards,
 	setNumberOfPreviousTopos,
+	removeUnpinnedTopo,
 } from '../UI/MapCards/ListOfMaps.js?v=0.01';
 import {
 	checkForPreviousTopos,
@@ -543,7 +544,11 @@ const queryController = {
 		this.resultRecordCount = '';
 
 		// isQueryInProcess = true;
-		clearMapsList(), showSpinnerIcon(), hideMapCount(), this.queryMapData();
+		removeUnpinnedTopo(),
+			clearMapsList(),
+			showSpinnerIcon(),
+			hideMapCount(),
+			this.queryMapData();
 
 		// numberOfMapsinView(this.url, this.totalMapsInExtentParams())
 		// 	.then((response) => {

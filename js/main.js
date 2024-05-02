@@ -23,7 +23,7 @@ import {
 } from './UI/ExportMaps/ExportMapsPrompt.js?v=0.01';
 import { initLayerToggle } from './UI/Basemaps/basemaps.js?v=0.01';
 import { setAccountData } from './support/AddItemRequest.js?v=0.01';
-// import { animatingStatus } from './support/HashParams.js?v=0.01';
+import { animatingStatus } from './support/HashParams.js?v=0.01';
 
 const initApp = async () => {
 	try {
@@ -71,6 +71,18 @@ const initApp = async () => {
 				require(['esri/core/reactiveUtils'], (reactiveUtils) => {
 					let prevCenter;
 					let currentZoom;
+
+					reactiveUtils.when(
+						() => view?.updating === false,
+						() => {
+							console.log('done building layers');
+							initialMapQuery();
+							animatingStatus();
+						},
+						{
+							once: true,
+						}
+					);
 
 					// 	reactiveUtils.when(
 					// 		() => view?.stationary === true,

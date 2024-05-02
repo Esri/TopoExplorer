@@ -588,6 +588,7 @@ transform: translate(5px, 0px);
   z-index: 1;
   top: -20px;
   margin-left: -60px;
+  opacity: 0.9;
   transition: opacity 0.3s;
 }
 

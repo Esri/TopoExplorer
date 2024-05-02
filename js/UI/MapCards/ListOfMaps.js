@@ -1551,6 +1551,15 @@ const removeFromPinnedGeometriesArray = (objectId) => {
 
 initSortChoice(setSortOptions, filterMaps);
 
+const removeUnpinnedTopo = () => {
+	if (
+		currentlySelectedMapId &&
+		pinnedCardIDsArray.indexOf(`${currentlySelectedMapId}`) === -1
+	) {
+		removeTopoFromMap(currentlySelectedMapId);
+	}
+};
+
 export {
 	clearMapsList,
 	setMapDataArray,
@@ -1568,4 +1577,5 @@ export {
 	mapHaloGraphicLayer,
 	crosshairLayer,
 	filterMaps,
+	removeUnpinnedTopo,
 };
