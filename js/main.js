@@ -49,7 +49,6 @@ const initApp = async () => {
 				}
 
 				sliderValues;
-				initialMapQuery();
 			})
 			.then(() => {
 				initLayerToggle(view);
@@ -58,6 +57,7 @@ const initApp = async () => {
 			})
 			.then(() => {
 				isHashedToposForQuery(view);
+				initialMapQuery();
 				console.log(view);
 
 				view.on('click', (event) => {

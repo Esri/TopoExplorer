@@ -163,11 +163,11 @@ const createMapSlotItems = (list, view) => {
 		return;
 	}
 
-	const isCurrentlySelectMapWithinView =
-		currentlySelectedMapId &&
-		isTargetPolygonWithinExtent(currentlySelectedMapGeometry)
-			? true
-			: false;
+	// const isCurrentlySelectMapWithinView =
+	// 	currentlySelectedMapId &&
+	// 	isTargetPolygonWithinExtent(currentlySelectedMapGeometry)
+	// 		? true
+	// 		: false;
 
 	const areOtherMapCardsPresent = () => {
 		if (explorerList.querySelectorAll('.map-list-item')[0]) {
@@ -199,9 +199,7 @@ const makeCards = (list) => {
 
 			return `
         <div class='mapCard-container'>
-          <div class ='map-list-item' oid='${
-						topoMap.OBJECTID
-					}' geometry=${JSON.stringify(topoMap.mapBoundry)}>
+          <div class ='map-list-item' oid='${topoMap.OBJECTID}'>
 
           <div class='topRow'>
             <div class='left-margin'>
@@ -454,10 +452,17 @@ mapModes.addEventListener('click', (event) => {
 	toggleListVisibility();
 });
 
-const setTopoMapPlaceholder = (oid, mapGeometry, isMapCardOpen) => {
+const setTopoMapPlaceholder = (oid, isMapCardOpen) => {
 	//if mobile is active, do not keep track of the most recently opened topo
-
 	if (isMobileFormat()) {
+		// return;
+		console.log(
+			'setting placeholding in mobile',
+			oid,
+			mapGeometry,
+			isMapCardOpen
+		);
+		currentlySelectedMapId = oid;
 		return;
 	}
 
@@ -490,6 +495,7 @@ const isTargetPolygonWithinExtent = (currentlySelectedMapGeometry) => {
 	//determines wether a specific polygon is within the visible extent of the mapView.
 	//This function deconstructs the rings of a polygon to create a simple extent object containing the xMax,Ymax,xMin,yMin of the polygon.
 	// it then evaluates whether any of those points are withing the extent.
+	console.log('was this called?');
 	const currentlySelectedMapGeometryObj = currentlySelectedMapGeometry
 		? JSON.parse(currentlySelectedMapGeometry)
 		: null;
@@ -546,6 +552,10 @@ const isTargetPolygonWithinExtent = (currentlySelectedMapGeometry) => {
 };
 
 const checkAnyOpenMapCards = (oid) => {
+	if (isMobileFormat()) {
+		console.log('checking other mapcards');
+		// return;
+	}
 	mapListItems.forEach((mapCard) => {
 		if (mapCard.attributes.oid.value == oid || currentlySelectedMapId == oid) {
 			return;
@@ -680,16 +690,14 @@ const isCurrentMapPinned = (targetMapCard, topoMapGeometry, callback) => {
 		// setTopoMapPlaceholder(oid);
 		return;
 	} else {
-		const relatedMapCard = explorerList.querySelector(
-			`.map-list-item[oid="${oid}"]`
-		);
+		const relatedMapCard = explorerList.querySelector(`.map-list-item`)
+			? explorerList.querySelector(`.map-list-item[oid="${oid}"]`)
+			: null;
 
-		const mapCardGeometry = relatedMapCard
-			? relatedMapCard.attributes.geometry.value
-			: getPinnedTopoGeometry(oid);
+		// const mapCardGeometry = getPinnedTopoGeometry(oid);
 
 		if (oid == currentlySelectedMapId && pinnedCardIDsArray.length >= 1) {
-			setTopoMapPlaceholder(oid, mapCardGeometry, true);
+			setTopoMapPlaceholder(oid, true);
 		}
 
 		if (targetMapCard.closest('#pinnedList')) {
@@ -1022,7 +1030,7 @@ const closeMapCard = (target) => {
 
 const isMapCardOpen = (target, targetOID) => {
 	if (isMobileFormat()) {
-		removeTopoFromMap(targetOID);
+		removeTopoFromMap(currentlySelectedMapId);
 	}
 	const targetTopLevel = target.closest('.map-list-item');
 	// const targetGeometry = targetTopLevel.attributes.geometry.value;
@@ -1045,11 +1053,11 @@ const isMapCardOpen = (target, targetOID) => {
 			addTopoToMap(targetOID, serviceURL);
 			addHalo(targetOID, targetGeometry);
 			openMapCard(target);
-			setTopoMapPlaceholder(targetOID, targetGeometry, false);
+			setTopoMapPlaceholder(targetOID, false);
 			return false;
 		} else {
 			closeMapCard(target);
-			setTopoMapPlaceholder(targetOID, targetGeometry, true);
+			setTopoMapPlaceholder(targetOID, true);
 			removeTopoFromMap(targetOID);
 			return true;
 		}
