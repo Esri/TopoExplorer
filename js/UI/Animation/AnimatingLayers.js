@@ -89,7 +89,6 @@ setInitialDuration(speeds);
 
 const setPinListCurrentOrder = () => {
 	pinListCurrentOrder = currentStateOfPinnedList();
-	console.log('the pinned maps to loop over', pinListCurrentOrder);
 };
 
 const getAnimatingImages = async () => {
@@ -152,27 +151,31 @@ const exportingTopoImageAndCreatingImageElement = async () => {
 
 	const processCardIntoImage = (card) => {
 		return new Promise((resolve) => {
-			console.log(card);
 			const cardId = card.querySelector('.map-list-item').attributes.oid.value;
+			console.log(card);
+			console.log(cardId);
 
 			const currentOpacity = card.querySelector('.opacity-slider').value / 100;
 			const imageName = `${
 				card.querySelector('.map-list-item .location').textContent
 			} ${card.querySelector('.map-list-item .year').textContent}`;
 
-			getPinnedTopoGeometry(cardId).then((pinnedTopoMapGeometry) => {
+			getPinnedTopoGeometry(cardId).then(async (pinnedTopoMapGeometry) => {
 				if (isTargetPolygonWithinExtent(pinnedTopoMapGeometry)) {
-					imageExport(cardId, currentOpacity, isCancelled).then((imageData) => {
-						imageData.isCheckedForAnimation = true;
-						imageData.opacity = currentOpacity;
-						imageData.mapName = imageName;
+					await imageExport(cardId, currentOpacity, isCancelled).then(
+						(imageData) => {
+							imageData.isCheckedForAnimation = true;
+							imageData.opacity = currentOpacity;
+							imageData.mapName = imageName;
+							console.log(imageData);
 
-						arrayOfImageData.push(imageData);
-						imagesForDownload.topoImages.push(imageData);
+							// arrayOfImageData.push(imageData);
+							// imagesForDownload.topoImages.push(imageData);
 
-						showAvailableTopoCheckbox(cardId);
-						resolve(imageData);
-					});
+							showAvailableTopoCheckbox(cardId);
+							resolve(imageData);
+						}
+					);
 				} else {
 					disableMapCardForAnimation(cardId);
 					resolve(false);
@@ -195,7 +198,7 @@ const exportingTopoImageAndCreatingImageElement = async () => {
 		promiseArray.push(processCardIntoImage(card));
 	}
 
-	await Promise.all(promiseArray);
+	arrayOfImageData = await Promise.all(promiseArray);
 
 	// arrayOfImageData = arrayOfImageData.filter((image) => !(image === false));
 	console.log(arrayOfImageData);
@@ -265,9 +268,12 @@ const takeScreenshotOfView = () => {
 };
 
 const toggleMapCardDownloadAvailability = (mapCardOID) => {
+	console.log('update topo download availability', mapCardOID);
 	imagesForDownload.topoImages.map((topoImageData) => {
 		if (topoImageData.id === mapCardOID) {
+			console.log(topoImageData.isCheckedForAnimation);
 			if (topoImageData.isCheckedForAnimation) {
+				console.log('changing check status');
 				topoImageData.isCheckedForAnimation = false;
 			} else {
 				topoImageData.isCheckedForAnimation = true;
@@ -308,12 +314,14 @@ const checkToposIncludedForDownload = async () => {
 				try {
 					const processImages = imagesForDownload.topoImages.map(
 						async (topoMapImage) => {
-							return await Promise.resolve(
-								makeCompositeForAnimationDownload(
-									imagesForDownload.basemap,
-									topoMapImage
-								)
-							);
+							if (topoMapImage.isCheckedForAnimation) {
+								return await Promise.resolve(
+									makeCompositeForAnimationDownload(
+										imagesForDownload.basemap,
+										topoMapImage
+									)
+								);
+							}
 						}
 					);
 					console.log('processImages', processImages);
@@ -321,7 +329,9 @@ const checkToposIncludedForDownload = async () => {
 					const topoAnimationComposite = await Promise.all(processImages);
 
 					const animationParams = {
-						data: topoAnimationComposite,
+						data: topoAnimationComposite.filter(
+							(animationFrame) => animationFrame
+						),
 						animationSpeed: duration,
 						outputWidth: animationDimensions.width,
 						outputHeight: animationDimensions.height,
@@ -483,4 +493,5 @@ export {
 	checkToposIncludedForDownload,
 	setAnimationDimensions,
 	setVideoExportName,
+	revokeBasemapBlobURL,
 };

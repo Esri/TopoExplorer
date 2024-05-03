@@ -29,6 +29,7 @@ const getTopoMap = (oid, url) => {
 };
 
 const imageExport = async (oid, opacity) => {
+	console.log(oid);
 	const exportImageSize = queryController.mapView.size.join(', ');
 	const exportMosaicRule = JSON.stringify({
 		mosaicMethod: 'esriMosaicLockRaster',

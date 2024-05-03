@@ -57,8 +57,6 @@ const initApp = async () => {
 			})
 			.then(() => {
 				isHashedToposForQuery(view);
-				initialMapQuery();
-				console.log(view);
 
 				view.on('click', (event) => {
 					const zoomLevel = view.zoom;
