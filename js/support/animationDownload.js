@@ -5,6 +5,8 @@ import {
 	addDownloadErrorMessage,
 } from '../UI/Animation/animation.js?v=0.01';
 
+import { revokeBasemapBlobURL } from '../UI/Animation/AnimatingLayers.js?v=0.01';
+
 const images2VideoClient =
 	window['@vannizhang/images-to-video-converter-client'];
 
@@ -40,6 +42,8 @@ const createAnimationVideo = (params) => {
 			}
 			addDownloadErrorMessage();
 			setTimeout(() => {
+				revokeBasemapBlobURL();
+				revokeCompositeBlobURLs(params.data);
 				revertAnimationUIToPreview();
 			}, 2000);
 			console.log(error);
@@ -65,6 +69,7 @@ const downloadVideo = (params, url, filename) => {
 	anchor.click();
 	anchor.remove();
 	revokeBlobDownloadURL(url);
+	revokeBasemapBlobURL();
 	revokeCompositeBlobURLs(params.data);
 	revertAnimationUIToPreview();
 };
