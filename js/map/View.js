@@ -50,8 +50,6 @@ const initView = () => {
 				id: 'crosshair',
 				title: 'crosshair',
 				graphics: [],
-				// geometry: mapPointGraphic,
-				// symbol: mapPointSymbol,
 			});
 
 			const map = new WebMap({
@@ -67,7 +65,6 @@ const initView = () => {
 				center: hashCoordinates() || config.defaultMapSettings.center,
 				zoom: hashLoD() || config.defaultMapSettings.zoom,
 				constraints: {
-					// minZoom: config.defaultMapSettings.constraints.minZoom,
 					snapToZoom: false,
 				},
 				popup: {

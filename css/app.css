@@ -254,9 +254,11 @@ padding: 0 0 3rem 0
   height: 2rem;
   padding: 0.5rem;
   background-color: #EAEEF1;
+  color: #637287;
   box-shadow: inset -6px -6px 6px #FFFFFF, inset 6px 6px 8px #B8C2D3;
   border-radius: 6px;
   border: none;
+  outline: none;
 }
 
 .animation-title div {
@@ -855,7 +857,6 @@ font-style: italic;
 }
 
 .choice {
-  /* padding: 10px;  */
   line-height: 3rem;
   display: flex; 
   justify-content: center;
@@ -867,7 +868,6 @@ font-style: italic;
 }
 
 .choice:hover{
-  /* background-color: black; */
   color: #242b33;
   text-decoration: underline;
   font-weight: bold;

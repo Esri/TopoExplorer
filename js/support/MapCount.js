@@ -17,10 +17,6 @@ const hideMapCount = () => {
 };
 
 const updateMapCount = (number) => {
-	// if (!number) {
-	// 	console.log('0 is false genius');
-	// 	return;
-	// }
 	if (isMobileFormat() && document.querySelector('.mobile-header .mapCount')) {
 		document.querySelector('.mobile-header .mapCount').innerHTML =
 			number.toLocaleString();

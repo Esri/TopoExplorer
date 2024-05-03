@@ -154,8 +154,7 @@ const exportingTopoImageAndCreatingImageElement = async () => {
 		return new Promise((resolve) => {
 			console.log(card);
 			const cardId = card.querySelector('.map-list-item').attributes.oid.value;
-			// const cardMapLocation =
-			// 	card.querySelector('.map-list-item').attributes.geometry.value;
+
 			const currentOpacity = card.querySelector('.opacity-slider').value / 100;
 			const imageName = `${
 				card.querySelector('.map-list-item .location').textContent
@@ -174,14 +173,6 @@ const exportingTopoImageAndCreatingImageElement = async () => {
 						showAvailableTopoCheckbox(cardId);
 						resolve(imageData);
 					});
-					// .then(async (imageData) => {
-					// 	console.log(imageData);
-					// 	resolve(
-					// 		await Promise.resolve(
-					// 			createImageElementForMediaLayer(imageData)
-					// 		)
-					// 	);
-					// });
 				} else {
 					disableMapCardForAnimation(cardId);
 					resolve(false);
@@ -204,7 +195,6 @@ const exportingTopoImageAndCreatingImageElement = async () => {
 		promiseArray.push(processCardIntoImage(card));
 	}
 
-	// arrayOfImageData =
 	await Promise.all(promiseArray);
 
 	// arrayOfImageData = arrayOfImageData.filter((image) => !(image === false));
@@ -406,7 +396,6 @@ const animationEnd = () => {
 
 const stopAnimationInterval = () => {
 	clearInterval(animationInterval);
-	// animationInterval = null;
 };
 
 const revokeTopoMapBlobURLs = () => {
