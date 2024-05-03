@@ -39,7 +39,6 @@ const updateHashParams = (data, zoomLevel) => {
 			`maps=${parsedHashParams.maps}`
 		);
 
-		history.replaceState(undefined, '', window.location.hash);
 		return;
 	} else {
 		console.log(data);
@@ -64,7 +63,6 @@ const updateHashParams = (data, zoomLevel) => {
 
 	//replacing the window location with the new information
 	window.location.hash = hashString;
-	history.replaceState(undefined, '', window.location.hash);
 };
 
 const invertHashedMapOrder = () => {
@@ -138,7 +136,7 @@ const hashLoD = () => {
 
 const checkForPreviousTopos = () => {
 	parseHashParams();
-	console.log('cheking old topo', parsedHashParams.maps);
+
 	// parsedHashParams.maps.split(',').map((oid) => {
 	// 	console.log(oid);
 	// });
