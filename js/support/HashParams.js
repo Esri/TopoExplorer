@@ -39,7 +39,7 @@ const updateHashParams = (data, zoomLevel) => {
 			`maps=${parsedHashParams.maps}`
 		);
 
-		replaceHistory();
+		history.replaceState(undefined, '', window.location.hash);
 		return;
 	} else {
 		console.log(data);
@@ -64,7 +64,7 @@ const updateHashParams = (data, zoomLevel) => {
 
 	//replacing the window location with the new information
 	window.location.hash = hashString;
-	replaceHistory();
+	history.replaceState(undefined, '', window.location.hash);
 };
 
 const invertHashedMapOrder = () => {
@@ -81,7 +81,6 @@ const addHashExportPrompt = (mapDetails) => {
 		.join(',');
 
 	window.location.hash += `&export=${mapsForExport}`;
-	replaceHistory();
 };
 
 const addAnimateStatusHashParam = () => {
@@ -91,10 +90,11 @@ const addAnimateStatusHashParam = () => {
 	const animationStatus = `&animation=true`;
 
 	window.location.hash += animationStatus;
-	replaceHistory();
 };
 
 const removeAnimationStatusHashParam = () => {
+	console.log('remove', parsedHashParams);
+
 	parseHashParams;
 
 	parsedHashParams.animation = null;
@@ -103,8 +103,8 @@ const removeAnimationStatusHashParam = () => {
 		parsedHashParams.loc
 	}&LoD=${parsedHashParams.LoD}`;
 
+	console.log('the new hash', hashString);
 	window.location.hash = hashString;
-	replaceHistory();
 };
 
 const animatingStatus = () => {
@@ -161,11 +161,6 @@ const removeExportParam = () => {
 	}&LoD=${parsedHashParams.LoD}`;
 
 	window.location.hash = hashString;
-	replaceHistory();
-};
-
-const replaceHistory = () => {
-	history.replaceState(undefined, '', window.location.hash);
 };
 
 export {
