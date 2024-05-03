@@ -1557,6 +1557,7 @@ const removeUnpinnedTopo = () => {
 		pinnedCardIDsArray.indexOf(`${currentlySelectedMapId}`) === -1
 	) {
 		removeTopoFromMap(currentlySelectedMapId);
+		setTopoMapPlaceholder(currentlySelectedMapId);
 	}
 };
 

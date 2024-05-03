@@ -282,12 +282,6 @@ const toggleMapCardDownloadAvailability = (mapCardOID) => {
 	});
 };
 
-const clearBasemapOfAnimationFrames = () => {
-	for (const animationTopoImage of arrayOfMapImages) {
-		return (animationTopoImage.visible = false);
-	}
-};
-
 //this should be in another module
 const hideMediaLayer = () => {
 	return new Promise((resolve, reject) => {
