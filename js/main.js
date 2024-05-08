@@ -82,22 +82,22 @@ const initApp = async () => {
 						}
 					);
 
-					// 	reactiveUtils.when(
-					// 		() => view?.stationary === true,
-					// 		async () => {
-					// 			if (prevCenter) {
-					// 				if (prevCenter.x === view.center.x) {
-					// 					return;
-					// 				}
-					// 			}
-					// 			queryController.setGeometry(view.extent.center);
-					// 			queryController.mapView = view;
-					// 			queryController.extentQueryCall();
-					// 			updateHashParams(view);
+					reactiveUtils.when(
+						() => view?.stationary === true,
+						async () => {
+							// if (prevCenter) {
+							// 	if (prevCenter.x === view.center.x) {
+							// 		return;
+							// 	}
+							// }
+							// queryController.setGeometry(view.extent.center);
+							queryController.mapView = view;
+							// queryController.extentQueryCall();
+							updateHashParams(view.extent.center, view.zoom);
 
-					// 			prevCenter = view?.center;
-					// 		}
-					// 	);
+							// prevCenter = view?.center;
+						}
+					);
 
 					// 	reactiveUtils.watch(
 					// 		() => [view.stationary, view.zoom],

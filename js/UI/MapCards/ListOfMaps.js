@@ -50,6 +50,7 @@ to find topo maps.
 `;
 
 const serviceURL = config.environment.serviceUrls.historicalTopoImageService;
+const unavailableInfo = 'Unavailable';
 
 let currentView;
 //This layer contains the crosshair/mapPoint indicator that highlights the user's selection.
@@ -185,12 +186,13 @@ const createMapSlotItems = (list, view) => {
 }; //end of the mapCard Generator
 
 const makeCards = (list) => {
-	console.log('make the cards?', list);
 	if (list.length === 0) {
 		updateMapCount(list.length);
 		mapsList.innerHTML = noMapsHelpText;
 		return;
 	}
+
+	console.log(list);
 
 	const mapSlot = list
 		.map((topoMap, index) => {
@@ -205,6 +207,7 @@ const makeCards = (list) => {
             <div class='left-margin'>
 
               <div class="animate checkbox hidden">
+                
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="1 0 20 20" height="16" width="16">
                   <path class="checkmark" d="M5.5 12L2 8.689l.637-.636L5.5 10.727l8.022-7.87.637.637z"></path>
                 </svg>
@@ -222,46 +225,55 @@ const makeCards = (list) => {
               <div class ='map-list-item-title'>
                 <div style="display:flex">
                     
-                  <div class='infoIcon' >
-                    <div>
-                    <svg class='svg' xmlns="http://www.w3.org/2000/svg" viewBox="1 -1 21 21" height="16" width="16"><path d="M8.5 6.5a1 1 0 1 1 1-1 1.002 1.002 0 0 1-1 1zM8 13h1V8H8zm2-1H7v1h3zm5.8-3.5a7.3 7.3 0 1 1-7.3-7.3 7.3 7.3 0 0 1 7.3 7.3zm-1 0a6.3 6.3 0 1 0-6.3 6.3 6.307 6.307 0 0 0 6.3-6.3z"></path></svg>
-                    </div>  
-                    <div class='tooltipText hidden''>
-                      <p>Survey year: ${
-												topoMap.topo.attributes.Survey_Year || 'unavailable'
-											}</p>
-                      <p>Photo Year: ${
-												topoMap.topo.attributes.Aerial_Photo_Year ||
-												'unavailable'
-											}</p>
-                      <p>Photo Revision Year: ${
-												topoMap.topo.attributes.Photo_Revision || 'unavailable'
-											}</p>
-                      <p>Field Check Year: ${
-												topoMap.topo.attributes.Field_Check_Year ||
-												'unavailable'
-											}</p>
-                      <p>Projection: ${
-												topoMap.topo.attributes.Projection || 'unavailable'
-											}</p>
-                      <p>Datum: ${
-												topoMap.topo.attributes.Datum || 'unavailable'
-											}</p>
-                      <p>Citation: ${
-												topoMap.topo.attributes.Citation || 'unavailable'
-											}</p>
-                    </div>
-                    
-                  </div>
                     <p class="mapSlotHeader"> <span class="year">${
 											topoMap.date
-										}</span> | <span class="name">${topoMap.mapName}</span>
+										}</span> | <span>${
+				topoMap.topo.attributes.Imprint_Year
+			} rev</span> | <span class="name">${topoMap.mapName}</span>
                     </p>
                   </div>
+                <div style="display:flex">
+                <div class='infoIcon' >
+                <div>
+                <svg class='svg' xmlns="http://www.w3.org/2000/svg" viewBox="1 -5 21 21" height="16" width="16"><path d="M8.5 6.5a1 1 0 1 1 1-1 1.002 1.002 0 0 1-1 1zM8 13h1V8H8zm2-1H7v1h3zm5.8-3.5a7.3 7.3 0 1 1-7.3-7.3 7.3 7.3 0 0 1 7.3 7.3zm-1 0a6.3 6.3 0 1 0-6.3 6.3 6.307 6.307 0 0 0 6.3-6.3z"></path></svg>
+                </div>  
+                <div style='padding: 5px 20px; margin: 0 30px' class='tooltipText hidden'>
+                  <div class='mapMetaData'>
+                  <p>Date on Map: ${topoMap.date || unavailableInfo}</p>
+                  <p>Revision year: ${
+										topoMap.topo.attributes.Imprint_Year || unavailableInfo
+									}</p>
+                  <p>Survey year: ${
+										topoMap.topo.attributes.Survey_Year || unavailableInfo
+									}</p>
+                  <p>Photo Year: ${
+										topoMap.topo.attributes.Aerial_Photo_Year || unavailableInfo
+									}</p>
+                  <p>Photo Revision Year: ${
+										topoMap.topo.attributes.Photo_Revision || unavailableInfo
+									}</p>
+                  <p>Field Check Year: ${
+										topoMap.topo.attributes.Field_Check_Year || unavailableInfo
+									}</p>
+                  <p>Projection: ${
+										topoMap.topo.attributes.Projection || unavailableInfo
+									}</p>
+                  <p>Datum: ${
+										topoMap.topo.attributes.Datum || unavailableInfo
+									}</p>
+                  <p>Citation: ${
+										topoMap.topo.attributes.Citation || unavailableInfo
+									}</p>
+                  </div>
+                  <p><em>Click <span><svg class='svg' xmlns="http://www.w3.org/2000/svg" viewBox="1 -5 21 21" height="16" width="16"><path style="fill:#ffffff; stroke:#ffffff;" d="M8.5 6.5a1 1 0 1 1 1-1 1.002 1.002 0 0 1-1 1zM8 13h1V8H8zm2-1H7v1h3zm5.8-3.5a7.3 7.3 0 1 1-7.3-7.3 7.3 7.3 0 0 1 7.3 7.3zm-1 0a6.3 6.3 0 1 0-6.3 6.3 6.307 6.307 0 0 0 6.3-6.3z"></path></svg></span>to copy to clipboard</em></p>
+                </div>
+                
+              </div>
                 <p class ="mapSlotSub-title"> <span class="scale">${
 									topoMap.mapScale
 								}</span> | <span class="location">${topoMap.location}</span>
 			</p>
+      </div>  
               </div>
 
               <div class="img-cover">
@@ -381,8 +393,7 @@ const makeCards = (list) => {
 
 		return;
 	}
-	console.log('topo data in list', topoMapDataArray);
-	console.log(topoGeometriesArray);
+
 	updateMapCount(list.length);
 	mapsList.innerHTML = mapSlot;
 
@@ -456,12 +467,7 @@ const setTopoMapPlaceholder = (oid, isMapCardOpen) => {
 	//if mobile is active, do not keep track of the most recently opened topo
 	if (isMobileFormat()) {
 		// return;
-		console.log(
-			'setting placeholding in mobile',
-			oid,
-			mapGeometry,
-			isMapCardOpen
-		);
+
 		currentlySelectedMapId = oid;
 		return;
 	}
@@ -495,7 +501,7 @@ const isTargetPolygonWithinExtent = (currentlySelectedMapGeometry) => {
 	//determines wether a specific polygon is within the visible extent of the mapView.
 	//This function deconstructs the rings of a polygon to create a simple extent object containing the xMax,Ymax,xMin,yMin of the polygon.
 	// it then evaluates whether any of those points are withing the extent.
-	console.log('was this called?');
+
 	const currentlySelectedMapGeometryObj = currentlySelectedMapGeometry
 		? JSON.parse(currentlySelectedMapGeometry)
 		: null;
@@ -505,7 +511,6 @@ const isTargetPolygonWithinExtent = (currentlySelectedMapGeometry) => {
 	}
 
 	const extent = currentView.extent.clone().normalize()[0];
-	console.log(extent);
 
 	const topoExtent = {
 		xmax: null,
@@ -513,9 +518,6 @@ const isTargetPolygonWithinExtent = (currentlySelectedMapGeometry) => {
 		xmin: null,
 		ymin: null,
 	};
-
-	console.log(currentlySelectedMapGeometryObj);
-	console.log(currentView);
 
 	currentlySelectedMapGeometryObj.rings[0].map((coordinates, index) => {
 		if (index === 0) {
@@ -553,7 +555,6 @@ const isTargetPolygonWithinExtent = (currentlySelectedMapGeometry) => {
 
 const checkAnyOpenMapCards = (oid) => {
 	if (isMobileFormat()) {
-		console.log('checking other mapcards');
 		// return;
 	}
 	mapListItems.forEach((mapCard) => {
@@ -615,11 +616,6 @@ const addToPinnedArray = (oid, targetMapCard, topoMapGeometry) => {
 		pinBtnUnavailable();
 	}
 
-	// if (pinnedCardIDsArray.length === numberOfPreviousTopos) {
-	// 	console.log('check ani');
-	// 	animatingStatus();
-	// }
-
 	return;
 };
 
@@ -671,7 +667,6 @@ const closeSelectedMap = (currentlySelectedMapId) => {
 };
 
 const isCurrentMapPinned = (targetMapCard, topoMapGeometry, callback) => {
-	console.log('pinnedCheck');
 	const oid =
 		targetMapCard.querySelector('.map-list-item').attributes.oid.value;
 
@@ -755,9 +750,7 @@ const mapPinningAction = (pinIcon, pinCheckmarkIcon, targetMapCard) => {
 };
 
 const findTopoLayer = (oid) => {
-	// console.log(oid);
 	if (!currentView) {
-		// console.log('seriously');
 		return;
 	}
 	const addedLayers = currentView.map.layers.items;
@@ -765,7 +758,6 @@ const findTopoLayer = (oid) => {
 	return new Promise((resolve, reject) => {
 		addedLayers.find((imageTopo) => {
 			if (imageTopo.id == oid) {
-				console.log(imageTopo);
 				resolve(imageTopo);
 			}
 		});
@@ -823,9 +815,7 @@ const addPreviouslyPinnedTopoToMap = (target, serviceURL) => {
 const setTopoOpacity = (oid) => {
 	//sets the slider opacity position of generated map cards using the topo layer's opacity value
 
-	console.log(oid);
 	findTopoLayer(oid).then((topoLayer) => {
-		console.log(topoLayer);
 		const opacityValue = parseInt(0 + Math.round(topoLayer.opacity * 100));
 
 		//updating the opacity value on the UI of the mapCard in the explore list
@@ -928,6 +918,8 @@ const zoomToTopo = (geography) => {
 	currentView.goTo({
 		target: geography,
 	});
+
+	updateHashParams(currentView.extent.center, currentView.zoom);
 };
 
 const zoomEvent = (eventTarget, oid) => {
@@ -1088,7 +1080,8 @@ document.addEventListener('click', (event) => {
 			.querySelector('.unpin-action-warning')
 			.classList.contains('invisible') &&
 		!event.target.closest('.unpin-action-warning') &&
-		!event.target.closest('.unpin')
+		!event.target.closest('.unpin') &&
+		!event.target.closest('.infoIcon')
 	) {
 		document.querySelector('.unpin-action-warning').classList.add('invisible');
 		return;
@@ -1149,11 +1142,27 @@ const reorderMapLayers = () => {
 sideBarElement.addEventListener('click', (event) => {
 	const eventTarget = event.target;
 
+	if (event.target.closest('.infoIcon')) {
+		console.log('nothing');
+		const mapInfoText = event.target
+			.closest('.infoIcon')
+			.querySelector('.mapMetaData').innerText;
+		console.log(mapInfoText);
+		navigator.clipboard.writeText(mapInfoText);
+		// try {
+
+		// } catch (error) {
+		//   console.error('error while copying map info to clipboard', error)
+		// }
+		return;
+	}
+
 	if (eventTarget.closest('.animate.checkbox')) {
 		toggleAnimateCheckbox(eventTarget);
 		toggleMapCardDownloadAvailability(
 			eventTarget.closest('.map-list-item').attributes.oid.value
 		);
+		// checkForMapsToAnimate();
 	}
 
 	if (isAnimating) {
@@ -1426,7 +1435,6 @@ const addDragEventListener = () => {
 };
 
 const setFilterValues = (minYear, maxYear, minScale, maxScale) => {
-	console.log('setting values');
 	filterValues.minYear = minYear;
 	filterValues.maxYear = maxYear;
 	filterValues.minScale = minScale;
@@ -1456,13 +1464,31 @@ const filterMaps = () => {
 	sortListByChoice(filteredList);
 };
 
+const sortByYearAsc = (a, b) => {
+	if (a.date - b.date === 0) {
+		return a.topo.attributes.Imprint_Year - b.topo.attributes.Imprint_Year;
+	}
+
+	return a.date - b.date;
+};
+
+const sortByYearDesc = (a, b) => {
+	if (b.date - a.date === 0) {
+		return b.topo.attributes.Imprint_Year - a.topo.attributes.Imprint_Year;
+	}
+
+	return b.date - a.date;
+};
+
 const sortListByChoice = (list) => {
 	if (sortOption === 'yearAsc') {
-		list.sort((a, b) => a.date - b.date);
+		// list.sort((a, b) => a.date - b.date);
+		list.sort(sortByYearAsc);
 	}
 
 	if (sortOption === 'yearDesc') {
-		list.sort((a, b) => b.date - a.date);
+		// list.sort((a, b) => b.date - a.date);
+		list.sort(sortByYearDesc);
 	}
 
 	if (sortOption === 'scaleAsc') {
@@ -1506,12 +1532,10 @@ const sortListByChoice = (list) => {
 		});
 	}
 
-	console.log(list);
 	makeCards(list);
 };
 
 const setSortOptions = (choiceValue) => {
-	console.log('sort is', choiceValue);
 	//if the choiceValue picked is the same as the pre-existing sort option, end the function
 	if (sortOption === choiceValue) {
 		return;
@@ -1522,9 +1546,7 @@ const setSortOptions = (choiceValue) => {
 const getTopoGeometry = (objectId) => {
 	return new Promise((resolve) => {
 		topoGeometriesArray.find((topoMap) => {
-			// console.log(topoMap);
 			if (topoMap[0] == objectId) {
-				// console.log(topoMap);
 				resolve(JSON.stringify(topoMap[1]));
 			}
 		});

@@ -160,22 +160,20 @@ const exportingTopoImageAndCreatingImageElement = async () => {
 				card.querySelector('.map-list-item .location').textContent
 			} ${card.querySelector('.map-list-item .year').textContent}`;
 
-			getPinnedTopoGeometry(cardId).then(async (pinnedTopoMapGeometry) => {
+			getPinnedTopoGeometry(cardId).then((pinnedTopoMapGeometry) => {
 				if (isTargetPolygonWithinExtent(pinnedTopoMapGeometry)) {
-					await imageExport(cardId, currentOpacity, isCancelled).then(
-						(imageData) => {
-							imageData.isCheckedForAnimation = true;
-							imageData.opacity = currentOpacity;
-							imageData.mapName = imageName;
-							console.log(imageData);
+					imageExport(cardId, currentOpacity, isCancelled).then((imageData) => {
+						imageData.isCheckedForAnimation = true;
+						imageData.opacity = currentOpacity;
+						imageData.mapName = imageName;
+						console.log(imageData);
 
-							// arrayOfImageData.push(imageData);
-							// imagesForDownload.topoImages.push(imageData);
+						// arrayOfImageData.push(imageData);
+						// imagesForDownload.topoImages.push(imageData);
 
-							showAvailableTopoCheckbox(cardId);
-							resolve(imageData);
-						}
-					);
+						showAvailableTopoCheckbox(cardId);
+						resolve(imageData);
+					});
 				} else {
 					disableMapCardForAnimation(cardId);
 					resolve(false);
@@ -425,6 +423,13 @@ animationSpeedSlider.addEventListener('change', (event) => {
 		startAnimationInterval();
 	}
 });
+
+// checkForMapsToAnimate = () => {
+// 	if (!document.querySelectorAll('.animate.checkbox .checkmark')) {
+// 		console.log('stopping animation...kind of.');
+// 		stopAnimationInterval();
+// 	}
+// };
 
 const startAnimationInterval = () => {
 	animationInterval = setInterval(animate, duration);

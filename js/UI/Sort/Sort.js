@@ -17,9 +17,7 @@ const initSortChoice = (setSortChoice, filterList) => {
 
 	//this forEach calls and sets the default sort order for the list of map cards.
 	const defaultChoice = sortChoices.forEach((choice) => {
-		console.log(choice.classList.contains('bold'));
 		if (choice.classList.contains('bold')) {
-			console.log(choice.attributes.value.value);
 			const choiceValue = choice.attributes.value.value;
 			setSortChoice(choiceValue);
 		}
@@ -35,7 +33,7 @@ const initSortChoice = (setSortChoice, filterList) => {
 			});
 
 			event.target.classList.add('bold');
-			// console.log(event.target.attributes.value.value);
+
 			setSortChoice(event.target.attributes.value.value);
 			filterList();
 		});

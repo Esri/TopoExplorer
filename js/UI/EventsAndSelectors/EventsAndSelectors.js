@@ -34,7 +34,7 @@ const exploreList = document.querySelector('#exploreList');
 const preventingMapInteractions = () => {
 	const view = getView();
 
-	console.log(view);
+	// console.log(view);
 	view.on('drag', (event) => {
 		if (isAnimating) {
 			event.stopPropagation();
@@ -134,9 +134,9 @@ sideBar.addEventListener(
 
 		if (event.target.closest('.infoIcon')) {
 			event.preventDefault();
-			console.log('info', event.target);
+			// console.log('info', event.target);
 			// console.log('info', event.target.element);
-			console.log(event.target.closest('.infoIcon'));
+			// console.log(event.target.closest('.infoIcon'));
 			// console.log(
 			// 	event.target.closest('.infoIcon').querySelector('.tooltipText')
 			// );
@@ -155,11 +155,20 @@ sideBar.addEventListener(
 
 			event.target
 				.closest('.infoIcon')
-				.querySelector('.tooltipText').style.top = `${event.clientY - 194}px`;
+				.querySelector('.tooltipText').style.top = `${checkOverFlow(event)}px`;
+			// checkOverFlow(
+			// 	event.target.closest('.infoIcon').querySelector('.tooltipText'),
+			// 	event
+			// );
+			// event.target
+			// 	.closest('.infoIcon')
+			// 	.querySelector('.tooltipText').style.top = `${checkOverFlow(
+			// 	event.target.closest('.infoIcon').querySelector('.tooltipText'), event
+			// )}px`;
 
 			event.target
 				.closest('.infoIcon')
-				.querySelector('.tooltipText').style.left = `${event.clientX + 20}px`;
+				.querySelector('.tooltipText').style.left = `${event.clientX - 35}px`;
 		}
 
 		if (
@@ -176,6 +185,12 @@ sideBar.addEventListener(
 	true
 );
 
+const checkOverFlow = (event) => {
+	if (!document.elementFromPoint(event.clientY - 249, event.clientX)) {
+		return event.clientY + 20;
+	}
+	return event.clientY - 255;
+};
 exploreList.addEventListener('scroll', () => {
 	const sortWindow = document.querySelector('.sortOptions');
 
@@ -292,6 +307,11 @@ document.addEventListener('click', (event) => {
 	if (event.target.closest('.modalClose')) {
 		removeInfoModal();
 	}
+
+	//NOTE: may want to move this to the listOfMaps file. Need to make sure that clicking the infoIcon doesn't open/close the mapCard.
+	// if (event.target.closest('.infoIcon')) {
+	// 	console.log('infoClick');
+	// }
 });
 
 document.querySelector('.app.heading').addEventListener('click', () => {
@@ -343,8 +363,8 @@ document.querySelector('#viewDiv').addEventListener('click', (event) => {
 		const videoName = document.getElementById('animation-title').value
 			? document.getElementById('animation-title').value
 			: 'Topo Map Explorer';
-		console.log(videoName);
-		console.log(document.getElementById('animation-title'));
+		// console.log(videoName);
+		// console.log(document.getElementById('animation-title'));
 		checkToposIncludedForDownload();
 		addDownloadingNotification();
 

@@ -120,6 +120,8 @@ cursor: -webkit-grabbing;
 
 .infoIcon svg path {
   pointer-events: none;
+  stroke: #637287;
+  stroke-width: 0.5px;
 }
 
 .infoIcon .tooltipText {
@@ -166,6 +168,7 @@ cursor: -webkit-grabbing;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  letter-spacing: -0.5px;
 }
 
 .mapSlotSub-title {
@@ -177,7 +180,7 @@ cursor: -webkit-grabbing;
 .map-list-item-title{
   margin: auto 0;
   /* width: 200px; */
-  line-height: 1.1rem;
+  line-height: 1.5rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

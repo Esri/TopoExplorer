@@ -2,23 +2,6 @@ import { hashCoordinates, hashLoD } from '../support/HashParams.js?v=0.01';
 // import { CenterCrosshair } from '../../public/image/CenterCrosshair.png';
 import { config } from '../../app-config.js?v=0.01';
 
-// const graphicsLayerElement = () => {
-// 	return new Promise((resolve) => {
-// 		require(['esri/layers/GraphicsLayer'], (GraphicsLayer) => {
-// 			const newLayer = new GraphicsLayer();
-// 			console.log(newLayer);
-// 			resolve(newLayer);
-// 		});
-// 	});
-// };
-
-// const testLayer = () => {
-// 	graphicsLayerElement().then((layer) => {
-// 		layer.id = 'test';
-// 		console.log(layer);
-// 	});
-// };
-
 const initView = () => {
 	return new Promise((resolve, reject) => {
 		require([
@@ -117,8 +100,6 @@ const newMapCrossHair = (view, mapPoint) => {
 		'esri/symbols/PictureMarkerSymbol',
 		// 'esri/geometry/SpatialReference',
 	], (Point, Graphic, PictureMarkerSymbol) => {
-		console.log('calling newMapCrossHair', mapPoint);
-
 		const crosshairGraphicLayer = view.map.layers.items.find((layer) => {
 			if (layer.id === 'crosshair') {
 				return layer;

@@ -23,17 +23,6 @@ const updateHashParams = (data, zoomLevel) => {
 	if (Array.isArray(data)) {
 		parsedHashParams.maps = data.join(',');
 
-		// console.log(parsedHashParams);
-		// console.log(parsedHashParams.maps);
-		// console.log(window.location.hash);
-		// console.log(window.location.hash.substring(1).split('&')[0]);
-		// console.log(
-		// 	window.location.hash.replace(
-		// 		window.location.hash.substring(1).split('&')[0],
-		// 		`maps=${parsedHashParams.maps}`
-		// 	)
-		// );
-
 		window.location.hash = window.location.hash.replace(
 			window.location.hash.substring(1).split('&')[0],
 			`maps=${parsedHashParams.maps}`
@@ -41,8 +30,7 @@ const updateHashParams = (data, zoomLevel) => {
 
 		return;
 	} else {
-		console.log(data);
-
+		console.log(data, zoomLevel);
 		parsedHashParams.loc = `${data.longitude.toFixed(
 			2
 		)},${data.latitude.toFixed(2)}`;
@@ -91,8 +79,6 @@ const addAnimateStatusHashParam = () => {
 };
 
 const removeAnimationStatusHashParam = () => {
-	console.log('remove', parsedHashParams);
-
 	parseHashParams;
 
 	parsedHashParams.animation = null;
@@ -101,12 +87,10 @@ const removeAnimationStatusHashParam = () => {
 		parsedHashParams.loc
 	}&LoD=${parsedHashParams.LoD}`;
 
-	console.log('the new hash', hashString);
 	window.location.hash = hashString;
 };
 
 const animatingStatus = () => {
-	console.log(parsedHashParams.animation);
 	if (parsedHashParams.animation) {
 		toggleListVisibility();
 		beginAnimation();
