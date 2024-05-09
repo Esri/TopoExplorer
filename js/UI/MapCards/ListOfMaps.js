@@ -919,7 +919,7 @@ const zoomToTopo = (geography) => {
 		target: geography,
 	});
 
-	updateHashParams(currentView.extent.center, currentView.zoom);
+	// updateHashParams(currentView.extent.center, currentView.zoom);
 };
 
 const zoomEvent = (eventTarget, oid) => {

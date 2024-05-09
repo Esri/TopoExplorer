@@ -31,6 +31,7 @@ const initApp = async () => {
 		const view = await initView();
 		const sliderValues = await getYearsAndScales(view);
 		// const getPreviousTopos = await isHashedToposForQuery(view);
+		const searchWidget = view.ui.find('searchWidget');
 		const initialMapQuery = () => {
 			queryController.setGeometry(view.extent.center);
 			queryController.mapView = view;
@@ -64,6 +65,13 @@ const initApp = async () => {
 					queryController.setGeometry(event.mapPoint);
 					queryController.extentQueryCall();
 					updateHashParams(event.mapPoint, zoomLevel);
+				});
+
+				searchWidget.on('select-result', (event) => {
+					const searchResultPoint = event.result.extent.center;
+					queryController.setGeometry(event.result.extent.center);
+					queryController.extentQueryCall();
+					newMapCrossHair(view, searchResultPoint);
 				});
 
 				require(['esri/core/reactiveUtils'], (reactiveUtils) => {
