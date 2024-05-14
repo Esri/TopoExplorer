@@ -501,56 +501,116 @@ const isTargetPolygonWithinExtent = (currentlySelectedMapGeometry) => {
 	//determines wether a specific polygon is within the visible extent of the mapView.
 	//This function deconstructs the rings of a polygon to create a simple extent object containing the xMax,Ymax,xMin,yMin of the polygon.
 	// it then evaluates whether any of those points are withing the extent.
+	return new Promise((resolve, reject) => {
+		const currentlySelectedMapGeometryObj = currentlySelectedMapGeometry
+			? JSON.parse(currentlySelectedMapGeometry)
+			: null;
 
-	const currentlySelectedMapGeometryObj = currentlySelectedMapGeometry
-		? JSON.parse(currentlySelectedMapGeometry)
-		: null;
+		if (!currentlySelectedMapGeometryObj) {
+			return;
+		}
 
-	if (!currentlySelectedMapGeometryObj) {
+		// console.log(currentView.extent);
+
+		// const viewExtent = webMercatorUtils.webMercatorToGeographic(
+		// 	currentView.extent
+		// );
+
+		// console.log(viewExtent.clone().normalize());
+
+		// if (viewExtent.xmin > viewExtent.xmax) {
+		// 	viewExtent.xmin -= 360;
+		// }
+
+		// if (viewExtent.xmin < -179) {
+		// 	viewExtent.xmin = -179;
+		// }
+
+		//normalize the extent. This returns an array of the extent, usually the array will contain only one extent.
+		//If the International Date Line is present in the view, the array will have two extents: one for each side of the date line.
+		//It has the additional use of resetting the extent coordinates if the user spins around the world.
+		const extent = currentView.extent.clone().normalize();
+		// console.log('extent situation', extent);
+
+		const topoExtent = {
+			xmax: null,
+			ymax: null,
+			xmin: null,
+			ymin: null,
+		};
+
+		currentlySelectedMapGeometryObj.rings[0].map((coordinates, index) => {
+			// const longLat = webMercatorUtils.xyToLngLat(
+			// 	coordinates[0],
+			// 	coordinates[1]
+			// );
+			if (index === 0) {
+				// console.log(coordinates[0]);
+				// console.log(coordinates.join(', '));
+
+				(topoExtent.xmax = coordinates[0]),
+					(topoExtent.ymax = coordinates[1]),
+					(topoExtent.xmin = coordinates[0]),
+					(topoExtent.ymin = coordinates[1]);
+			}
+
+			if (coordinates[0] > topoExtent.xmax) {
+				topoExtent.xmax = coordinates[0];
+			}
+			if (coordinates[1] > topoExtent.ymax) {
+				topoExtent.ymax = coordinates[1];
+			}
+			if (coordinates[0] < topoExtent.xmin) {
+				topoExtent.xmin = coordinates[0];
+			}
+			if (coordinates[1] < topoExtent.ymin) {
+				topoExtent.ymin = coordinates[1];
+			}
+		});
+
+		if (extent.length > 1) {
+			if (
+				topoExtent.ymax > extent[0].ymin &&
+				topoExtent.ymin < extent[0].ymax &&
+				topoExtent.xmax > extent[0].xmin &&
+				topoExtent.xmin < extent[0].xmax
+			) {
+				// console.log('topo in the first extent');
+				resolve(extent[0]);
+				return;
+			}
+
+			if (
+				topoExtent.ymax > extent[1].ymin &&
+				topoExtent.ymin < extent[1].ymax &&
+				topoExtent.xmax > extent[1].xmin &&
+				topoExtent.xmin < extent[1].xmax
+			) {
+				// console.log('topo in the second extent');
+				resolve(extent[1]);
+				return;
+			}
+
+			// console.log('topo not present');
+			resolve(false);
+			return;
+			// console.log('is this still going?');
+		}
+
+		// console.log("there's only one extent geometry");
+		if (
+			topoExtent.ymax > extent[0].ymin &&
+			topoExtent.ymin < extent[0].ymax &&
+			topoExtent.xmax > extent[0].xmin &&
+			topoExtent.xmin < extent[0].xmax
+		) {
+			resolve(extent[0]);
+			return;
+		}
+
+		resolve(false);
 		return;
-	}
-
-	const extent = currentView.extent.clone().normalize()[0];
-
-	const topoExtent = {
-		xmax: null,
-		ymax: null,
-		xmin: null,
-		ymin: null,
-	};
-
-	currentlySelectedMapGeometryObj.rings[0].map((coordinates, index) => {
-		if (index === 0) {
-			(topoExtent.xmax = coordinates[0]),
-				(topoExtent.ymax = coordinates[1]),
-				(topoExtent.xmin = coordinates[0]),
-				(topoExtent.ymin = coordinates[1]);
-		}
-
-		if (coordinates[0] > topoExtent.xmax) {
-			topoExtent.xmax = coordinates[0];
-		}
-		if (coordinates[1] > topoExtent.ymax) {
-			topoExtent.ymax = coordinates[1];
-		}
-		if (coordinates[0] < topoExtent.xmin) {
-			topoExtent.xmin = coordinates[0];
-		}
-		if (coordinates[1] < topoExtent.ymin) {
-			topoExtent.ymin = coordinates[1];
-		}
 	});
-
-	if (
-		topoExtent.ymax >= extent.ymin &&
-		topoExtent.ymin <= extent.ymax &&
-		topoExtent.xmax >= extent.xmin &&
-		topoExtent.xmin <= extent.xmax
-	) {
-		return true;
-	}
-
-	return false;
 };
 
 const checkAnyOpenMapCards = (oid) => {

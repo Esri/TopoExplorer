@@ -7,6 +7,7 @@ const makeCompositeForAnimationDownload = async (basemap, topo) => {
 		//will create an image that combines the basemap image and each of the topoMap images present in the imagesForDownload obj.
 		//Once the composite is made, on obj with the image and corresponding information will be stored in the imagesForDownload obj's animationImages array
 
+		console.log(topo.opacity);
 		return new Promise(async (resolve, reject) => {
 			const viewWidth = queryController.mapView.width;
 			const viewHeight = queryController.mapView.height;
@@ -92,6 +93,7 @@ const drawTopoMap = async (topo, compositeCanvas) => {
 		const topoMap = new Image();
 
 		topoMap.onload = () => {
+			compositeCanvas.globalAlpha = topo.opacity;
 			resolve(compositeCanvas.drawImage(topoMap, 0, 0));
 		};
 		topoMap.onerror = (error) => {

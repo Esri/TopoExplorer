@@ -28,17 +28,23 @@ const getTopoMap = (oid, url) => {
 	});
 };
 
-const imageExport = async (oid, opacity) => {
-	console.log(oid);
+const imageExport = async (oid, opacity, extent) => {
 	const exportImageSize = queryController.mapView.size.join(', ');
+	const extentResolution = queryController.mapView.resolution;
+
+	const newImageSize = `${extent.width / extentResolution}, ${
+		extent.height / extentResolution
+	}`;
 	const exportMosaicRule = JSON.stringify({
 		mosaicMethod: 'esriMosaicLockRaster',
 		lockRasterIds: [oid],
 	});
 
+	console.log('check extents', extent);
+
 	const params = new URLSearchParams({
-		bbox: JSON.stringify(queryController.mapView.extent.clone().normalize()[0]),
-		size: exportImageSize,
+		bbox: JSON.stringify(extent),
+		size: newImageSize,
 		bboxSR: '102100',
 		imageSR: '102100',
 		mosaicRule: exportMosaicRule,
@@ -55,7 +61,6 @@ const imageExport = async (oid, opacity) => {
 			signal: controller.signal,
 			responseType: 'blob',
 		}).then((response) => {
-			console.log(response);
 			const url = URL.createObjectURL(response.data);
 			const imageData = {
 				id: oid,
@@ -64,7 +69,6 @@ const imageExport = async (oid, opacity) => {
 				urlDataObj: response.data,
 			};
 
-			console.log(imageData);
 			resolve(imageData);
 		});
 	});

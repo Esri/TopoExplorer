@@ -93,6 +93,7 @@ const setPinListCurrentOrder = () => {
 
 const getAnimatingImages = async () => {
 	await createArrayOfImageElements(arrayOfMapImages);
+	console.log('the array of animating images', arrayOfMapImages);
 };
 
 const removeAnimatingImages = () => {
@@ -135,7 +136,9 @@ const hideTopoLayers = async () => {
 };
 
 const showTopoLayers = () => {
-	pinListCurrentOrder.forEach((card, index) => {
+	const allPinnedMaps = currentStateOfPinnedList();
+
+	allPinnedMaps.forEach((card, index) => {
 		const cardId = card.querySelector('.map-list-item').attributes.oid.value;
 
 		findTopoLayer(cardId).then((layer) => {
@@ -161,23 +164,26 @@ const exportingTopoImageAndCreatingImageElement = async () => {
 			} ${card.querySelector('.map-list-item .year').textContent}`;
 
 			getPinnedTopoGeometry(cardId).then((pinnedTopoMapGeometry) => {
-				if (isTargetPolygonWithinExtent(pinnedTopoMapGeometry)) {
-					imageExport(cardId, currentOpacity, isCancelled).then((imageData) => {
-						imageData.isCheckedForAnimation = true;
-						imageData.opacity = currentOpacity;
-						imageData.mapName = imageName;
-						console.log(imageData);
+				isTargetPolygonWithinExtent(pinnedTopoMapGeometry).then((newExtent) => {
+					if (newExtent) {
+						imageExport(cardId, currentOpacity, newExtent).then((imageData) => {
+							imageData.isCheckedForAnimation = true;
+							imageData.opacity = currentOpacity;
+							imageData.mapName = imageName;
+							imageData.containingExtent = newExtent;
+							console.log(imageData);
 
-						// arrayOfImageData.push(imageData);
-						// imagesForDownload.topoImages.push(imageData);
+							// arrayOfImageData.push(imageData);
+							// imagesForDownload.topoImages.push(imageData);
 
-						showAvailableTopoCheckbox(cardId);
-						resolve(imageData);
-					});
-				} else {
-					disableMapCardForAnimation(cardId);
-					resolve(false);
-				}
+							showAvailableTopoCheckbox(cardId);
+							resolve(imageData);
+						});
+					} else {
+						disableMapCardForAnimation(cardId);
+						resolve(false);
+					}
+				});
 			});
 		});
 	};
@@ -198,7 +204,7 @@ const exportingTopoImageAndCreatingImageElement = async () => {
 
 	arrayOfImageData = await Promise.all(promiseArray);
 
-	// arrayOfImageData = arrayOfImageData.filter((image) => !(image === false));
+	arrayOfImageData = arrayOfImageData.filter((image) => !(image === false));
 	console.log(arrayOfImageData);
 };
 
@@ -271,9 +277,9 @@ const toggleMapCardDownloadAvailability = (mapCardOID) => {
 		if (topoImageData.id === mapCardOID) {
 			console.log(topoImageData.isCheckedForAnimation);
 			if (topoImageData.isCheckedForAnimation) {
-				console.log('changing check status');
 				topoImageData.isCheckedForAnimation = false;
 			} else {
+				console.log('setting check to true');
 				topoImageData.isCheckedForAnimation = true;
 			}
 		}
@@ -435,6 +441,12 @@ const startAnimationInterval = () => {
 	animationInterval = setInterval(animate, duration);
 };
 
+const areAllImagesUnchecked = () => {
+	imagesForDownload.topoImages.every((animationImage) => {
+		animationImage.isCheckedForAnimation === false;
+	});
+};
+
 const animate = () => {
 	if (mapIdIndex !== -1) {
 		if (arrayOfMapImages[mapIdIndex].opacity !== 0) {
@@ -458,7 +470,10 @@ const animate = () => {
 };
 
 const findNextTopoToAnimate = () => {
-	mapIdIndex === arrayOfMapImages.length - 1 ? (mapIdIndex = 0) : ++mapIdIndex;
+	if (arrayOfImageData)
+		mapIdIndex === arrayOfMapImages.length - 1
+			? (mapIdIndex = 0)
+			: ++mapIdIndex;
 
 	isCardUnchecked = cardCheckStatus(pinListCurrentOrder[mapIdIndex]);
 
@@ -470,6 +485,7 @@ const findNextTopoToAnimate = () => {
 };
 
 const showTopoImage = (mapIdIndex) => {
+	// console.log('animation index', mapIdIndex);
 	let topoMap = arrayOfMapImages[mapIdIndex];
 	let highlightingAnimatedMap = pinListCurrentOrder[mapIdIndex];
 	let topoChosenOpacity = arrayOfImageData[mapIdIndex].currentOpacity;

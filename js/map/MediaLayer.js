@@ -54,11 +54,12 @@ const createImageElementForMediaLayer = async (imageData) => {
 				opacity: 0,
 				// effect: 'drop-shadow(0px, 0px, 8px, black)',
 				georeference: new ExtentAndRotationGeoreference({
-					extent: queryController.mapView.extent.clone().normalize()[0],
+					extent: imageData.containingExtent,
 				}),
 			});
 
 			console.log(imageElement);
+			console.log(imageElement.opacity);
 			mediaLayerSourceElementsArray.push(imageElement);
 		});
 		resolve();
