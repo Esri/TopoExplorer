@@ -4,6 +4,7 @@ import {
 	removeAnimationLoadingDiv,
 	addAnimationCloseBtn,
 	showAnimateCheckboxVisibility,
+	checkToposAvailableForAnimation,
 	uncheckMapCard,
 	setMapCardUnavailableStatus,
 	showAvailableTopoCheckbox,
@@ -47,6 +48,7 @@ const setVideoExportName = (string) => {
 const animationSpeedSlider = document.querySelector('.animation-speed-value');
 
 let isCancelled = false;
+let isPaused = false;
 let mapIdIndex = -1;
 let isCardUnchecked;
 let arrayOfMapImages = [];
@@ -161,7 +163,9 @@ const exportingTopoImageAndCreatingImageElement = async () => {
 			const currentOpacity = card.querySelector('.opacity-slider').value / 100;
 			const imageName = `${
 				card.querySelector('.map-list-item .location').textContent
-			} ${card.querySelector('.map-list-item .year').textContent}`;
+			} ${card.querySelector('.map-list-item .year').textContent} | ${
+				card.querySelector('.map-list-item .revisionYear').textContent
+			} revision`;
 
 			getPinnedTopoGeometry(cardId).then((pinnedTopoMapGeometry) => {
 				isTargetPolygonWithinExtent(pinnedTopoMapGeometry).then((newExtent) => {
@@ -171,6 +175,12 @@ const exportingTopoImageAndCreatingImageElement = async () => {
 							imageData.opacity = currentOpacity;
 							imageData.mapName = imageName;
 							imageData.containingExtent = newExtent;
+							imageData.imgWidth = Math.round(
+								newExtent.width / queryController.mapView.resolution
+							);
+							imageData.imgHeight = Math.round(
+								newExtent.height / queryController.mapView.resolution
+							);
 							console.log(imageData);
 
 							// arrayOfImageData.push(imageData);
@@ -278,14 +288,30 @@ const toggleMapCardDownloadAvailability = (mapCardOID) => {
 			console.log(topoImageData.isCheckedForAnimation);
 			if (topoImageData.isCheckedForAnimation) {
 				topoImageData.isCheckedForAnimation = false;
+				if (checkToposAvailableForAnimation()) {
+					pauseAnimation();
+				}
 			} else {
 				console.log('setting check to true');
 				topoImageData.isCheckedForAnimation = true;
+				if (!checkToposAvailableForAnimation() && isPaused) {
+					restartAnimation();
+				}
 			}
 		}
 	});
 };
 
+const pauseAnimation = () => {
+	stopAnimationInterval();
+	isPaused = true;
+	arrayOfMapImages[mapIdIndex].opacity = 0;
+};
+
+const restartAnimation = () => {
+	isPaused = false;
+	startAnimationInterval();
+};
 //this should be in another module
 const hideMediaLayer = () => {
 	return new Promise((resolve, reject) => {

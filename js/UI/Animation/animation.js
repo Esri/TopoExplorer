@@ -62,6 +62,23 @@ const cardCheckStatus = (mapIdIndex) => {
 		.classList.contains('hidden');
 };
 
+const checkToposAvailableForAnimation = () => {
+	const arrayOfPossibleTopos = document.querySelectorAll(
+		'.animate.checkbox .checkmark'
+	);
+
+	const arrayOfHiddenTopos = document.querySelectorAll(
+		'.animate.checkbox .checkmark.hidden'
+	);
+	console.log(arrayOfPossibleTopos.length);
+	console.log(arrayOfHiddenTopos.length);
+	if (arrayOfPossibleTopos.length === arrayOfHiddenTopos.length) {
+		return true;
+	}
+
+	return false;
+};
+
 const setLoadingStatus = () => {
 	isLoading ? (isLoading = false) : (isLoading = true);
 };
@@ -302,6 +319,7 @@ export {
 	hideUnavailableTopoCheckbox,
 	uncheckMapCard,
 	showAvailableTopoCheckbox,
+	checkToposAvailableForAnimation,
 	showAnimateCheckboxVisibility,
 	setMapCardUnavailableStatus,
 	removeAnimationLoadingDiv,

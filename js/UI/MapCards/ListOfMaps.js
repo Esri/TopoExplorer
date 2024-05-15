@@ -227,9 +227,9 @@ const makeCards = (list) => {
                     
                     <p class="mapSlotHeader"> <span class="year">${
 											topoMap.date
-										}</span> | <span>${
+										}</span> | <span class="revisionYear">${
 				topoMap.topo.attributes.Imprint_Year
-			} rev</span> | <span class="name">${topoMap.mapName}</span>
+			} </span> rev | <span class="name">${topoMap.mapName}</span>
                     </p>
                   </div>
                 <div style="display:flex">
