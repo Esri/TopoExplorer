@@ -26,12 +26,19 @@ const downloadOptionsHTML = formats
 		return `
             <div class='choiceGroup'>
               <h4  class='orientation' style='text-align: center;'>${size.format.toUpperCase()}</h4>
-              <div class='choice'>
-                <div style='width:${size.largeFormatWidth}; height: ${
-			size.largeFormatHeight
-		};'></div>
-                <a>${size.largeFormatSize}</a>
-              </div>
+              ${
+								size.format.includes('square')
+									? `<div class='choice'>
+										<div
+											style='width:${size.largeFormatWidth}; height: ${size.largeFormatHeight};'
+										></div>
+										<a>${size.largeFormatSize}</a>
+									</div>`
+									: ''
+							}
+             
+              
+                
               <div class='choice'>
                 <div class= 'smallerSize' style='width:${
 									size.smallFormatWidth

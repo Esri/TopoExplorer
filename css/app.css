@@ -36,6 +36,7 @@ main {
 
 .modalBox {
   width: 60%;
+  height: 75%;
   display:flex;
   background: linear-gradient(0deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
   border-radius: 0.75rem;
@@ -49,6 +50,9 @@ main {
 
 .modalText{
   margin: 0 1rem;
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--thumbBG) transparent;
 }
 
 .modalText div{
