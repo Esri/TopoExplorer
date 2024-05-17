@@ -70,8 +70,7 @@ const checkToposAvailableForAnimation = () => {
 	const arrayOfHiddenTopos = document.querySelectorAll(
 		'.animate.checkbox .checkmark.hidden'
 	);
-	console.log(arrayOfPossibleTopos.length);
-	console.log(arrayOfHiddenTopos.length);
+
 	if (arrayOfPossibleTopos.length === arrayOfHiddenTopos.length) {
 		return true;
 	}
@@ -156,7 +155,6 @@ const addMapAnimationOverlay = () => {
   height: 500px;
   background: linear-gradient(135deg, rgba(241,244,245,1) 20%, rgba(241,244,245,0) 50%);`;
 
-	// closeDivOverlay.innerHTML = closeBtn;
 	document.querySelector('#viewDiv').prepend(closeDivOverlay);
 };
 
@@ -182,10 +180,9 @@ const addDownloadErrorMessage = () => {
 
 const removeMapAnimationOverlay = () => {
 	document.querySelector('.mapAnimationOverlay').remove();
-	// document.querySelector('#viewDiv').remove(closeDivOverlay);
 };
 
-//thisneeds a better name it's highlighting the topo's card while the corresponding topo is visible during animation.
+//this needs a better name it's highlighting the topo's card while the corresponding topo is visible during animation.
 const removeHighlight = () => {
 	if (document.querySelector('.animating')) {
 		document.querySelector('.animating').classList.remove('animating');
@@ -238,9 +235,6 @@ const hideUnavailableTopoCheckbox = (oid) => {
 	const mapCard = document.querySelector(
 		`#pinnedList .map-list-item[oid="${oid}"]`
 	);
-	// const mapCardCheckbox = mapCard.querySelector('.checkbox')
-	// mapCard.closest
-	// console.log('no cechkbox', mapCardCheckbox)
 };
 
 const uncheckMapCard = (oid) => {
@@ -259,8 +253,6 @@ const resetAnimateCheckbox = () => {
 };
 
 const setMapCardUnavailableStatus = (oid) => {
-	// document.querySelector(`#pinnedList .map-list-item[oid="${oid}"]`).classList.add('unavailable')
-	// document.querySelector(`#pinnedList .map-list-item[oid="${oid}"]`)
 	const mapCard = document.querySelector(
 		`#pinnedList .map-list-item[oid="${oid}"]`
 	);
@@ -311,7 +303,6 @@ const resetUIAfterAnimation = () => {
 };
 
 export {
-	// setAnimationSlider,
 	beginAnimation,
 	endAnimation,
 	setLoadingStatus,
@@ -335,5 +326,4 @@ export {
 	removeHighlight,
 	isAnimating,
 	isLoading,
-	// speeds,
 };

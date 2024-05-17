@@ -192,8 +192,6 @@ const makeCards = (list) => {
 		return;
 	}
 
-	console.log(list);
-
 	const mapSlot = list
 		.map((topoMap, index) => {
 			const isCardPinned =
@@ -510,27 +508,10 @@ const isTargetPolygonWithinExtent = (currentlySelectedMapGeometry) => {
 			return;
 		}
 
-		// console.log(currentView.extent);
-
-		// const viewExtent = webMercatorUtils.webMercatorToGeographic(
-		// 	currentView.extent
-		// );
-
-		// console.log(viewExtent.clone().normalize());
-
-		// if (viewExtent.xmin > viewExtent.xmax) {
-		// 	viewExtent.xmin -= 360;
-		// }
-
-		// if (viewExtent.xmin < -179) {
-		// 	viewExtent.xmin = -179;
-		// }
-
 		//normalize the extent. This returns an array of the extent, usually the array will contain only one extent.
 		//If the International Date Line is present in the view, the array will have two extents: one for each side of the date line.
 		//It has the additional use of resetting the extent coordinates if the user spins around the world.
 		const extent = currentView.extent.clone().normalize();
-		// console.log('extent situation', extent);
 
 		const topoExtent = {
 			xmax: null,
@@ -540,14 +521,7 @@ const isTargetPolygonWithinExtent = (currentlySelectedMapGeometry) => {
 		};
 
 		currentlySelectedMapGeometryObj.rings[0].map((coordinates, index) => {
-			// const longLat = webMercatorUtils.xyToLngLat(
-			// 	coordinates[0],
-			// 	coordinates[1]
-			// );
 			if (index === 0) {
-				// console.log(coordinates[0]);
-				// console.log(coordinates.join(', '));
-
 				(topoExtent.xmax = coordinates[0]),
 					(topoExtent.ymax = coordinates[1]),
 					(topoExtent.xmin = coordinates[0]),
@@ -575,7 +549,6 @@ const isTargetPolygonWithinExtent = (currentlySelectedMapGeometry) => {
 				topoExtent.xmax > extent[0].xmin &&
 				topoExtent.xmin < extent[0].xmax
 			) {
-				// console.log('topo in the first extent');
 				resolve(extent[0]);
 				return;
 			}
@@ -586,18 +559,14 @@ const isTargetPolygonWithinExtent = (currentlySelectedMapGeometry) => {
 				topoExtent.xmax > extent[1].xmin &&
 				topoExtent.xmin < extent[1].xmax
 			) {
-				// console.log('topo in the second extent');
 				resolve(extent[1]);
 				return;
 			}
 
-			// console.log('topo not present');
 			resolve(false);
 			return;
-			// console.log('is this still going?');
 		}
 
-		// console.log("there's only one extent geometry");
 		if (
 			topoExtent.ymax > extent[0].ymin &&
 			topoExtent.ymin < extent[0].ymax &&
@@ -742,14 +711,11 @@ const isCurrentMapPinned = (targetMapCard, topoMapGeometry, callback) => {
 
 		callback(oid, cardHTML, topoMapGeometry);
 		currentlySelectedMapCardHTML = cardHTML;
-		// setTopoMapPlaceholder(oid);
 		return;
 	} else {
 		const relatedMapCard = explorerList.querySelector(`.map-list-item`)
 			? explorerList.querySelector(`.map-list-item[oid="${oid}"]`)
 			: null;
-
-		// const mapCardGeometry = getPinnedTopoGeometry(oid);
 
 		if (oid == currentlySelectedMapId && pinnedCardIDsArray.length >= 1) {
 			setTopoMapPlaceholder(oid, true);
@@ -761,13 +727,6 @@ const isCurrentMapPinned = (targetMapCard, topoMapGeometry, callback) => {
 			removePinnedTopo(pinnedCardIDsArray.indexOf(oid), oid);
 			return;
 		}
-
-		// if (targetMapCard.closest('#pinnedList')) {
-		// 	callback(oid);
-		// 	relatedMapCard ? closeMapCard(relatedMapCard) : null;
-		// 	removePinnedTopo(pinnedCardIDsArray.indexOf(oid), oid);
-		// 	return;
-		// }
 
 		//remove the mapCard from the 'pinnedIDsArray' to reflect it's unpinning.
 		removePinnedTopo(pinnedCardIDsArray.indexOf(oid), oid);
@@ -791,7 +750,6 @@ const mapPinningAction = (pinIcon, pinCheckmarkIcon, targetMapCard) => {
 	const objectId =
 		targetMapCard.querySelector('.map-list-item').attributes.oid.value;
 
-	// pinIcon.closest('.pushpin').classList.toggle('pinned');
 	if (!pinIcon.classList.contains('pinned')) {
 		getPinnedTopoGeometry(objectId).then((topoMapGeometry) => {
 			isCurrentMapPinned(targetMapCard, topoMapGeometry, removeTopoFromMap);
@@ -802,10 +760,6 @@ const mapPinningAction = (pinIcon, pinCheckmarkIcon, targetMapCard) => {
 		if (pinIcon.classList.contains('pinned')) {
 			isCurrentMapPinned(targetMapCard, topoMapGeometry, addToPinnedArray);
 		}
-		//This conditional may no longer be necessary
-		//   else {
-		// 		isCurrentMapPinned(targetMapCard, topoMapGeometry, removeTopoFromMap);
-		// 	}
 	});
 };
 
@@ -957,9 +911,6 @@ const pinEvent = (eventTarget, mapCard, targetOID) => {
 
 	//if the card is in 'pinned list' AND the mapCard exists in the 'explore list' set the icon to the unpinned status.
 	if (mapCard.closest('#pinnedList') && mapCardInExploreModeList) {
-		// mapCardInExploreModeList
-		// 	.querySelector('.icon .unpinned')
-		// 	.classList.toggle('pinned');
 		mapCardInExploreModeList
 			.querySelector('.unpinned')
 			.classList.toggle('pinned');
@@ -978,16 +929,12 @@ const zoomToTopo = (geography) => {
 	currentView.goTo({
 		target: geography,
 	});
-
-	// updateHashParams(currentView.extent.center, currentView.zoom);
 };
 
 const zoomEvent = (eventTarget, oid) => {
 	if (!eventTarget.closest('.zoom')) {
 		return;
 	}
-	// const targetGeometry =
-	// 	eventTarget.closest('.map-list-item').attributes.geometry.value;
 
 	if (!eventTarget.closest('#pinnedList')) {
 		getTopoGeometry(oid).then((topoGeometryData) => {
@@ -1085,8 +1032,6 @@ const isMapCardOpen = (target, targetOID) => {
 		removeTopoFromMap(currentlySelectedMapId);
 	}
 	const targetTopLevel = target.closest('.map-list-item');
-	// const targetGeometry = targetTopLevel.attributes.geometry.value;
-	// const cardHTML = target.closest('.mapCard-container').innerHTML;
 
 	if (
 		target.closest('.action-container') ||
@@ -1203,11 +1148,9 @@ sideBarElement.addEventListener('click', (event) => {
 	const eventTarget = event.target;
 
 	if (event.target.closest('.infoIcon')) {
-		console.log('nothing');
 		const mapInfoText = event.target
 			.closest('.infoIcon')
 			.querySelector('.mapMetaData').innerText;
-		console.log(mapInfoText);
 		navigator.clipboard.writeText(mapInfoText);
 		// try {
 

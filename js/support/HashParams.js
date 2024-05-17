@@ -1,5 +1,6 @@
 import { beginAnimation } from '../UI/Animation/animation.js?v=0.01';
 import { toggleListVisibility } from '../UI/MapCards/ListOfMaps.js?v=0.01';
+import { isPinModeActive } from '../UI/EventsAndSelectors/EventsAndSelectors.js?v=0.01';
 
 let parsedHashParams = null;
 
@@ -30,7 +31,6 @@ const updateHashParams = (data, zoomLevel) => {
 
 		return;
 	} else {
-		console.log(data, zoomLevel);
 		parsedHashParams.loc = `${data.longitude.toFixed(
 			2
 		)},${data.latitude.toFixed(2)}`;
@@ -92,7 +92,9 @@ const removeAnimationStatusHashParam = () => {
 
 const animatingStatus = () => {
 	if (parsedHashParams.animation) {
-		toggleListVisibility();
+		if (!isPinModeActive()) {
+			toggleListVisibility();
+		}
 		beginAnimation();
 	}
 	return;
@@ -121,9 +123,6 @@ const hashLoD = () => {
 const checkForPreviousTopos = () => {
 	parseHashParams();
 
-	// parsedHashParams.maps.split(',').map((oid) => {
-	// 	console.log(oid);
-	// });
 	return parsedHashParams.maps;
 };
 

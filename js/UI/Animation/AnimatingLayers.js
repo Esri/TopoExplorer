@@ -95,7 +95,6 @@ const setPinListCurrentOrder = () => {
 
 const getAnimatingImages = async () => {
 	await createArrayOfImageElements(arrayOfMapImages);
-	console.log('the array of animating images', arrayOfMapImages);
 };
 
 const removeAnimatingImages = () => {
@@ -157,8 +156,6 @@ const exportingTopoImageAndCreatingImageElement = async () => {
 	const processCardIntoImage = (card) => {
 		return new Promise((resolve) => {
 			const cardId = card.querySelector('.map-list-item').attributes.oid.value;
-			console.log(card);
-			console.log(cardId);
 
 			const currentOpacity = card.querySelector('.opacity-slider').value / 100;
 			const imageName = `${
@@ -181,10 +178,6 @@ const exportingTopoImageAndCreatingImageElement = async () => {
 							imageData.imgHeight = Math.round(
 								newExtent.height / queryController.mapView.resolution
 							);
-							console.log(imageData);
-
-							// arrayOfImageData.push(imageData);
-							// imagesForDownload.topoImages.push(imageData);
 
 							showAvailableTopoCheckbox(cardId);
 							resolve(imageData);
@@ -215,21 +208,16 @@ const exportingTopoImageAndCreatingImageElement = async () => {
 	arrayOfImageData = await Promise.all(promiseArray);
 
 	arrayOfImageData = arrayOfImageData.filter((image) => !(image === false));
-	console.log(arrayOfImageData);
 };
 
 const addImageElementToMediaLayer = async () => {
 	const promiseArray = [];
-	console.log(arrayOfImageData);
 	for (const imageData of arrayOfImageData) {
-		console.log(imageData);
 		imagesForDownload.topoImages.push(imageData);
 		promiseArray.push(createImageElementForMediaLayer(imageData));
 	}
 
 	await Promise.all(promiseArray);
-
-	// console.log(arrayOfMapImages);
 };
 
 const disableMapCardForAnimation = (cardId) => {
@@ -240,20 +228,6 @@ const disableMapCardForAnimation = (cardId) => {
 
 const takeScreenshotOfView = () => {
 	return new Promise((resolve, reject) => {
-		// for (const animationTopoImage of arrayOfMapImages) {
-		// 	console.log(animationTopoImage);
-		// 	if (animationTopoImage.visible !== false) {
-		// 		takeScreenshotOfView();
-		// 		return;
-		// 	}
-		// }
-		// if (mediaLayer.visible === true) {
-		// 	console.log('media layer visible', mediaLayer);
-		// 	mediaLayer.visible === false;
-		// 	takeScreenshotOfView();
-		// 	return;
-		// }
-
 		const screenshotQualityValue = 98;
 		const screenshotFormat = 'jpg';
 
@@ -265,7 +239,6 @@ const takeScreenshotOfView = () => {
 		};
 
 		queryController.mapView.takeScreenshot(options).then(async (screenshot) => {
-			// startAnimationInterval();
 			const screenshotResponse = await fetch(screenshot.dataUrl);
 			const blob = URL.createObjectURL(await screenshotResponse.blob());
 
@@ -274,25 +247,20 @@ const takeScreenshotOfView = () => {
 				url: blob,
 			};
 
-			console.log(basemapImage);
-			// imagesForDownload.basemap = basemapImage;
 			resolve((imagesForDownload.basemap = basemapImage));
 		});
 	});
 };
 
 const toggleMapCardDownloadAvailability = (mapCardOID) => {
-	console.log('update topo download availability', mapCardOID);
 	imagesForDownload.topoImages.map((topoImageData) => {
 		if (topoImageData.id === mapCardOID) {
-			console.log(topoImageData.isCheckedForAnimation);
 			if (topoImageData.isCheckedForAnimation) {
 				topoImageData.isCheckedForAnimation = false;
 				if (checkToposAvailableForAnimation()) {
 					pauseAnimation();
 				}
 			} else {
-				console.log('setting check to true');
 				topoImageData.isCheckedForAnimation = true;
 				if (!checkToposAvailableForAnimation() && isPaused) {
 					restartAnimation();
@@ -315,8 +283,6 @@ const restartAnimation = () => {
 //this should be in another module
 const hideMediaLayer = () => {
 	return new Promise((resolve, reject) => {
-		// mediaLayer.visible = false;
-
 		queryController.mapView.map.remove(mediaLayer);
 
 		resolve();
@@ -348,7 +314,6 @@ const checkToposIncludedForDownload = async () => {
 							}
 						}
 					);
-					console.log('processImages', processImages);
 
 					const topoAnimationComposite = await Promise.all(processImages);
 
@@ -363,7 +328,6 @@ const checkToposIncludedForDownload = async () => {
 						abortController: new AbortController(),
 					};
 
-					console.log(animationParams);
 					createAnimationVideo(animationParams);
 				} catch (e) {
 					console.error('error during image processing', e);
@@ -395,7 +359,6 @@ const getAnimationOrderForPinnedMapsUI = () => {
 		(pinnedCard) =>
 			!pinnedCard.firstElementChild.classList.contains('transparency')
 	);
-	console.log(pinListCurrentOrder);
 };
 
 const checkAnimationLoadStatus = () => {
@@ -456,13 +419,6 @@ animationSpeedSlider.addEventListener('change', (event) => {
 	}
 });
 
-// checkForMapsToAnimate = () => {
-// 	if (!document.querySelectorAll('.animate.checkbox .checkmark')) {
-// 		console.log('stopping animation...kind of.');
-// 		stopAnimationInterval();
-// 	}
-// };
-
 const startAnimationInterval = () => {
 	animationInterval = setInterval(animate, duration);
 };
@@ -511,7 +467,6 @@ const findNextTopoToAnimate = () => {
 };
 
 const showTopoImage = (mapIdIndex) => {
-	// console.log('animation index', mapIdIndex);
 	let topoMap = arrayOfMapImages[mapIdIndex];
 	let highlightingAnimatedMap = pinListCurrentOrder[mapIdIndex];
 	let topoChosenOpacity = arrayOfImageData[mapIdIndex].currentOpacity;

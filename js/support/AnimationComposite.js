@@ -7,7 +7,6 @@ const makeCompositeForAnimationDownload = async (basemap, topo) => {
 		//will create an image that combines the basemap image and each of the topoMap images present in the imagesForDownload obj.
 		//Once the composite is made, on obj with the image and corresponding information will be stored in the imagesForDownload obj's animationImages array
 
-		console.log('MAKING AN IMG COMPOSITE', topo);
 		return new Promise(async (resolve, reject) => {
 			const viewWidth = queryController.mapView.width;
 			const viewHeight = queryController.mapView.height;
@@ -32,7 +31,7 @@ const makeCompositeForAnimationDownload = async (basemap, topo) => {
 
 				//this is for testing only. Checks the quality of the recently made composite image
 				// downloadCompositeImages(basemap.url);
-				console.log('the URL is ready', url);
+
 				createAnimationImageElement(url, topo).then((animationImageElement) => {
 					resolve(animationImageElement);
 				});
@@ -97,12 +96,10 @@ const drawTopoMap = async (topo, compositeCanvas, topoImageDrawOffset) => {
 		topoMap.onload = () => {
 			compositeCanvas.globalAlpha = topo.opacity;
 			if (topo.containingExtent.xmin > 0) {
-				console.log('drawing let of the international date line');
 				resolve(compositeCanvas.drawImage(topoMap, 0, 0));
 				return;
 			}
 
-			console.log(topoImageDrawOffset);
 			resolve(
 				compositeCanvas.drawImage(
 					topoMap,
@@ -140,7 +137,7 @@ const downloadCompositeImages = (url) => {
 
 // const revokeBlobDownloadURL = (downloadURL) => {
 // 	URL.revokeObjectURL(downloadURL);
-// 	console.log(arrayOfCompositeImages);
+
 // };
 
 export { makeCompositeForAnimationDownload };

@@ -40,8 +40,6 @@ const imageExport = async (oid, opacity, extent) => {
 		lockRasterIds: [oid],
 	});
 
-	console.log('check extents', extent);
-
 	const params = new URLSearchParams({
 		bbox: JSON.stringify(extent),
 		size: newImageSize,

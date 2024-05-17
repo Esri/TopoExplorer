@@ -34,7 +34,6 @@ const exploreList = document.querySelector('#exploreList');
 const preventingMapInteractions = () => {
 	const view = getView();
 
-	// console.log(view);
 	view.on('drag', (event) => {
 		if (isAnimating) {
 			event.stopPropagation();
@@ -134,12 +133,7 @@ sideBar.addEventListener(
 
 		if (event.target.closest('.infoIcon')) {
 			event.preventDefault();
-			// console.log('info', event.target);
-			// console.log('info', event.target.element);
-			// console.log(event.target.closest('.infoIcon'));
-			// console.log(
-			// 	event.target.closest('.infoIcon').querySelector('.tooltipText')
-			// );
+
 			if (
 				event.target
 					.closest('.infoIcon')
@@ -156,15 +150,6 @@ sideBar.addEventListener(
 			event.target
 				.closest('.infoIcon')
 				.querySelector('.tooltipText').style.top = `${checkOverFlow(event)}px`;
-			// checkOverFlow(
-			// 	event.target.closest('.infoIcon').querySelector('.tooltipText'),
-			// 	event
-			// );
-			// event.target
-			// 	.closest('.infoIcon')
-			// 	.querySelector('.tooltipText').style.top = `${checkOverFlow(
-			// 	event.target.closest('.infoIcon').querySelector('.tooltipText'), event
-			// )}px`;
 
 			event.target
 				.closest('.infoIcon')
@@ -287,6 +272,13 @@ const isMobileFormat = () => {
 	return isReadyForMobileFormat;
 };
 
+const isPinModeActive = () => {
+	if (document.querySelector('.pin-mode-btn.selected')) {
+		return true;
+	}
+
+	return false;
+};
 const scrollPosition = () => {
 	return Math.abs(
 		exploreList.scrollHeight - exploreList.clientHeight - exploreList.scrollTop
@@ -307,11 +299,6 @@ document.addEventListener('click', (event) => {
 	if (event.target.closest('.modalClose')) {
 		removeInfoModal();
 	}
-
-	//NOTE: may want to move this to the listOfMaps file. Need to make sure that clicking the infoIcon doesn't open/close the mapCard.
-	// if (event.target.closest('.infoIcon')) {
-	// 	console.log('infoClick');
-	// }
 });
 
 document.querySelector('.app.heading').addEventListener('click', () => {
@@ -363,8 +350,7 @@ document.querySelector('#viewDiv').addEventListener('click', (event) => {
 		const videoName = document.getElementById('animation-title').value
 			? document.getElementById('animation-title').value
 			: 'Topo Map Explorer';
-		// console.log(videoName);
-		// console.log(document.getElementById('animation-title'));
+
 		checkToposIncludedForDownload();
 		addDownloadingNotification();
 
@@ -403,4 +389,9 @@ document.querySelector('#viewDiv').addEventListener('mouseover', (event) => {
 });
 
 document.querySelector;
-export { addAccountImage, isMobileFormat, preventingMapInteractions };
+export {
+	addAccountImage,
+	isMobileFormat,
+	preventingMapInteractions,
+	isPinModeActive,
+};

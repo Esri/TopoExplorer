@@ -7,10 +7,7 @@ import { initView, newMapCrossHair } from './map/View.js?v=0.01';
 import {
 	queryController,
 	isHashedToposForQuery,
-	setView,
 } from './support/queryController.js?v=0.01';
-
-// import { isScrollAtPageEnd } from './support/eventListeners/ScrollListener.js?v=0.01';
 
 import { updateHashParams } from './support/HashParams.js?v=0.01';
 import { getYearsAndScales } from './support/YearsAndScalesProcessing.js?v=0.01';
@@ -30,20 +27,18 @@ const initApp = async () => {
 		const oauthResponse = await authorization();
 		const view = await initView();
 		const sliderValues = await getYearsAndScales(view);
-		// const getPreviousTopos = await isHashedToposForQuery(view);
+
 		const searchWidget = view.ui.find('searchWidget');
 		const initialMapQuery = () => {
 			queryController.setGeometry(view.extent.center);
 			queryController.mapView = view;
-			// setView(view);
+
 			queryController.extentQueryCall();
 			newMapCrossHair(view, view.center);
 		};
 
 		view
 			.when(() => {
-				// setView(view);
-				// queryController.mapView = view;
 				if (oauthResponse) {
 					addAccountImage(oauthResponse);
 					setAccountData(oauthResponse);
@@ -75,13 +70,9 @@ const initApp = async () => {
 				});
 
 				require(['esri/core/reactiveUtils'], (reactiveUtils) => {
-					let prevCenter;
-					let currentZoom;
-
 					reactiveUtils.when(
 						() => view?.updating === false,
 						() => {
-							console.log('done building layers');
 							initialMapQuery();
 							animatingStatus();
 						},
@@ -93,39 +84,13 @@ const initApp = async () => {
 					reactiveUtils.when(
 						() => view?.stationary === true,
 						async () => {
-							// if (prevCenter) {
-							// 	if (prevCenter.x === view.center.x) {
-							// 		return;
-							// 	}
-							// }
-							// queryController.setGeometry(view.extent.center);
 							queryController.mapView = view;
-							// queryController.extentQueryCall();
-							updateHashParams(view.extent.center, view.zoom);
 
-							// prevCenter = view?.center;
+							updateHashParams(view.extent.center, view.zoom);
 						}
 					);
-
-					// 	reactiveUtils.watch(
-					// 		() => [view.stationary, view.zoom],
-					// 		([stationary, zoom]) => {
-					// 			if (stationary && zoom !== currentZoom) {
-					// 				// queryController.setGeometry(view.extent.center);
-					// 				// queryController.mapView = view;
-					// 				// queryController.extentQueryCall();
-					// 				// updateHashParams(view.extent.center);
-					// 				currentZoom = zoom;
-					// 			}
-					// 		}
-					// 	);
 				});
 			});
-
-		// const isReadyForMoreMaps = (value) =>
-		// 	value ? queryController.checkAvailableNumberOfMaps() : null;
-
-		// isScrollAtPageEnd(isReadyForMoreMaps);
 	} catch (error) {
 		//error handeling for any intialization issues
 		console.error('problem initalizing app', error);

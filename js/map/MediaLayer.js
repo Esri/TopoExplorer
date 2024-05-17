@@ -1,7 +1,10 @@
 import { queryController } from '../support/queryController.js?v=0.01';
 
+//this will contain the images of each topo map in the animation and will be added to the media's source once layer is create
 const mediaLayerSourceElementsArray = [];
+
 let mediaLayer;
+
 const mediaLayerIdAndTitle = 'animation';
 
 const createMediaLayer = async () => {
@@ -24,9 +27,7 @@ const createMediaLayer = async () => {
 };
 
 const createArrayOfImageElements = (array) => {
-	console.log('the media layer source', mediaLayer.source.elements.items);
 	for (const topoImage of mediaLayer.source.elements.items) {
-		console.log('generating image for animation', topoImage);
 		array.push(topoImage);
 	}
 
@@ -41,7 +42,7 @@ const createImageElementForMediaLayer = async (imageData) => {
 	if (!imageData) {
 		return;
 	}
-	console.log('creating image element');
+
 	return await new Promise((resolve) => {
 		require([
 			'esri/layers/support/ImageElement',
@@ -58,8 +59,6 @@ const createImageElementForMediaLayer = async (imageData) => {
 				}),
 			});
 
-			console.log(imageElement);
-			console.log(imageElement.opacity);
 			mediaLayerSourceElementsArray.push(imageElement);
 		});
 		resolve();

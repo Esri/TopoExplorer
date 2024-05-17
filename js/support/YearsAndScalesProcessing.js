@@ -53,32 +53,22 @@ const minMaxYears = getMinMaxYears;
 const minMaxScales = getMinMaxScales;
 
 const filterTheYear = (minYear, maxYear) => {
-	console.log('years slider', minYear, maxYear);
 	setYearSelections(minYear, maxYear);
 	const minScale = scaleSelections[0];
 	const maxScale = scaleSelections[1];
-	// console.log('years was called heres the scale', scaleSelections);
+
 	setFilterValues(minYear, maxYear, minScale, maxScale);
 	filterMaps();
 };
 
 const filterTheScale = (minScale, maxScale) => {
-	console.log('scale slider', minScale, maxScale);
 	setScaleSelections(minScale, maxScale);
 	const minYear = yearSelections[0];
 	const maxYear = yearSelections[1];
-	console.log(yearSelections);
+
 	setFilterValues(minYear, maxYear, minScale, maxScale);
 	filterMaps();
 };
-
-// const setSortOptions = (choiceValue) => {
-// 	// queryController.setSortChoice(choiceValue);
-// 	// queryController.extentQueryCall();
-// 	console.log('sort Callback', choiceValue);
-// };
-
-// initSortChoice(setSortOptions);
 
 const setScaleSelections = (minScale, maxScale) => {
 	scaleSelections = [minScale, maxScale];

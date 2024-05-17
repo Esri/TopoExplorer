@@ -1,11 +1,5 @@
 import { formats } from './animationOptionsSettings.js?v=0.01';
-import {
-	checkToposIncludedForDownload,
-	setAnimationDimensions,
-} from './AnimatingLayers.js?v=0.01';
-
-let newWidth;
-let newHeight;
+import { setAnimationDimensions } from './AnimatingLayers.js?v=0.01';
 
 const animationLoadingHTML = `             
                                       <div style='position: absolute; left:25px; top: 25px;'>
@@ -99,6 +93,8 @@ const downloadErrorMessageHTML = `
                               `;
 
 const findAspectRatio = (dimension) => {
+	let newWidth;
+	let newHeight;
 	//this function receives a value for width and a value for height, then adjusts the size of mapView
 	//dimensions to create a preview for the download area that reflects the aspect ratio from the given dimensions.
 
@@ -113,11 +109,11 @@ const findAspectRatio = (dimension) => {
 	const previewHeight = parseInt(previewDimensions[1]);
 	const aspectRatio = previewWidth / previewHeight;
 
+	//determine the width and height of the MP4 based on the aspect ratio
 	newHeight = mapViewHeight;
 	newWidth = mapViewHeight * aspectRatio;
 
 	if (newWidth > mapViewWidth) {
-		// console.log('adjust');
 		newWidth = mapViewWidth;
 		newHeight = mapViewWidth * (1 / aspectRatio);
 	}
@@ -125,7 +121,6 @@ const findAspectRatio = (dimension) => {
 	previewHighlight.width = `${newWidth}px`;
 	previewHighlight.height = `${newHeight}px`;
 
-	console.log('MapView size', mapViewWidth, mapViewHeight);
 	return setAnimationDimensions(previewWidth, previewHeight);
 };
 export {

@@ -18,7 +18,6 @@ const cancelAnimationVideo = () => {
 };
 
 const createAnimationVideo = (params) => {
-	console.log(params);
 	controller = params.abortController;
 	addDownloadCancel();
 
@@ -26,8 +25,6 @@ const createAnimationVideo = (params) => {
 		.convertImages2Video(params)
 		.then((response) => {
 			const videoURL = URL.createObjectURL(response.fileContent);
-			console.log(response);
-			console.log(videoURL);
 
 			downloadVideo(params, videoURL, response.filename);
 

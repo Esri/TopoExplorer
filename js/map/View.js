@@ -49,6 +49,7 @@ const initView = () => {
 				zoom: hashLoD() || config.defaultMapSettings.zoom,
 				constraints: {
 					snapToZoom: false,
+					minZoom: 3,
 				},
 				popup: {
 					popup: null,
@@ -95,14 +96,12 @@ const initView = () => {
 };
 
 const newMapCrossHair = (view, mapPoint) => {
-	console.log('map point coming');
 	require([
 		'esri/geometry/Point',
 		'esri/Graphic',
 		'esri/symbols/PictureMarkerSymbol',
 		// 'esri/geometry/SpatialReference',
 	], (Point, Graphic, PictureMarkerSymbol) => {
-		console.log('new map point', view, mapPoint);
 		const crosshairGraphicLayer = view.map.layers.items.find((layer) => {
 			if (layer.id === 'crosshair') {
 				return layer;
