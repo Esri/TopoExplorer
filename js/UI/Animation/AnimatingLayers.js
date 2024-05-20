@@ -194,14 +194,6 @@ const exportingTopoImageAndCreatingImageElement = async () => {
 	const promiseArray = [];
 
 	for (const card of pinListCurrentOrder) {
-		// const cardId = card.querySelector('.map-list-item').attributes.oid.value;
-		// const cardMapLocation =
-		// 	card.querySelector('.map-list-item').attributes.geometry.value;
-		// currentOpacity = card.querySelector('.opacity-slider').value / 100;
-		// imageName = `${
-		// 	card.querySelector('.map-list-item .location').textContent
-		// } ${card.querySelector('.map-list-item .year').textContent}`;
-
 		promiseArray.push(processCardIntoImage(card));
 	}
 
@@ -375,6 +367,7 @@ const checkAnimationLoadStatus = () => {
 	setLoadingStatus();
 	enableAnimationSpeedSlider();
 };
+
 //note: some of these functions have more UI-centric. They could probably be moved into another module (i.e.: the animation.js module.)
 const animationEnd = () => {
 	stopAnimationInterval();
@@ -384,7 +377,6 @@ const animationEnd = () => {
 	showCrosshairLayer();
 	removeMediaLayer();
 	revokeTopoMapBlobURLs();
-	// revokeBasemapBlobURL();
 	removeTopoImageElements();
 	removeAnimatingImages();
 	removeImagesForDownload();

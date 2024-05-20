@@ -51,7 +51,7 @@ const addHeaderSearchInfo = () => {
 
 const headerMapInfo = () => {
 	const mapInfo = `
-  <div class='map-list-item mobile' oid=${mapOID} geometry=${mapGeometry}>  
+  <div class='map-list-item mobile' oid=${mapOID}>  
     <div class='openSideBarBtn icon left-arrow'>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13H4.707l2.646 2.646-.707.707L2.793 12.5l3.853-3.854.707.707L4.707 12H21z"></path></svg>
     </div>
@@ -72,7 +72,10 @@ const addMapInfoOnMobileHeader = (event) => {
 	mapOpacitySlider = topoMap.querySelector('.mapCard-slider').innerHTML;
 
 	mapOID = topoMap.attributes.oid.value;
-	mapGeometry = topoMap.attributes.geometry.value;
+};
+
+const resetMobileHeaderInfo = () => {
+	addHeaderSearchInfo();
 };
 
 const initMobileHeader = () => {
@@ -115,4 +118,4 @@ const initMobileHeader = () => {
 		});
 };
 
-export { initMobileHeader };
+export { initMobileHeader, resetMobileHeaderInfo };

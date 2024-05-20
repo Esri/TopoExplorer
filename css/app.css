@@ -549,10 +549,10 @@ background: none;
   width: 50%;
   font-size: 1.4rem;
   line-height: 1;
-  padding: 0 10px;
+  padding: 0 0 0 10px;
 }
 
-.app.heading{
+.infoModalIcon{
   cursor:pointer
 }
 

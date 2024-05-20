@@ -164,12 +164,6 @@ const createMapSlotItems = (list, view) => {
 		return;
 	}
 
-	// const isCurrentlySelectMapWithinView =
-	// 	currentlySelectedMapId &&
-	// 	isTargetPolygonWithinExtent(currentlySelectedMapGeometry)
-	// 		? true
-	// 		: false;
-
 	const areOtherMapCardsPresent = () => {
 		if (explorerList.querySelectorAll('.map-list-item')[0]) {
 			return true;
@@ -490,7 +484,6 @@ const setTopoMapPlaceholder = (oid, isMapCardOpen) => {
 
 	if (!isMapCardOpen) {
 		currentlySelectedMapId = parseInt(oid);
-		// currentlySelectedMapCardHTML = mapCardHTML;
 		currentlySelectedMapGeometry = mapGeometry;
 	}
 };
@@ -684,22 +677,17 @@ const checkPinStatusOfSelectedMap = () => {
 	}
 };
 
-const closeSelectedMap = (currentlySelectedMapId) => {
-	// const selectedMap = explorerList.querySelector(
-	// 	`.map-list-item[oid="${currentlySelectedMapId}"]`
-	// );
-	// if (selectedMap) {
-	// 	selectedMap.querySelector('.action-container').classList.remove('flex');
-	// 	selectedMap.querySelector('.action-container').classList.add('invisible');
-	// 	setTopoMapPlaceholder(currentlySelectedMapId, true);
-	// }
-};
-
+//looks to see if the mapCard provided has already been pinned,
+//the callback provided will either remove the mapCard from the pinned list, or create a copy of the mapCard, and add it to the list.
 const isCurrentMapPinned = (targetMapCard, topoMapGeometry, callback) => {
+	//will use this original ID to check if it already exists in an array that tracks the currently pinned topo maps
 	const oid =
 		targetMapCard.querySelector('.map-list-item').attributes.oid.value;
 
 	if (getPinnedTopoIndex(oid) === -1) {
+		//if this card (it's ID specifically) is not in the array of pinned topos,
+		//document the position (value) of card's opacity slider.
+		//this value will be used while creating the copy of the card for the pinned list
 		const opacityValueForNewPin = targetMapCard.querySelector('input').value;
 		targetMapCard.querySelector('input').attributes.value.value =
 			opacityValueForNewPin;
@@ -709,8 +697,10 @@ const isCurrentMapPinned = (targetMapCard, topoMapGeometry, callback) => {
 
 		const cardHTML = targetMapCard.innerHTML;
 
+		//take the ID, and the Card's HTML, and the associated topo map's geometry and add it to the pinned list.
 		callback(oid, cardHTML, topoMapGeometry);
-		currentlySelectedMapCardHTML = cardHTML;
+		//updating the most-recently selected card HTML
+		// currentlySelectedMapCardHTML = cardHTML;
 		return;
 	} else {
 		const relatedMapCard = explorerList.querySelector(`.map-list-item`)

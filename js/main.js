@@ -21,6 +21,7 @@ import {
 import { initLayerToggle } from './UI/Basemaps/basemaps.js?v=0.01';
 import { setAccountData } from './support/AddItemRequest.js?v=0.01';
 import { animatingStatus } from './support/HashParams.js?v=0.01';
+import { resetMobileHeaderInfo } from './UI/MobileMapHeader/mobileMapHeader.js?v=0.01';
 
 const initApp = async () => {
 	try {
@@ -55,6 +56,9 @@ const initApp = async () => {
 				isHashedToposForQuery(view);
 
 				view.on('click', (event) => {
+					if (isMobileFormat()) {
+						resetMobileHeaderInfo();
+					}
 					const zoomLevel = view.zoom;
 					newMapCrossHair(view, event.mapPoint);
 					queryController.setGeometry(event.mapPoint);

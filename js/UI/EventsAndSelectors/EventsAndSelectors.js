@@ -301,7 +301,7 @@ document.addEventListener('click', (event) => {
 	}
 });
 
-document.querySelector('.app.heading').addEventListener('click', () => {
+document.querySelector('.infoModalIcon').addEventListener('click', () => {
 	displayInfoModal();
 });
 
