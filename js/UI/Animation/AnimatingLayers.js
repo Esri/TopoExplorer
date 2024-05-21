@@ -272,6 +272,7 @@ const restartAnimation = () => {
 	isPaused = false;
 	startAnimationInterval();
 };
+
 //this should be in another module
 const hideMediaLayer = () => {
 	return new Promise((resolve, reject) => {

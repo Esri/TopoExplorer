@@ -64,11 +64,11 @@ const cardCheckStatus = (mapIdIndex) => {
 
 const checkToposAvailableForAnimation = () => {
 	const arrayOfPossibleTopos = document.querySelectorAll(
-		'.animate.checkbox .checkmark'
+		'#pinnedList .animate.checkbox .checkmark'
 	);
 
 	const arrayOfHiddenTopos = document.querySelectorAll(
-		'.animate.checkbox .checkmark.hidden'
+		'#pinnedList .animate.checkbox .checkmark.hidden'
 	);
 
 	if (arrayOfPossibleTopos.length === arrayOfHiddenTopos.length) {

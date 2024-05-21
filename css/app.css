@@ -938,4 +938,11 @@ svg{
      font-size: 1.13rem; 
   }
 
+ 
+}
+
+@media only screen and (max-width: 375px) {
+  #sideBar {
+    margin: 0 -10px;
+  }
 }
