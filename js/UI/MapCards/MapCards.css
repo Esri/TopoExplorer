@@ -417,24 +417,11 @@ background-color: chartreuse;
 }
 
 #pinnedList .drag-sort-active{
-  /* background: transparent; */
-  /* color: transparent; */
-  /* border: 1px solid #4ca1af; */
-  /* background: #637287;
-  color: #637287; */
+  color: #637287; 
   opacity: 0;
   cursor: grabbing;
 }
 
-/* #pinnedList .drag-sort-active:active {
-  /* background: transparent; */
-  /* color: transparent; */
-  /* border: 1px solid #4ca1af; */
-  /* background: #637287;
-  color: #637287;
-  opacity: 0;
-  cursor: grabbing;
-} */
 
 .drag-sort-background {
   background-color: #EAEEF1;
@@ -442,7 +429,7 @@ box-shadow:
   inset -6px -6px 6px #FFFFFF,
   inset 6px 6px 8px #B8C2D3;
 border-radius: 12px;
-  /* box-shadow: inset 6px 6px 6px #EAEEF1, -6px -6px 8px #F9FBFB, 6px 6px 8px #D8E0E7; */
+  
 }
 
 #pinnedList div.mapCard-container  div:active {
@@ -451,7 +438,8 @@ border-radius: 12px;
 
 .grabbedItemImage {
   position:absolute;
-  top: -200px;
+
+  z-index: -1;
   width:350px;
 }
 

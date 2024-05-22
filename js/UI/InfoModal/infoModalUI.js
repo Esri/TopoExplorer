@@ -12,13 +12,13 @@ const information = `<div class='modalBox'>
                             About the USGS Historical Topo Map Collection and Explorer
                           </div>
                           <div>
-                          The US Geological Survey (USGS) and Esri collaborated to bring the ever-increasing collection of US historical topographic maps to everyone through the Historical Topo Map Explorer. This app, now in its second generation, brings to life more than 180,000 maps dating from 1882 to 2006. Previously available only as printed lithographic copies, the legacy quadrangles are now available as web viewable images and free, downloadable digital files. The Historical Topo Map Explorer allows users to explore the historical maps, save the current view as a web map, and download the maps as high-resolution georeferenced images in GeoTIFF format for use in web mapping applications and GIS. Learn more about the app in the <a href="${topMapExplorerItemPage}">item description</a> on ArcGIS Online.
+                          The US Geological Survey (USGS) and Esri collaborated to bring the ever-increasing collection of US historical topographic maps to everyone through the Historical Topo Map Explorer. This app, now in its second generation, brings to life more than 180,000 maps dating from 1882 to 2006. Previously available only as printed lithographic copies, the legacy quadrangles are now available as web-viewable images and free, downloadable digital files. The Historical Topo Map Explorer allows users to explore the historical maps, save the current view as a web map, and download the maps as high-resolution georeferenced images in GeoTIFF format for use in web mapping applications and GIS. Learn more about the app in the <a href="${topMapExplorerItemPage}">item description</a> on ArcGIS Online.
                           </br>
                           </br>
                           The historical maps are part of the USGS Historical Topographic Map Collection ― a project that was launched in 2011. The collection includes all scales and all editions of the topographic maps published by the USGS since the inception of the topographic mapping program in 1879. The maps have been prepared at scales ranging from 1:10,000 to 1:250,000. Some scales have broad coverage across the United States, while others may have only one map.
                           </div>
                           <div>
-                          The USGS scanned each map as is to capture the content and condition of each map sheet. All maps were georeferenced, and metadata was captured as part of the process. Using ArcGIS, the scanned maps comprise the USGS Historical Topographic Maps image service that can be viewed on the web and provides links to allow users to download individual scanned images. Learn more about the image service in the <a href = '${USGSTopoMapCollection}'>item description</a> in ArcGIS Online.
+                          The USGS scanned each map as is to capture the content and condition of each map sheet. All maps were georeferenced, and metadata was captured as part of the process. Using ArcGIS, the scanned maps comprise the USGS Historical Topographic Maps image service, which can be viewed on the web and provides links to allow users to download individual scanned images. Learn more about the image service in the <a href = '${USGSTopoMapCollection}'>item description</a> in ArcGIS Online.
                           </br>
                           </br>
                           <em>
@@ -30,15 +30,15 @@ const information = `<div class='modalBox'>
                             <div>
                             <ul style="margin 0 0 0 5%">
                             <li>
-                              Navigate to your location of interest and click on the map view to see which USGS maps are available for in that area.
+                              Navigate to your location of interest and click on the map view to see which USGS maps are available in that area.
                             </li>
                             </br>
                             <li>
-                              Use the timeline list on the left to explore the names, dates, and thumbnails of the topo maps. Mouse-over the list to see geographic extents. Click a topo map to add it to the map.
+                              Use the timeline list on the left to explore the names, dates, and thumbnails of the topo maps. Mouse over the list to see geographic extents. Click a topo map to add it to the map.
                             </li>
                             </br>
                             <li>
-                            	Pin maps to create a collection of topographic maps, for bulk download, web map creation, or animation.
+                            	Pin maps to create a collection of topographic maps for bulk download, web map creation, or animation.
                             </li>
                             </br>
                             	Once logged in to your ArcGIS Online account, you can create a web map that includes the historical maps you have pinned.
@@ -47,7 +47,7 @@ const information = `<div class='modalBox'>
                             </div>
                           </div>
                           <div>
-                          The USGS had published <a href ="https://www.usgs.gov/faqs/where-can-i-find-topographic-map-symbol-sheet">these symbol keys</a> to help you identify the symbols used on their topographic maps.
+                          The USGS published <a href ="https://www.usgs.gov/faqs/where-can-i-find-topographic-map-symbol-sheet">these symbol keys</a> to help you identify the symbols used on their topographic maps.
                           </br>
                           </br>
                           <em>

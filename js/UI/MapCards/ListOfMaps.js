@@ -232,10 +232,10 @@ const makeCards = (list) => {
                 <div style='padding: 5px 20px; margin: 0 30px' class='tooltipText hidden'>
                   <div class='mapMetaData'>
                   <p>Date on Map: ${topoMap.date || unavailableInfo}</p>
-                  <p>Revision year: ${
+                  <p>Revision Year: ${
 										topoMap.topo.attributes.Imprint_Year || unavailableInfo
 									}</p>
-                  <p>Survey year: ${
+                  <p>Survey Year: ${
 										topoMap.topo.attributes.Survey_Year || unavailableInfo
 									}</p>
                   <p>Photo Year: ${
@@ -1338,6 +1338,8 @@ document.querySelectorAll('.warning-btns').forEach((warningBtn) => {
 let movingCard;
 let movingCardItem;
 const handleDragStart = (event) => {
+	event.stopPropagation();
+
 	if (!event.target.closest('.drag-grip')) {
 		return;
 	}
@@ -1349,6 +1351,7 @@ const handleDragStart = (event) => {
 	movingCardItem = event.target.closest('.map-list-item');
 
 	const dragImage = document.querySelector('.grabbedItemImage');
+
 	dragImage.innerHTML = movingCard.innerHTML;
 
 	movingCardItem.classList.add('drag-sort-active');
