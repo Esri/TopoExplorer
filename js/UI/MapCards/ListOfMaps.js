@@ -431,8 +431,11 @@ const toggleListVisibility = () => {
 			const openTopoCard = document.querySelector(
 				`.map-list-item[oid="${currentlySelectedMapId}"]`
 			);
-			const openTopoCardGeometry = currentlySelectedMapGeometry;
-
+			const openTopoCardGeometry = JSON.stringify(currentlySelectedMapGeometry);
+			console.log(
+				'the geometry for the returning selected map',
+				openTopoCardGeometry
+			);
 			addHalo(currentlySelectedMapId, openTopoCardGeometry);
 		}
 	}
@@ -708,6 +711,7 @@ const isCurrentMapPinned = (targetMapCard, topoMapGeometry, callback) => {
 			: null;
 
 		if (oid == currentlySelectedMapId && pinnedCardIDsArray.length >= 1) {
+			console.log('resetting placeholder');
 			setTopoMapPlaceholder(oid, true);
 		}
 
@@ -722,10 +726,8 @@ const isCurrentMapPinned = (targetMapCard, topoMapGeometry, callback) => {
 		removePinnedTopo(pinnedCardIDsArray.indexOf(oid), oid);
 
 		//checking to see if there are any other topos pinned and if an unpinned map has been opened.If yes, stop the process.
-		if (
-			pinnedCardIDsArray.length == 0 &&
-			(currentlySelectedMapId == oid || currentlySelectedMapId == 0)
-		) {
+		if (pinnedCardIDsArray.length == 0 && currentlySelectedMapId == 0) {
+			setTopoMapPlaceholder(oid);
 			return;
 		}
 
@@ -843,6 +845,7 @@ const setTopoOpacity = (oid) => {
 };
 
 const removeTopoFromMap = (oid) => {
+	console.log('removing');
 	findTopoLayer(oid)
 		.then((specificTopo) => {
 			currentView.map.remove(specificTopo);
@@ -870,10 +873,12 @@ const removeHalo = (oid) => {
 };
 
 const addHalo = (oid, geometry) => {
+	console.log(oid, geometry);
 	if (!oid) {
 		return;
 	}
 	mapHalo(oid, geometry).then((topoOutline) => {
+		console.log('the outline', topoOutline);
 		mapHaloGraphicLayer.graphics.add(topoOutline);
 	});
 };
