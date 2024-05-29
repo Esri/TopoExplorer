@@ -431,7 +431,9 @@ const toggleListVisibility = () => {
 			const openTopoCard = document.querySelector(
 				`.map-list-item[oid="${currentlySelectedMapId}"]`
 			);
-			const openTopoCardGeometry = currentlySelectedMapGeometry;
+			const openTopoCardGeometry = JSON.stringify(
+				currentlySelectedMapGeometry.geometry
+			);
 
 			addHalo(currentlySelectedMapId, openTopoCardGeometry);
 		}
@@ -873,6 +875,7 @@ const addHalo = (oid, geometry) => {
 	if (!oid) {
 		return;
 	}
+
 	mapHalo(oid, geometry).then((topoOutline) => {
 		mapHaloGraphicLayer.graphics.add(topoOutline);
 	});
