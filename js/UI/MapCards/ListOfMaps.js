@@ -710,7 +710,6 @@ const isCurrentMapPinned = (targetMapCard, topoMapGeometry, callback) => {
 			: null;
 
 		if (oid == currentlySelectedMapId && pinnedCardIDsArray.length >= 1) {
-			console.log('resetting placeholder');
 			setTopoMapPlaceholder(oid, true);
 		}
 
@@ -844,7 +843,6 @@ const setTopoOpacity = (oid) => {
 };
 
 const removeTopoFromMap = (oid) => {
-	console.log('removing');
 	findTopoLayer(oid)
 		.then((specificTopo) => {
 			currentView.map.remove(specificTopo);
@@ -872,13 +870,11 @@ const removeHalo = (oid) => {
 };
 
 const addHalo = (oid, geometry) => {
-	console.log(oid, geometry);
 	if (!oid) {
 		return;
 	}
 
 	mapHalo(oid, geometry).then((topoOutline) => {
-		console.log('the outline', topoOutline);
 		mapHaloGraphicLayer.graphics.add(topoOutline);
 	});
 };
