@@ -1,5 +1,6 @@
 const productionEnv = {
-	appId: 'Tq1LTry7bEQeemat',
+	appId: 'TopoExplorer',
+	// appId: 'Tq1LTry7bEQeemat',
 	webMap: {
 		webMapItemId: 'a9a0ab48db1b4691adfa62cc5775de74',
 		webMapLayers: {
@@ -15,7 +16,6 @@ const productionEnv = {
 };
 
 const developmentEnv = {
-	//testing this appId for DEV. It's taken from the previous topoExplorer App.
 	appId: 'TopoExplorer',
 	// appId: 'KZAK9DITO38X2SXM',
 	webMap: {
@@ -54,9 +54,9 @@ const config = {
 	defaultMapSettings: {
 		center: [-98.5357, 40.1549],
 		zoom: 4,
-		// constraints: {
-		// 	minZoom: 4,
-		// },
+		constraints: {
+			minZoom: 3,
+		},
 	},
 	spatialRefernce: {
 		wkid: 102100,
