@@ -38,17 +38,18 @@ const initView = () => {
 			const map = new WebMap({
 				portalItem: {
 					id: config.environment.webMap.webMapItemId,
+					//for bug testing during app init, '3582b744bba84668b52a16b0b6942544'
 				},
 			});
 
 			const view = new MapView({
 				container: 'viewDiv',
 				map: map,
-				layerView: [],
+				// layerView: [],
 				center: hashCoordinates() || config.defaultMapSettings.center,
 				zoom: hashLoD() || config.defaultMapSettings.zoom,
 				constraints: {
-					snapToZoom: false,
+					// snapToZoom: false,
 					minZoom: config.defaultMapSettings.constraints.minZoom,
 				},
 				popup: {
@@ -57,9 +58,9 @@ const initView = () => {
 				},
 			});
 
-			map.layers.add(haloLayer, 3);
-			map.layers.add(footprintLayer, map.layers.length - 2);
-			map.layers.add(crosshairLayer, map.layers.length - 1);
+			map.layers.add(haloLayer);
+			map.layers.add(footprintLayer);
+			map.layers.add(crosshairLayer);
 
 			const searchWidget = new Search({
 				view: view,
@@ -90,7 +91,9 @@ const initView = () => {
 				position: 'top-right',
 			});
 
-			return resolve(view);
+			view.when(() => {
+				return resolve(view);
+			});
 		});
 	});
 };
@@ -100,7 +103,6 @@ const newMapCrossHair = (view, mapPoint) => {
 		'esri/geometry/Point',
 		'esri/Graphic',
 		'esri/symbols/PictureMarkerSymbol',
-		// 'esri/geometry/SpatialReference',
 	], (Point, Graphic, PictureMarkerSymbol) => {
 		const crosshairGraphicLayer = view.map.layers.items.find((layer) => {
 			if (layer.id === 'crosshair') {

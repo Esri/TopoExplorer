@@ -163,7 +163,8 @@ const queryController = {
 			})
 			.then((mapsList) => {
 				// setMapListData(mapsList);
-				createMapSlotItems(mapsList, this.mapView);
+				const isTopoHashed = false;
+				createMapSlotItems(mapsList, this.mapView, isTopoHashed);
 				hideSpinnerIcon();
 				return;
 			});
@@ -178,6 +179,15 @@ const queryController = {
 	},
 	topoMapsInExtent: [],
 	processMapData: function (topos) {
+		const arrayOfPreviouslyPinnedTopos = checkForPreviousTopos().split(',');
+		console.log(arrayOfPreviouslyPinnedTopos);
+
+		const isMapPinned = (objectId) => {
+			return arrayOfPreviouslyPinnedTopos
+				.map((hashedTopoId) => hashedTopoId)
+				.indexOf(objectId);
+		};
+
 		return topos.map((topo) => ({
 			topo,
 			OBJECTID: topo.attributes.OBJECTID,
@@ -190,7 +200,8 @@ const queryController = {
 			mapCenterGeographyY: topo.attributes.CenterY,
 			downloadLink: topo.attributes.DownloadG,
 			mapBoundry: topo.geometry,
-			previousPinnedMap: false,
+			previousPinnedMap:
+				isMapPinned(`${topo.attributes.OBJECTID}`) !== -1 ? true : false,
 		}));
 	},
 	setGeometry: function (locationData) {
@@ -278,10 +289,11 @@ const getDataForHashedTopos = async (view) => {
 			});
 
 			originalOrderHashedTopos.map((singleMap) => {
+				const isTopoHashed = true;
 				singleMap.previousPinnedMap = true;
 				//I should really call 'makeCards()' here, but there's an existing race condition I'll need to deal with
 				//the ListOfMaps File is still declaring some variables that makeCards() needs.
-				createMapSlotItems([singleMap], view);
+				createMapSlotItems([singleMap], view, isTopoHashed);
 			});
 			return originalOrderHashedTopos;
 		});

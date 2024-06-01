@@ -102,9 +102,11 @@ const setNumberOfPreviousTopos = (number) => {
 };
 
 //This older function needs to be refactored. The reason for it being here is no longer applicable.
-const createMapSlotItems = (list, view) => {
-	setMapDataArray(list);
-	setTopoGeometriesArray(list);
+const createMapSlotItems = (list, view, isTopoHashed) => {
+	if (!isTopoHashed) {
+		setMapDataArray(list);
+		setTopoGeometriesArray(list);
+	}
 
 	if (!currentView) {
 		currentView = view;
@@ -172,14 +174,15 @@ const createMapSlotItems = (list, view) => {
 		}
 	};
 
-	if (list[0].previousPinnedMap) {
-		makeCards(list);
+	if (isTopoHashed) {
+		makeCards(list, isTopoHashed);
 		return;
 	}
 	filterMaps();
 }; //end of the mapCard Generator
 
-const makeCards = (list) => {
+const makeCards = (list, isTopoHashed) => {
+	console.log(list);
 	if (list.length === 0) {
 		updateMapCount(list.length);
 		mapsList.innerHTML = noMapsHelpText;
@@ -190,6 +193,7 @@ const makeCards = (list) => {
 		.map((topoMap, index) => {
 			const isCardPinned =
 				topoMap.previousPinnedMap || getPinnedTopoIndex(`${topoMap.OBJECTID}`);
+			console.log('pinned value', isCardPinned);
 
 			return `
         <div class='mapCard-container'>
@@ -352,9 +356,9 @@ const makeCards = (list) => {
                   <div class='slider-range'>
                     <div class='slider-range-background'></div>
                     <div class='slider-range-color' style= "width: ${
-											isCardPinned !== -1
-												? setTopoOpacity(topoMap.OBJECTID)
-												: 100
+											getPinnedTopoIndex(`${topoMap.OBJECTID}`) === -1
+												? 100
+												: setTopoOpacity(topoMap.OBJECTID)
 										}%;"></div>
                   </div>
                   <input class="opacity-slider" type="range" list="" value=100
@@ -369,7 +373,7 @@ const makeCards = (list) => {
 		})
 		.join(' ');
 
-	if (list[0].previousPinnedMap) {
+	if (list[0].previousPinnedMap && isTopoHashed) {
 		const mapCardContainingDiv = document.createElement('div');
 		mapCardContainingDiv.innerHTML = mapSlot;
 		const containingItem =
@@ -754,6 +758,7 @@ const mapPinningAction = (pinIcon, pinCheckmarkIcon, targetMapCard) => {
 };
 
 const findTopoLayer = (oid) => {
+	console.log('find topo called');
 	if (!currentView) {
 		return;
 	}
@@ -765,6 +770,7 @@ const findTopoLayer = (oid) => {
 				resolve(imageTopo);
 			}
 		});
+		resolve(false);
 	});
 };
 
@@ -818,8 +824,17 @@ const addPreviouslyPinnedTopoToMap = (target, serviceURL) => {
 
 const setTopoOpacity = (oid) => {
 	//sets the slider opacity position of generated map cards using the topo layer's opacity value
+	console.log('anything?');
 
 	findTopoLayer(oid).then((topoLayer) => {
+		if (!topoLayer) {
+			//this conditional is working as a patch. to ensure that, on page load,
+			//the mapcard in explorer mode reflects the default opacity of a pinned map.
+			//even if that map layer has not been loaded on the view yet.
+			// I'm not a fan of this implementation, but it works.
+			topoLayer = { opacity: 1 };
+		}
+
 		const opacityValue = parseInt(0 + Math.round(topoLayer.opacity * 100));
 
 		//updating the opacity value on the UI of the mapCard in the explore list
@@ -1396,7 +1411,7 @@ const endDrag = (event) => {
 	listOfPinnedIDs.forEach((pinCard, index) => {
 		if (pinCard === movingCardItem.attributes.oid.value) {
 			findTopoLayer(movingCardItem.attributes.oid.value).then((movedMap) => {
-				currentView.map.layers.reorder(movedMap, index + 4);
+				currentView.map.layers.reorder(movedMap, index + 3);
 
 				currentView.map.layers.reorder(
 					mapFootprintLayer,

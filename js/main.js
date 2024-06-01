@@ -40,12 +40,38 @@ const initApp = async () => {
 
 		view
 			.when(() => {
-				if (oauthResponse) {
-					addAccountImage(oauthResponse);
-					setAccountData(oauthResponse);
-				}
+				require(['esri/core/reactiveUtils'], (reactiveUtils) => {
+					if (oauthResponse) {
+						addAccountImage(oauthResponse);
+						setAccountData(oauthResponse);
+					}
+					sliderValues;
 
-				sliderValues;
+					reactiveUtils.when(
+						() => view?.updating === false,
+						() => {
+							//this is called here, after all topos are loaded, to accommodate the possibility
+							//that a topoCard in the explorer list will need to reflect the information a previously pinned topo.
+							//but the pinned topos have to be loaded first.
+							//there has to be a better way.
+							//there  might be. Look at the 'previousPinnedMap' key in queryController 193
+							// initialMapQuery();
+							animatingStatus();
+						},
+						{
+							once: true,
+						}
+					);
+
+					reactiveUtils.when(
+						() => view?.stationary === true,
+						async () => {
+							queryController.mapView = view;
+
+							updateHashParams(view.extent.center, view.zoom);
+						}
+					);
+				});
 			})
 			.then(() => {
 				initLayerToggle(view);
@@ -53,6 +79,7 @@ const initApp = async () => {
 				setViewInfo(view);
 			})
 			.then(() => {
+				initialMapQuery();
 				isHashedToposForQuery(view);
 
 				view.on('click', (event) => {
@@ -73,27 +100,28 @@ const initApp = async () => {
 					newMapCrossHair(view, searchResultPoint);
 				});
 
-				require(['esri/core/reactiveUtils'], (reactiveUtils) => {
-					reactiveUtils.when(
-						() => view?.updating === false,
-						() => {
-							initialMapQuery();
-							animatingStatus();
-						},
-						{
-							once: true,
-						}
-					);
+				// reactiveUtils.when(
+				// 	() => view?.updating === false,
+				// 	() => {
+				// 		// initialMapQuery();
+				// 		animatingStatus();
+				// 	},
+				// 	{
+				// 		once: true,
+				// 	}
+				// );
 
-					reactiveUtils.when(
-						() => view?.stationary === true,
-						async () => {
-							queryController.mapView = view;
+				// reactiveUtils.when(
+				// 	() => view?.stationary === true,
+				// 	async () => {
+				// 		queryController.mapView = view;
 
-							updateHashParams(view.extent.center, view.zoom);
-						}
-					);
-				});
+				// 		updateHashParams(view.extent.center, view.zoom);
+				// 	}
+				// );
+				//
+				// });
+				//
 			});
 	} catch (error) {
 		//error handeling for any intialization issues
