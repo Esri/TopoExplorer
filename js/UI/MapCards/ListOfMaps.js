@@ -182,7 +182,6 @@ const createMapSlotItems = (list, view, isTopoHashed) => {
 }; //end of the mapCard Generator
 
 const makeCards = (list, isTopoHashed) => {
-	console.log(list);
 	if (list.length === 0) {
 		updateMapCount(list.length);
 		mapsList.innerHTML = noMapsHelpText;
@@ -193,7 +192,6 @@ const makeCards = (list, isTopoHashed) => {
 		.map((topoMap, index) => {
 			const isCardPinned =
 				topoMap.previousPinnedMap || getPinnedTopoIndex(`${topoMap.OBJECTID}`);
-			console.log('pinned value', isCardPinned);
 
 			return `
         <div class='mapCard-container'>
@@ -325,9 +323,7 @@ const makeCards = (list, isTopoHashed) => {
                 </div>
                 <div class='iconWrapper zoom'>
                   <span class='tooltipText hidden' style='top:-60px;'>Zoom to the extent of this topo map</span>
-                  <div class='icon' location='${topoMap.mapCenterGeographyX}, ${
-				topoMap.mapCenterGeographyY
-			}'>
+                  <div class='icon'>
                   <svg class="zoomToExtent" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 16H2v6h6v-1H3zM16 3h5v5h1V2h-6zm5 18h-5v1h6v-6h-1zM8 2H2v6h1V3h5z"/><path fill="none" d="M0 0h24v24H0z"/>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="-9 -8 36 36"><path d="M15.805 13.918l-3.067-3.068a.668.668 0 0 0-.943 0l-.124.124-1.108-1.108A5.279 5.279 0 1 0 6.5 11.8a5.251 5.251 0 0 0 3.373-1.244l1.108 1.108-.13.129a.667.667 0 0 0 0 .943l3.068 3.067a.665.665 0 0 0 .943 0l.943-.942a.666.666 0 0 0 0-.943zM6.5 10.8a4.3 4.3 0 1 1 4.3-4.3 4.304 4.304 0 0 1-4.3 4.3zm7.89 4.06l-2.596-2.595.473-.473 2.595 2.598z"/><path fill="none" d="M0 0h16v16H0z"/></svg>
                   </svg>
@@ -758,7 +754,6 @@ const mapPinningAction = (pinIcon, pinCheckmarkIcon, targetMapCard) => {
 };
 
 const findTopoLayer = (oid) => {
-	console.log('find topo called');
 	if (!currentView) {
 		return;
 	}
@@ -824,7 +819,6 @@ const addPreviouslyPinnedTopoToMap = (target, serviceURL) => {
 
 const setTopoOpacity = (oid) => {
 	//sets the slider opacity position of generated map cards using the topo layer's opacity value
-	console.log('anything?');
 
 	findTopoLayer(oid).then((topoLayer) => {
 		if (!topoLayer) {

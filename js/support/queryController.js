@@ -179,10 +179,14 @@ const queryController = {
 	},
 	topoMapsInExtent: [],
 	processMapData: function (topos) {
-		const arrayOfPreviouslyPinnedTopos = checkForPreviousTopos().split(',');
-		console.log(arrayOfPreviouslyPinnedTopos);
+		const arrayOfPreviouslyPinnedTopos = checkForPreviousTopos()
+			? checkForPreviousTopos().split(',')
+			: false;
 
 		const isMapPinned = (objectId) => {
+			if (arrayOfPreviouslyPinnedTopos === false) {
+				return;
+			}
 			return arrayOfPreviouslyPinnedTopos
 				.map((hashedTopoId) => hashedTopoId)
 				.indexOf(objectId);
@@ -196,8 +200,6 @@ const queryController = {
 			mapScale: `1:${topo.attributes.Map_Scale.toLocaleString()}`,
 			location: `${topo.attributes.Map_Name}, ${topo.attributes.State}`,
 			thumbnail: `${url}/${topo.attributes.OBJECTID}/info/thumbnail`,
-			mapCenterGeographyX: topo.attributes.CenterX,
-			mapCenterGeographyY: topo.attributes.CenterY,
 			downloadLink: topo.attributes.DownloadG,
 			mapBoundry: topo.geometry,
 			previousPinnedMap:
