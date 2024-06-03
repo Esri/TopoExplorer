@@ -49,7 +49,7 @@ const initView = () => {
 				center: hashCoordinates() || config.defaultMapSettings.center,
 				zoom: hashLoD() || config.defaultMapSettings.zoom,
 				constraints: {
-					// snapToZoom: false,
+					snapToZoom: false,
 					minZoom: config.defaultMapSettings.constraints.minZoom,
 				},
 				popup: {

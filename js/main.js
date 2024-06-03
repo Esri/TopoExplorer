@@ -64,6 +64,19 @@ const initApp = async () => {
 					);
 
 					reactiveUtils.when(
+						() => view.fatalError,
+						() => view.tryFatalErrorRecovery()
+						// () => view?.stationary === true,
+						// async () => {
+						// 	queryController.mapView = view;
+
+						// 	updateHashParams(view.extent.center, view.zoom);
+						// }
+					);
+
+					reactiveUtils.when(
+						// () => view.fatalError,
+						// () => view.tryFatalErrorRecovery(),
 						() => view?.stationary === true,
 						async () => {
 							queryController.mapView = view;
