@@ -184,8 +184,8 @@ const queryController = {
 			: false;
 
 		const isMapPinned = (objectId) => {
-			if (arrayOfPreviouslyPinnedTopos === false) {
-				return;
+			if (!arrayOfPreviouslyPinnedTopos) {
+				return -1;
 			}
 			return arrayOfPreviouslyPinnedTopos
 				.map((hashedTopoId) => hashedTopoId)
