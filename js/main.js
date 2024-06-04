@@ -50,12 +50,6 @@ const initApp = async () => {
 					reactiveUtils.when(
 						() => view?.updating === false,
 						() => {
-							//this is called here, after all topos are loaded, to accommodate the possibility
-							//that a topoCard in the explorer list will need to reflect the information a previously pinned topo.
-							//but the pinned topos have to be loaded first.
-							//there has to be a better way.
-							//there  might be. Look at the 'previousPinnedMap' key in queryController 193
-							// initialMapQuery();
 							animatingStatus();
 						},
 						{
@@ -69,8 +63,6 @@ const initApp = async () => {
 					);
 
 					reactiveUtils.when(
-						// () => view.fatalError,
-						// () => view.tryFatalErrorRecovery(),
 						() => view?.stationary === true,
 						async () => {
 							queryController.mapView = view;
