@@ -102,9 +102,11 @@ const setNumberOfPreviousTopos = (number) => {
 };
 
 //This older function needs to be refactored. The reason for it being here is no longer applicable.
-const createMapSlotItems = (list, view) => {
-	setMapDataArray(list);
-	setTopoGeometriesArray(list);
+const createMapSlotItems = (list, view, isTopoHashed) => {
+	if (!isTopoHashed) {
+		setMapDataArray(list);
+		setTopoGeometriesArray(list);
+	}
 
 	if (!currentView) {
 		currentView = view;
@@ -172,14 +174,14 @@ const createMapSlotItems = (list, view) => {
 		}
 	};
 
-	if (list[0].previousPinnedMap) {
-		makeCards(list);
+	if (isTopoHashed) {
+		makeCards(list, isTopoHashed);
 		return;
 	}
 	filterMaps();
 }; //end of the mapCard Generator
 
-const makeCards = (list) => {
+const makeCards = (list, isTopoHashed) => {
 	if (list.length === 0) {
 		updateMapCount(list.length);
 		mapsList.innerHTML = noMapsHelpText;
@@ -321,9 +323,7 @@ const makeCards = (list) => {
                 </div>
                 <div class='iconWrapper zoom'>
                   <span class='tooltipText hidden' style='top:-60px;'>Zoom to the extent of this topo map</span>
-                  <div class='icon' location='${topoMap.mapCenterGeographyX}, ${
-				topoMap.mapCenterGeographyY
-			}'>
+                  <div class='icon'>
                   <svg class="zoomToExtent" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 16H2v6h6v-1H3zM16 3h5v5h1V2h-6zm5 18h-5v1h6v-6h-1zM8 2H2v6h1V3h5z"/><path fill="none" d="M0 0h24v24H0z"/>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="-9 -8 36 36"><path d="M15.805 13.918l-3.067-3.068a.668.668 0 0 0-.943 0l-.124.124-1.108-1.108A5.279 5.279 0 1 0 6.5 11.8a5.251 5.251 0 0 0 3.373-1.244l1.108 1.108-.13.129a.667.667 0 0 0 0 .943l3.068 3.067a.665.665 0 0 0 .943 0l.943-.942a.666.666 0 0 0 0-.943zM6.5 10.8a4.3 4.3 0 1 1 4.3-4.3 4.304 4.304 0 0 1-4.3 4.3zm7.89 4.06l-2.596-2.595.473-.473 2.595 2.598z"/><path fill="none" d="M0 0h16v16H0z"/></svg>
                   </svg>
@@ -352,9 +352,9 @@ const makeCards = (list) => {
                   <div class='slider-range'>
                     <div class='slider-range-background'></div>
                     <div class='slider-range-color' style= "width: ${
-											isCardPinned !== -1
-												? setTopoOpacity(topoMap.OBJECTID)
-												: 100
+											getPinnedTopoIndex(`${topoMap.OBJECTID}`) === -1
+												? 100
+												: setTopoOpacity(topoMap.OBJECTID)
 										}%;"></div>
                   </div>
                   <input class="opacity-slider" type="range" list="" value=100
@@ -369,7 +369,7 @@ const makeCards = (list) => {
 		})
 		.join(' ');
 
-	if (list[0].previousPinnedMap) {
+	if (list[0].previousPinnedMap && isTopoHashed) {
 		const mapCardContainingDiv = document.createElement('div');
 		mapCardContainingDiv.innerHTML = mapSlot;
 		const containingItem =
@@ -431,7 +431,9 @@ const toggleListVisibility = () => {
 			const openTopoCard = document.querySelector(
 				`.map-list-item[oid="${currentlySelectedMapId}"]`
 			);
-			const openTopoCardGeometry = currentlySelectedMapGeometry;
+			const openTopoCardGeometry = JSON.stringify(
+				currentlySelectedMapGeometry.geometry
+			);
 
 			addHalo(currentlySelectedMapId, openTopoCardGeometry);
 		}
@@ -651,6 +653,7 @@ const removePinnedCardFromHTML = (oid) => {
 const removePinnedTopo = (index, oid) => {
 	removePinnedCardFromHTML(oid);
 	removeFromPinnedGeometriesArray(oid);
+	setTopoMapDataPinnedStatusFalse(oid);
 	pinnedCardIDsArray.splice(index, 1);
 	pinnedCardHTMLArray.splice(index, 1);
 	mapFootprintLayer.graphics.removeAll();
@@ -722,10 +725,8 @@ const isCurrentMapPinned = (targetMapCard, topoMapGeometry, callback) => {
 		removePinnedTopo(pinnedCardIDsArray.indexOf(oid), oid);
 
 		//checking to see if there are any other topos pinned and if an unpinned map has been opened.If yes, stop the process.
-		if (
-			pinnedCardIDsArray.length == 0 &&
-			(currentlySelectedMapId == oid || currentlySelectedMapId == 0)
-		) {
+		if (pinnedCardIDsArray.length == 0 && currentlySelectedMapId == 0) {
+			setTopoMapPlaceholder(oid);
 			return;
 		}
 
@@ -765,6 +766,7 @@ const findTopoLayer = (oid) => {
 				resolve(imageTopo);
 			}
 		});
+		resolve(false);
 	});
 };
 
@@ -820,6 +822,14 @@ const setTopoOpacity = (oid) => {
 	//sets the slider opacity position of generated map cards using the topo layer's opacity value
 
 	findTopoLayer(oid).then((topoLayer) => {
+		if (!topoLayer) {
+			//this conditional is working as a patch. to ensure that, on page load,
+			//the mapcard in explorer mode reflects the default opacity of a pinned map.
+			//even if that map layer has not been loaded on the view yet.
+			// I'm not a fan of this implementation, but it works.
+			topoLayer = { opacity: 1 };
+		}
+
 		const opacityValue = parseInt(0 + Math.round(topoLayer.opacity * 100));
 
 		//updating the opacity value on the UI of the mapCard in the explore list
@@ -873,6 +883,7 @@ const addHalo = (oid, geometry) => {
 	if (!oid) {
 		return;
 	}
+
 	mapHalo(oid, geometry).then((topoOutline) => {
 		mapHaloGraphicLayer.graphics.add(topoOutline);
 	});
@@ -1395,7 +1406,7 @@ const endDrag = (event) => {
 	listOfPinnedIDs.forEach((pinCard, index) => {
 		if (pinCard === movingCardItem.attributes.oid.value) {
 			findTopoLayer(movingCardItem.attributes.oid.value).then((movedMap) => {
-				currentView.map.layers.reorder(movedMap, index + 4);
+				currentView.map.layers.reorder(movedMap, index + 3);
 
 				currentView.map.layers.reorder(
 					mapFootprintLayer,
@@ -1565,6 +1576,14 @@ const removeFromPinnedGeometriesArray = (objectId) => {
 		.indexOf(objectId);
 
 	pinnedTopoGeometriesArray.splice(pinnedTopoIndex, 1);
+};
+
+const setTopoMapDataPinnedStatusFalse = (oid) => {
+	topoMapDataArray.map((topo) => {
+		if (topo.OBJECTID == oid) {
+			topo.previousPinnedMap = false;
+		}
+	});
 };
 
 initSortChoice(setSortOptions, filterMaps);

@@ -40,12 +40,37 @@ const initApp = async () => {
 
 		view
 			.when(() => {
-				if (oauthResponse) {
-					addAccountImage(oauthResponse);
-					setAccountData(oauthResponse);
-				}
+				require(['esri/core/reactiveUtils'], (reactiveUtils) => {
+					if (oauthResponse) {
+						addAccountImage(oauthResponse);
+						setAccountData(oauthResponse);
+					}
+					sliderValues;
 
-				sliderValues;
+					reactiveUtils.when(
+						() => view?.updating === false,
+						() => {
+							animatingStatus();
+						},
+						{
+							once: true,
+						}
+					);
+
+					reactiveUtils.when(
+						() => view.fatalError,
+						() => view.tryFatalErrorRecovery()
+					);
+
+					reactiveUtils.when(
+						() => view?.stationary === true,
+						async () => {
+							queryController.mapView = view;
+
+							updateHashParams(view.extent.center, view.zoom);
+						}
+					);
+				});
 			})
 			.then(() => {
 				initLayerToggle(view);
@@ -53,6 +78,7 @@ const initApp = async () => {
 				setViewInfo(view);
 			})
 			.then(() => {
+				initialMapQuery();
 				isHashedToposForQuery(view);
 
 				view.on('click', (event) => {
@@ -73,27 +99,28 @@ const initApp = async () => {
 					newMapCrossHair(view, searchResultPoint);
 				});
 
-				require(['esri/core/reactiveUtils'], (reactiveUtils) => {
-					reactiveUtils.when(
-						() => view?.updating === false,
-						() => {
-							initialMapQuery();
-							animatingStatus();
-						},
-						{
-							once: true,
-						}
-					);
+				// reactiveUtils.when(
+				// 	() => view?.updating === false,
+				// 	() => {
+				// 		// initialMapQuery();
+				// 		animatingStatus();
+				// 	},
+				// 	{
+				// 		once: true,
+				// 	}
+				// );
 
-					reactiveUtils.when(
-						() => view?.stationary === true,
-						async () => {
-							queryController.mapView = view;
+				// reactiveUtils.when(
+				// 	() => view?.stationary === true,
+				// 	async () => {
+				// 		queryController.mapView = view;
 
-							updateHashParams(view.extent.center, view.zoom);
-						}
-					);
-				});
+				// 		updateHashParams(view.extent.center, view.zoom);
+				// 	}
+				// );
+				//
+				// });
+				//
 			});
 	} catch (error) {
 		//error handeling for any intialization issues
