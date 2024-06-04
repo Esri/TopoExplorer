@@ -653,6 +653,7 @@ const removePinnedCardFromHTML = (oid) => {
 const removePinnedTopo = (index, oid) => {
 	removePinnedCardFromHTML(oid);
 	removeFromPinnedGeometriesArray(oid);
+	setTopoMapDataPinnedStatusFalse(oid);
 	pinnedCardIDsArray.splice(index, 1);
 	pinnedCardHTMLArray.splice(index, 1);
 	mapFootprintLayer.graphics.removeAll();
@@ -1575,6 +1576,14 @@ const removeFromPinnedGeometriesArray = (objectId) => {
 		.indexOf(objectId);
 
 	pinnedTopoGeometriesArray.splice(pinnedTopoIndex, 1);
+};
+
+const setTopoMapDataPinnedStatusFalse = (oid) => {
+	topoMapDataArray.map((topo) => {
+		if (topo.OBJECTID == oid) {
+			topo.previousPinnedMap = false;
+		}
+	});
 };
 
 initSortChoice(setSortOptions, filterMaps);
