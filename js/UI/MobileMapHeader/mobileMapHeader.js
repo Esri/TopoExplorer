@@ -1,9 +1,9 @@
-import { isMobileFormat } from '../EventsAndSelectors/EventsAndSelectors.js?v=0.01';
-import { toggleSideBar } from '../SideBar/sideBar.js?v=0.01';
+import { isMobileFormat } from '../EventsAndSelectors/EventsAndSelectors.js?v=0.02';
+import { toggleSideBar } from '../SideBar/sideBar.js?v=0.02';
 import {
 	opacitySliderEvent,
 	zoomEvent,
-} from '../MapCards/ListOfMaps.js?v=0.01';
+} from '../MapCards/ListOfMaps.js?v=0.02';
 
 let topoMap;
 let mapNameAndScale;

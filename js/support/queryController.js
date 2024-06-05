@@ -2,24 +2,24 @@
 //this is certainly not an ideal layout, but I want to see what other additions I may have to add before I look at refactoring
 //At the risk of being redundant: I want to know what this file is doing before I try to refactor it.
 //TIP: this file should have as little involvement as possible with the UI.
-import { config } from '../../app-config.js?v=0.01';
+import { config } from '../../app-config.js?v=0.02';
 import {
 	findMinYear,
 	findMaxYear,
 	findMinScale,
 	findMaxScale,
-} from './GetAllMapScalesAndYears.js?v=0.01';
+} from './GetAllMapScalesAndYears.js?v=0.02';
 import {
 	numberOfMapsinView,
 	extentQuery,
 	queryForHashedTopos,
-} from './Query.js?v=0.01';
+} from './Query.js?v=0.02';
 import {
 	hideMapCount,
 	// updateMapcount,
 	showSpinnerIcon,
 	hideSpinnerIcon,
-} from './MapCount.js?v=0.01';
+} from './MapCount.js?v=0.02';
 import {
 	clearMapsList,
 	// setMapListData,
@@ -27,13 +27,13 @@ import {
 	makeCards,
 	setNumberOfPreviousTopos,
 	removeUnpinnedTopo,
-} from '../UI/MapCards/ListOfMaps.js?v=0.01';
+} from '../UI/MapCards/ListOfMaps.js?v=0.02';
 import {
 	checkForPreviousTopos,
 	activeExport,
-} from '../support/HashParams.js?v=0.01';
-import { resumeExportPrompt } from '../UI/ExportMaps/ExportMapsPrompt.js?v=0.01';
-import { isMobileFormat } from '../UI/EventsAndSelectors/EventsAndSelectors.js?v=0.01';
+} from '../support/HashParams.js?v=0.02';
+import { resumeExportPrompt } from '../UI/ExportMaps/ExportMapsPrompt.js?v=0.02';
+import { isMobileFormat } from '../UI/EventsAndSelectors/EventsAndSelectors.js?v=0.02';
 
 const setURL = () => {
 	return config.environment.serviceUrls.historicalTopoImageService;

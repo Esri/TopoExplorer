@@ -1,5 +1,5 @@
-import { removeExportParam } from '../../support/HashParams.js?v=0.01';
-import { createWebMapExportDefinition } from '../ExportMaps/ExportMapsPrompt.js?v=0.01';
+import { removeExportParam } from '../../support/HashParams.js?v=0.02';
+import { createWebMapExportDefinition } from '../ExportMaps/ExportMapsPrompt.js?v=0.02';
 
 const exportForm = document.querySelector('.export-prompt');
 const promptBox = document.querySelector('.prompt-box');

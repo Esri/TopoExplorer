@@ -1,26 +1,26 @@
-import { isMobileFormat } from '../EventsAndSelectors/EventsAndSelectors.js?v=0.01';
+import { isMobileFormat } from '../EventsAndSelectors/EventsAndSelectors.js?v=0.02';
 import {
 	updateHashParams,
 	addHashExportPrompt,
 	invertHashedMapOrder,
 	// animatingStatus,
-} from '../../support/HashParams.js?v=0.01';
+} from '../../support/HashParams.js?v=0.02';
 import {
 	mapFootprint,
 	mapHalo,
-} from '../../UI/MapAndFootprint/MapFootprint.js?v=0.01';
-import { getTopoMap } from '../../support/ImageExportQuery.js?v=0.01';
+} from '../../UI/MapAndFootprint/MapFootprint.js?v=0.02';
+import { getTopoMap } from '../../support/ImageExportQuery.js?v=0.02';
 import {
 	mapExportProcess,
 	setViewInfo,
-} from '../ExportMaps/ExportMapsPrompt.js?v=0.01';
-import { getCredentials } from '../../support/OAuth.js?v=0.01';
-import { setUserToken } from '../../support/AddItemRequest.js?v=0.01';
-import { config } from '../../../app-config.js?v=0.01';
-import { updateMapCount } from '../../support/MapCount.js?v=0.01';
-import { isAnimating, endAnimation } from '../Animation/animation.js?v=0.01';
-import { toggleMapCardDownloadAvailability } from '../Animation/AnimatingLayers.js?v=0.01';
-import { initSortChoice } from '../Sort/Sort.js?v=0.01';
+} from '../ExportMaps/ExportMapsPrompt.js?v=0.02';
+import { getCredentials } from '../../support/OAuth.js?v=0.02';
+import { setUserToken } from '../../support/AddItemRequest.js?v=0.02';
+import { config } from '../../../app-config.js?v=0.02';
+import { updateMapCount } from '../../support/MapCount.js?v=0.02';
+import { isAnimating, endAnimation } from '../Animation/animation.js?v=0.02';
+import { toggleMapCardDownloadAvailability } from '../Animation/AnimatingLayers.js?v=0.02';
+import { initSortChoice } from '../Sort/Sort.js?v=0.02';
 
 const sideBarElement = document.querySelector('#sideBar');
 const mapsList = document.querySelector('#exploreList');

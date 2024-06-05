@@ -1,5 +1,5 @@
-import { formats } from './animationOptionsSettings.js?v=0.01';
-import { setAnimationDimensions } from './AnimatingLayers.js?v=0.01';
+import { formats } from './animationOptionsSettings.js?v=0.02';
+import { setAnimationDimensions } from './AnimatingLayers.js?v=0.02';
 
 const animationLoadingHTML = `             
                                       <div style='position: absolute; left:25px; top: 25px;'>

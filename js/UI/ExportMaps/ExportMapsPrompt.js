@@ -2,9 +2,9 @@ import {
 	terrainLayer,
 	imageryLayer,
 	outdoorBasemapLabels,
-} from '../Basemaps/basemaps.js?v=0.01';
-import { activeExport } from '../../support/HashParams.js?v=0.01';
-import { url } from '../../support/queryController.js?v=0.01';
+} from '../Basemaps/basemaps.js?v=0.02';
+import { activeExport } from '../../support/HashParams.js?v=0.02';
+import { url } from '../../support/queryController.js?v=0.02';
 
 import {
 	successMessagePrompt,
@@ -17,12 +17,12 @@ import {
 	exportText,
 	addExportBtn,
 	openExportPrompt,
-} from '../ExportMapsPrompt/exportPromptUI.js?v=0.01';
+} from '../ExportMapsPrompt/exportPromptUI.js?v=0.02';
 import {
 	setUserToken,
 	addWebMapToUserPortal,
-} from '../../support/AddItemRequest.js?v=0.01';
-import { getCredentials } from '../../support/OAuth.js?v=0.01';
+} from '../../support/AddItemRequest.js?v=0.02';
+import { getCredentials } from '../../support/OAuth.js?v=0.02';
 
 const promptBox = document.querySelector('.prompt-box');
 

@@ -1,6 +1,6 @@
-import { hashCoordinates, hashLoD } from '../support/HashParams.js?v=0.01';
+import { hashCoordinates, hashLoD } from '../support/HashParams.js?v=0.02';
 // import { CenterCrosshair } from '../../public/image/CenterCrosshair.png';
-import { config } from '../../app-config.js?v=0.01';
+import { config } from '../../app-config.js?v=0.02';
 
 const initView = () => {
 	return new Promise((resolve, reject) => {

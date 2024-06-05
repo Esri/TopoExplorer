@@ -1,8 +1,8 @@
-import { getCredentials, logOutTry } from '../../support/OAuth.js?v=0.01';
+import { getCredentials, logOutTry } from '../../support/OAuth.js?v=0.02';
 import {
 	queryController,
 	getView,
-} from '../../support/queryController.js?v=0.01';
+} from '../../support/queryController.js?v=0.02';
 import {
 	addCancelTextToAnimationLoading,
 	addDownloadingNotification,
@@ -11,18 +11,18 @@ import {
 	endAnimation,
 	isAnimating,
 	isLoading,
-} from '../Animation/animation.js?v=0.01';
+} from '../Animation/animation.js?v=0.02';
 import {
 	setCancelledStatus,
 	checkToposIncludedForDownload,
 	setVideoExportName,
-} from '../Animation/AnimatingLayers.js?v=0.01';
-import { findAspectRatio } from '../Animation/animationOptionsUI.js?v=0.01';
+} from '../Animation/AnimatingLayers.js?v=0.02';
+import { findAspectRatio } from '../Animation/animationOptionsUI.js?v=0.02';
 import {
 	displayInfoModal,
 	removeInfoModal,
-} from '../InfoModal/infoModalUI.js?v=0.01';
-import { cancelAnimationVideo } from '../../support/animationDownload.js?v=0.01';
+} from '../InfoModal/infoModalUI.js?v=0.02';
+import { cancelAnimationVideo } from '../../support/animationDownload.js?v=0.02';
 
 let account = null;
 // const view = queryController.mapView;

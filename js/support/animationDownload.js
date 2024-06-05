@@ -3,9 +3,9 @@ import {
 	removeDownloadIndicator,
 	addAnimationCloseBtn,
 	addDownloadErrorMessage,
-} from '../UI/Animation/animation.js?v=0.01';
+} from '../UI/Animation/animation.js?v=0.02';
 
-import { revokeBasemapBlobURL } from '../UI/Animation/AnimatingLayers.js?v=0.01';
+import { revokeBasemapBlobURL } from '../UI/Animation/AnimatingLayers.js?v=0.02';
 
 const images2VideoClient =
 	window['@vannizhang/images-to-video-converter-client'];
