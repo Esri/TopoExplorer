@@ -1,4 +1,4 @@
-import { setUserContentURL } from '../UI/ExportMapsPrompt/exportPromptUI.jsv=0.03';
+import { setUserContentURL } from '../UI/ExportMapsPrompt/exportPromptUI.js?v=0.03';
 
 let accountData = {
 	urlKey: '',

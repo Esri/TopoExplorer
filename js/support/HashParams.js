@@ -1,6 +1,6 @@
-import { beginAnimation } from '../UI/Animation/animation.jsv=0.03';
-import { toggleListVisibility } from '../UI/MapCards/ListOfMaps.jsv=0.03';
-import { isPinModeActive } from '../UI/EventsAndSelectors/EventsAndSelectors.jsv=0.03';
+import { beginAnimation } from '../UI/Animation/animation.js?v=0.03';
+import { toggleListVisibility } from '../UI/MapCards/ListOfMaps.js?v=0.03';
+import { isPinModeActive } from '../UI/EventsAndSelectors/EventsAndSelectors.js?v=0.03';
 
 let parsedHashParams = null;
 

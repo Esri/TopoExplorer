@@ -1,4 +1,4 @@
-import { config } from '../../../app-config.jsv=0.03';
+import { config } from '../../../app-config.js?v=0.03';
 
 let mapView;
 let terrainLayer;

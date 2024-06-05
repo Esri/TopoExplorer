@@ -1,4 +1,4 @@
-import { queryController } from '../support/queryController.jsv=0.03';
+import { queryController } from '../support/queryController.js?v=0.03';
 
 //this will contain the images of each topo map in the animation and will be added to the media's source once layer is create
 const mediaLayerSourceElementsArray = [];
