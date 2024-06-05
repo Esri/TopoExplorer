@@ -1,4 +1,4 @@
-import { isMobileFormat } from '../EventsAndSelectors/EventsAndSelectors.js?v=0.02';
+import { isMobileFormat } from '../EventsAndSelectors/EventsAndSelectors.jsv=0.03';
 
 const sideBar = document.querySelector('#sideBar');
 const exploreList = document.querySelector('#exploreList');

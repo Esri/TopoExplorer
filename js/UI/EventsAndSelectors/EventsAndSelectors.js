@@ -1,8 +1,8 @@
-import { getCredentials, logOutTry } from '../../support/OAuth.js?v=0.02';
+import { getCredentials, logOutTry } from '../../support/OAuth.jsv=0.03';
 import {
 	queryController,
 	getView,
-} from '../../support/queryController.js?v=0.02';
+} from '../../support/queryController.jsv=0.03';
 import {
 	addCancelTextToAnimationLoading,
 	addDownloadingNotification,
@@ -11,18 +11,18 @@ import {
 	endAnimation,
 	isAnimating,
 	isLoading,
-} from '../Animation/animation.js?v=0.02';
+} from '../Animation/animation.jsv=0.03';
 import {
 	setCancelledStatus,
 	checkToposIncludedForDownload,
 	setVideoExportName,
-} from '../Animation/AnimatingLayers.js?v=0.02';
-import { findAspectRatio } from '../Animation/animationOptionsUI.js?v=0.02';
+} from '../Animation/AnimatingLayers.jsv=0.03';
+import { findAspectRatio } from '../Animation/animationOptionsUI.jsv=0.03';
 import {
 	displayInfoModal,
 	removeInfoModal,
-} from '../InfoModal/infoModalUI.js?v=0.02';
-import { cancelAnimationVideo } from '../../support/animationDownload.js?v=0.02';
+} from '../InfoModal/infoModalUI.jsv=0.03';
+import { cancelAnimationVideo } from '../../support/animationDownload.jsv=0.03';
 
 let account = null;
 // const view = queryController.mapView;
@@ -258,7 +258,7 @@ const isMobileFormat = () => {
 	}
 
 	if (
-		/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+		/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|ipad|iris|kindle|Android|Silk|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(
 			navigator.userAgent
 		)
 	) {

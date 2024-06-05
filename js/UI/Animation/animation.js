@@ -2,19 +2,19 @@ import {
 	animationStart,
 	animationEnd,
 	// setInitialDuration,
-} from '../Animation/AnimatingLayers.js?v=0.02';
-import { preventingMapInteractions } from '../EventsAndSelectors/EventsAndSelectors.js?v=0.02';
+} from '../Animation/AnimatingLayers.jsv=0.03';
+import { preventingMapInteractions } from '../EventsAndSelectors/EventsAndSelectors.jsv=0.03';
 import {
 	animationLoadingHTML,
 	closeAnimationBtnHTML,
 	animationDownloadAspectRatioPreviewElement,
 	creatingDownloadHTML,
 	downloadErrorMessageHTML,
-} from './animationOptionsUI.js?v=0.02';
+} from './animationOptionsUI.jsv=0.03';
 import {
 	addAnimateStatusHashParam,
 	removeAnimationStatusHashParam,
-} from '../../support/HashParams.js?v=0.02';
+} from '../../support/HashParams.jsv=0.03';
 
 //this variable is used to determine if the button events are disabled during animation
 let isAnimating = false;

@@ -1,27 +1,27 @@
-import './UI/Basemaps/basemaps.js?v=0.02';
-import { isMobileFormat } from './UI/EventsAndSelectors/EventsAndSelectors.js?v=0.02';
-import { initSideBar } from './UI/SideBar/sideBar.js?v=0.02';
-import { initMobileHeader } from './UI/MobileMapHeader/mobileMapHeader.js?v=0.02';
-import './UI/MobileMapHeader/mobileMapHeader.js?v=0.02';
-import { initView, newMapCrossHair } from './map/View.js?v=0.02';
+import './UI/Basemaps/basemaps.jsv=0.03';
+import { isMobileFormat } from './UI/EventsAndSelectors/EventsAndSelectors.jsv=0.03';
+import { initSideBar } from './UI/SideBar/sideBar.jsv=0.03';
+import { initMobileHeader } from './UI/MobileMapHeader/mobileMapHeader.jsv=0.03';
+import './UI/MobileMapHeader/mobileMapHeader.jsv=0.03';
+import { initView, newMapCrossHair } from './map/View.jsv=0.03';
 import {
 	queryController,
 	isHashedToposForQuery,
-} from './support/queryController.js?v=0.02';
+} from './support/queryController.jsv=0.03';
 
-import { updateHashParams } from './support/HashParams.js?v=0.02';
-import { getYearsAndScales } from './support/YearsAndScalesProcessing.js?v=0.02';
+import { updateHashParams } from './support/HashParams.jsv=0.03';
+import { getYearsAndScales } from './support/YearsAndScalesProcessing.jsv=0.03';
 
-import { authorization } from './support/OAuth.js?v=0.02';
-import { addAccountImage } from './UI/EventsAndSelectors/EventsAndSelectors.js?v=0.02';
+import { authorization } from './support/OAuth.jsv=0.03';
+import { addAccountImage } from './UI/EventsAndSelectors/EventsAndSelectors.jsv=0.03';
 import {
 	setBaseMapInfo,
 	setViewInfo,
-} from './UI/ExportMaps/ExportMapsPrompt.js?v=0.02';
-import { initLayerToggle } from './UI/Basemaps/basemaps.js?v=0.02';
-import { setAccountData } from './support/AddItemRequest.js?v=0.02';
-import { animatingStatus } from './support/HashParams.js?v=0.02';
-import { resetMobileHeaderInfo } from './UI/MobileMapHeader/mobileMapHeader.js?v=0.02';
+} from './UI/ExportMaps/ExportMapsPrompt.jsv=0.03';
+import { initLayerToggle } from './UI/Basemaps/basemaps.jsv=0.03';
+import { setAccountData } from './support/AddItemRequest.jsv=0.03';
+import { animatingStatus } from './support/HashParams.jsv=0.03';
+import { resetMobileHeaderInfo } from './UI/MobileMapHeader/mobileMapHeader.jsv=0.03';
 
 const initApp = async () => {
 	try {

@@ -6,6 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Topo Map Explorer</title>
     <link rel="icon" href="public/favicon.ico">
+    <style>
+      @media only screen and (max-width: 570px) {
+        #announcementModalBackground{
+          display: none
+        }
+      }
+    </style>
 		<style>
 			@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 		</style>
@@ -25,9 +32,9 @@
 			type="text/css"
 			href="https://js.arcgis.com/calcite-components/1.2.0/calcite.css"
 		/>
-		<link rel="stylesheet" type="text/css" href="css/app.css?v=0.02" />
-		<link rel="stylesheet" type="text/css" href="js/UI/DualSlider/slider.css?v=0.02" />
-		<link rel="stylesheet" type="text/css" href="js/UI/MapCards/MapCards.css?v=0.02" />
+		<link rel="stylesheet" type="text/css" href="css/app.cssv=0.03" />
+		<link rel="stylesheet" type="text/css" href="js/UI/DualSlider/slider.cssv=0.03" />
+		<link rel="stylesheet" type="text/css" href="js/UI/MapCards/MapCards.cssv=0.03" />
 	</head>
 	<body>
 		<main>
@@ -307,11 +314,12 @@
 		</main>
 		<script src="./Libraries/axios1.13.min.js"></script>
 		<script type="text/javascript" src="https://js.arcgis.com/4.28/"></script>
-		<script type="module" src="js/main.js?v=0.02"></script>
+		<script type="module" src="js/main.jsv=0.03"></script> 
+    <!-- update to version 0.03 on 6/5/2024 -->
     <script src="//mtags.arcgis.com/tags-min.js"></script>
     <script>
       //for the announcementModal.
-
+      
       //The following logic was taken from a pre-existing announcement modal from the older 'Historical Topo Explorer' app.
       // announcement modal
       const modal = document.getElementById('announcementModalBackground');

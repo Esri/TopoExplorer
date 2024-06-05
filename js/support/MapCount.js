@@ -1,4 +1,4 @@
-import { isMobileFormat } from '../UI/EventsAndSelectors/EventsAndSelectors.js?v=0.02';
+import { isMobileFormat } from '../UI/EventsAndSelectors/EventsAndSelectors.jsv=0.03';
 
 const spinnerIcon = document.querySelector('.queryIndicator');
 const mapCount = document.querySelector('.mapCount');

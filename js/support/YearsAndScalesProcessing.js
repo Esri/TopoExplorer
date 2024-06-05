@@ -4,13 +4,13 @@ import {
 	getMaxYear,
 	getMinScale,
 	getMaxScale,
-} from './queryController.js?v=0.02';
-import { initDualSlider } from '../UI/DualSlider/DualSlider.js?v=0.02';
-import { initSortChoice } from '../UI/Sort/Sort.js?v=0.02';
+} from './queryController.jsv=0.03';
+import { initDualSlider } from '../UI/DualSlider/DualSlider.jsv=0.03';
+import { initSortChoice } from '../UI/Sort/Sort.jsv=0.03';
 import {
 	filterMaps,
 	setFilterValues,
-} from '../UI/MapCards/ListOfMaps.js?v=0.02';
+} from '../UI/MapCards/ListOfMaps.jsv=0.03';
 
 let scaleSelections = null;
 let yearSelections = null;

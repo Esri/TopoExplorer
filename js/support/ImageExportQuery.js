@@ -1,5 +1,5 @@
 //import the queryController stuff here??
-import { queryController } from './queryController.js?v=0.02';
+import { queryController } from './queryController.jsv=0.03';
 
 let controller = new AbortController();
 

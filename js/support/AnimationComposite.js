@@ -1,4 +1,4 @@
-import { queryController } from './queryController.js?v=0.02';
+import { queryController } from './queryController.jsv=0.03';
 
 // const arrayOfCompositeImages = [];
 

@@ -1,5 +1,5 @@
 //NOTE: Rename this module to AnimationControl.
-import { queryController } from '../../support/queryController.js?v=0.02';
+import { queryController } from '../../support/queryController.jsv=0.03';
 import {
 	removeAnimationLoadingDiv,
 	addAnimationCloseBtn,
@@ -15,7 +15,7 @@ import {
 	isAnimating,
 	setLoadingStatus,
 	enableAnimationSpeedSlider,
-} from './animation.js?v=0.02';
+} from './animation.jsv=0.03';
 import {
 	findTopoLayer,
 	crosshairLayer,
@@ -23,20 +23,20 @@ import {
 	currentStateOfPinnedList,
 	isTargetPolygonWithinExtent,
 	getPinnedTopoGeometry,
-} from '../MapCards/ListOfMaps.js?v=0.02';
+} from '../MapCards/ListOfMaps.jsv=0.03';
 import {
 	imageExport,
 	cancelImageRequest,
-} from '../../support/ImageExportQuery.js?v=0.02';
+} from '../../support/ImageExportQuery.jsv=0.03';
 import {
 	createMediaLayer,
 	createArrayOfImageElements,
 	removeMediaLayer,
 	createImageElementForMediaLayer,
 	removeTopoImageElements,
-} from '../../map/MediaLayer.js?v=0.02';
-import { makeCompositeForAnimationDownload } from '../../support/AnimationComposite.js?v=0.02';
-import { createAnimationVideo } from '../../support/animationDownload.js?v=0.02';
+} from '../../map/MediaLayer.jsv=0.03';
+import { makeCompositeForAnimationDownload } from '../../support/AnimationComposite.jsv=0.03';
+import { createAnimationVideo } from '../../support/animationDownload.jsv=0.03';
 
 let mediaLayer;
 
