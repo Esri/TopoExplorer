@@ -280,36 +280,7 @@
 			</div>
       <div class="grabbedItemImage"></div>
 
-      <!-- the announcementModal. Is intended to be temporary. -->
-      <div id="announcementModalBackground" class="invisible" style="
-      position: absolute;
-      height: 100%;
-      width: 100%;
-      z-index: 5;
-      background: radial-gradient(circle, rgba(231,235,238,1) 0%, rgba(184,194,211,0.9) 100%);
-      flex-direction: row;
-      flex-wrap: nowrap;
-      justify-content: center;
-      align-items: center;">
-        <div style='width:40%; height:auto'class='modalBox'> 
-          <div  class='modalText'>
-            <div>
-              <div style="font-size:1.5rem">
-                <b>Welcome to the new Historical Topo Map Explorer!</b>
-                </br>
-                
-                We are out of beta and there have been many updates and improvements. Click anywhere in the United States to find USGS historical topo maps. Explore, download, or export what you like. To learn more about how to use this application and its collection of over 180,000 beautiful topos, visit this <a href='https://www.esri.com/arcgis-blog/?post_type=blog&p=2356722&preview=true' target="_blank">blog post</a>.
-              </div>
-              <div style="display: flex;
-                          justify-content: flex-end;">
-                <div id='close-announcement-modal' style="padding:1rem; box-shadow:none" class='prompt-btns'>
-                  Bring on the topo maps!
-                </div>
-              </div>
-            </div>  
-          </div>
-        </div>
-      </div>
+    
 
 		</main>
 		<script src="./Libraries/axios1.13.min.js"></script>
@@ -317,54 +288,6 @@
 		<script type="module" src="js/main.js?v=0.03"></script> 
     <!-- update to version 0.03 on 6/5/2024 -->
     <script src="//mtags.arcgis.com/tags-min.js"></script>
-    <script>
-      //for the announcementModal.
-      
-      //The following logic was taken from a pre-existing announcement modal from the older 'Historical Topo Explorer' app.
-      // announcement modal
-      const modal = document.getElementById('announcementModalBackground');
-
-      // Define a key for local storage to store the last view time of the modal
-      const LOCALSTORAGE_KEY = 'topomapexplorer:announcement-modal-last-view-time';
-
-      // Retrieve the last view time from local storage, if available
-      // Otherwise, set it to 0
-      const lastViewTime = localStorage.getItem(LOCALSTORAGE_KEY)
-        ? +localStorage.getItem(LOCALSTORAGE_KEY)
-        : 0;
-
-      // const now = new Date().getTime();
-
-      // Currently do not need this logic. The Modal is meant to be viewed only once and then permanently kept hoddem
-      // Define the time duration to keep the modal hidden in milliseconds (1 day, 86,400 seconds)
-      // const modalHiddenDurationInMilliseconds = 60 * 60 * 24 * 1000;
-
-      // Check if the modal should be displayed:
-
-      // If the user has never seen the modal or if it has been more than the duration time since they last saw it
-      // if (!lastViewTime || now - lastViewTime > modalHiddenDurationInMilliseconds) 
-      if(!lastViewTime){
-        // open modal if user has never seen this modal or saw it 1 day ago
-       
-        modal.classList.toggle('invisible');
-        modal.classList.toggle('flex');
-      }
-
-      // modal.addEventListener('calciteModalClose', () => {
-        // Save the current time to local storage when the modal is closed
-        // This allows the modal to be opened again after 1 day
-        // localStorage.setItem(LOCALSTORAGE_KEY, new Date().getTime().toString());
-      // });
-
-      document
-        .getElementById('close-announcement-modal')
-        .addEventListener('click', () => {
-          
-          localStorage.setItem(LOCALSTORAGE_KEY, new Date().getTime().toString());
-          modal.classList.toggle('flex');
-          modal.classList.toggle('invisible');
-        });
-
-    </script>
+   
 	</body>
 </html>
