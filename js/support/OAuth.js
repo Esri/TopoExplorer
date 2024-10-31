@@ -1,6 +1,6 @@
-import { config } from '../../app-config.js?v=0.03';
+import { configurables } from '../../app-config.js?v=0.03';
 
-const appId = config.environment.appId;
+const appId = configurables.appId;
 
 let userCredentials;
 let esriAccountId;
@@ -38,6 +38,20 @@ const authorization = async () => {
 			'esri/identity/IdentityManager',
 		], function (Portal, OAuthInfo, esriId) {
 			esriAccountId = esriId;
+
+			if (configurables.enablePortalAuthentication === false) {
+				document.getElementById('user-icon').remove();
+				document
+					.querySelector('.icon.save-all')
+					.closest('.iconWrapper')
+					.remove();
+
+				document.querySelector(
+					'.pinned-mode-options .pinned-mode-sub-section'
+				).style.justifyContent = 'space-around';
+
+				resolve(false);
+			}
 
 			info = new OAuthInfo({
 				portalUrl: portalUrl,
@@ -83,6 +97,7 @@ const authorization = async () => {
 					})
 					.catch(() => {
 						console.log('error in authorization', error);
+						reject(error);
 					});
 			};
 		});

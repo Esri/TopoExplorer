@@ -1,13 +1,13 @@
-const livingAtlasURL = 'https://livingatlas.arcgis.com/en/home/';
+import { configurables } from '../../../app-config.js?v=0.03';
+
+console.log(configurables.informationParagraph);
 const USGSTopoMapCollection =
 	'https://www.arcgis.com/home/item.html?id=ee19794feeed4e068ba99b2ddcb6c2db';
 const topMapExplorerItemPage =
 	'https://www.arcgis.com/home/item.html?id=c66fe3e5d16043e4bde748af2e84ecf5';
 const appEmail = 'topoexplorer@esri.com';
 
-const information = `<div class='modalBox'> 
-                      <div class='modalText'>
-                        <div>
+const modalInfoText = `<div>
                           <div>
                             About the USGS Historical Topo Map Collection and Explorer
                           </div>
@@ -56,23 +56,20 @@ const information = `<div class='modalBox'>
                           </div>
 
                         <div> Please contact us at <a href="mailto:${appEmail}" target="_blank">${appEmail}</a> with your questions or comments about the map collection or the online app.</div> 
-                      </div>
-                      </div>
-                      <div class='modalClose' style='margin: 0 1rem;'>
-                      <svg xmlns="http://www.w3.org/2000/svg" height="32" width="32"><path d="M23.985 8.722L16.707 16l7.278 7.278-.707.707L16 16.707l-7.278 7.278-.707-.707L15.293 16 8.015 8.722l.707-.707L16 15.293l7.278-7.278z"></path></svg>
+                      </div>`;
+
+const information = `<div class='modalBox'> 
+<div style='margin: 0 1rem; text-align: right;'>
+  <div>
+    <svg class='modalClose' xmlns="http://www.w3.org/2000/svg" height="32" width="32"><path d="M23.985 8.722L16.707 16l7.278 7.278-.707.707L16 16.707l-7.278 7.278-.707-.707L15.293 16 8.015 8.722l.707-.707L16 15.293l7.278-7.278z"></path></svg>
+  </div>
+</div>
+                      <div class='modalText'>
+                        ${configurables.informationParagraph || modalInfoText}
                       </div>
                       
                     </div> `;
 
-//   The <em>Historical Topo Map Explorer</em> is an application provided by Esri's <a href='${livingAtlasURL}' target='_blank'>Living Atlas of the World</a>. It provides an interface into the United States Geological Survey's
-//   <a href='${USGSTopoMapCollection}' target='_blank'>Historical Topographic Map Collection</a>. Explore geographically, and filter by map scale and publication year, to browse over 181,000 maps.
-// </div>
-// <div>
-//   Maps can be downloaded as GeoTIFF images to your computer or added to an ArcGIS Online web map. You can do this individually our by pinning a collection of maps and then performing a bulk action.
-// </div>
-// <div>
-//   Learn more about the Historical Topo Map Explorer <a href='${topMapExplorerItemPage}' target='_blank'>here</a>.
-// </div>
 const infoModalBackground = document.createElement('div');
 infoModalBackground.classList.add('infoModalBackground');
 infoModalBackground.innerHTML = information;

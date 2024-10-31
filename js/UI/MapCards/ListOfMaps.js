@@ -16,7 +16,7 @@ import {
 } from '../ExportMaps/ExportMapsPrompt.js?v=0.03';
 import { getCredentials } from '../../support/OAuth.js?v=0.03';
 import { setUserToken } from '../../support/AddItemRequest.js?v=0.03';
-import { config } from '../../../app-config.js?v=0.03';
+import { configurables } from '../../../app-config.js?v=0.03';
 import { updateMapCount } from '../../support/MapCount.js?v=0.03';
 import { isAnimating, endAnimation } from '../Animation/animation.js?v=0.03';
 import { toggleMapCardDownloadAvailability } from '../Animation/AnimatingLayers.js?v=0.03';
@@ -49,8 +49,8 @@ to find topo maps.
 </div>
 `;
 
-const serviceURL = config.environment.serviceUrls.historicalTopoImageService;
-const unavailableInfo = 'Unavailable';
+const serviceURL = configurables.imageServerURL;
+const unavailableInfo = configurables.unavailableInformationString;
 
 let currentView;
 //This layer contains the crosshair/mapPoint indicator that highlights the user's selection.
@@ -222,12 +222,16 @@ const makeCards = (list, isTopoHashed) => {
                     <p class="mapSlotHeader"> <span class="year">${
 											topoMap.date
 										}</span> | <span class="revisionYear">${
-				topoMap.topo.attributes.Imprint_Year
-			} </span> rev | <span class="name">${topoMap.mapName}</span>
+				topoMap.revisionYear
+			} </span> | <span class="name">${topoMap.mapName}</span>
                     </p>
                   </div>
                 <div style="display:flex">
-                <div class='infoIcon ${isMobileFormat() ? 'invisible' : ''}' >
+                <div class='infoIcon ${
+									configurables.enableTooltip === false || isMobileFormat()
+										? 'invisible'
+										: ''
+								}' >
                 <div>
                 <svg class='svg' xmlns="http://www.w3.org/2000/svg" viewBox="1 -5 21 21" height="16" width="16"><path d="M8.5 6.5a1 1 0 1 1 1-1 1.002 1.002 0 0 1-1 1zM8 13h1V8H8zm2-1H7v1h3zm5.8-3.5a7.3 7.3 0 1 1-7.3-7.3 7.3 7.3 0 0 1 7.3 7.3zm-1 0a6.3 6.3 0 1 0-6.3 6.3 6.307 6.307 0 0 0 6.3-6.3z"></path></svg>
                 </div>  
@@ -329,12 +333,25 @@ const makeCards = (list, isTopoHashed) => {
                   </svg>
                   </div>
                 </div>
-                <div class='iconWrapper'>
-                <span class='tooltipText hidden' style='top:-77px;'>Save this topo map to a new ArcGIS Online web map</span>
-                  <div class='icon save'>
-                    <svg class="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2 2h11v1H3v18h18V11h1v11H2zm20 6V2h-6v1h4.3l-8.41 8.403.707.707L21 3.714V8z"/><path fill="none" d="M0 0h24v24H0z"/></svg>
-                  </div>
-                </div>
+                ${
+									configurables.enablePortalAuthentication
+										? `<div class='iconWrapper'>
+											<span class='tooltipText hidden' style='top:-77px;'>
+												Save this topo map to a new ArcGIS Online web map
+											</span>
+											<div class='icon save'>
+												<svg
+													class=''
+													xmlns='http://www.w3.org/2000/svg'
+													viewBox='0 0 24 24'
+												>
+													<path d='M2 2h11v1H3v18h18V11h1v11H2zm20 6V2h-6v1h4.3l-8.41 8.403.707.707L21 3.714V8z' />
+													<path fill='none' d='M0 0h24v24H0z' />
+												</svg>
+											</div>
+										</div>`
+										: ''
+								}
                 <div class='iconWrapper'>
                   <span class='tooltipText hidden' style='top:-60px;'>Download this topo map as a GeoTIFF</span>
                   <a class='icon download' href="${

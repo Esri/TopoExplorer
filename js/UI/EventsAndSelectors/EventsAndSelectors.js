@@ -301,9 +301,11 @@ document.addEventListener('click', (event) => {
 	}
 });
 
-document.querySelector('.infoModalIcon').addEventListener('click', () => {
-	displayInfoModal();
-});
+if (document.querySelector('.infoModalIcon')) {
+	document.querySelector('.infoModalIcon').addEventListener('click', () => {
+		displayInfoModal();
+	});
+}
 
 //event listeners that work with animation process
 document

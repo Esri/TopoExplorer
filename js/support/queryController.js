@@ -1,8 +1,4 @@
-//NOTE: This whole file has gotten out of hand, a lot of elements need to be reviewed to make a more effecive refactor..
-//this is certainly not an ideal layout, but I want to see what other additions I may have to add before I look at refactoring
-//At the risk of being redundant: I want to know what this file is doing before I try to refactor it.
-//TIP: this file should have as little involvement as possible with the UI.
-import { config } from '../../app-config.js?v=0.03';
+import { configurables } from '../../app-config.js?v=0.03';
 import {
 	findMinYear,
 	findMaxYear,
@@ -36,33 +32,33 @@ import { resumeExportPrompt } from '../UI/ExportMaps/ExportMapsPrompt.js?v=0.03'
 import { isMobileFormat } from '../UI/EventsAndSelectors/EventsAndSelectors.js?v=0.03';
 
 const setURL = () => {
-	return config.environment.serviceUrls.historicalTopoImageService;
+	return configurables.imageServerURL;
 };
 
 //NOTE: this needs a better variable name. This is the imageServiceURL. There are a lot of 'URLs' in this application.
 const url = setURL();
 // let isQueryInProcess = false;
 
-let whereStatement = 'Date_On_Map >= 1879';
+const unavailableInfo = configurables.unavailableInformationString;
+
+let whereStatement = configurables.whereStatement;
 //'IsDefault = 1';
 //'Date_On_Map <= 1879';
-const objectId = 'ObjectID';
-const mapName = 'Map_Name';
-const dateOnMap = 'Date_On_Map';
-const dateCurrent = 'DateCurrent';
-const mapState = 'State';
-const mapYear = 'Imprint_Year';
-const mapScale = 'Map_Scale';
-const mapCenterX = 'CenterX';
-const mapCenterY = 'CenterY';
-const mapDownloadLink = 'DownloadG';
-const surveyYear = 'Survey_Year';
-const photoYear = 'Aerial_Photo_Year';
-const photoRevisionYear = 'Photo_Revision';
-const fieldCheckYear = 'Field_Check_Year';
-const projection = 'Projection';
-const datum = 'Datum';
-const citation = 'Citation';
+const objectId = configurables.outfields.objectId;
+const mapName = configurables.outfields.mapName;
+const dateOnMap = configurables.outfields.dateOnMap;
+const dateCurrent = configurables.outfields.dateCurrent;
+const mapState = configurables.outfields.mapState;
+const mapYear = configurables.outfields.mapYear;
+const mapScale = configurables.outfields.mapScale;
+const mapDownloadLink = configurables.outfields.mapDownloadLink || null;
+const surveyYear = configurables.outfields.surveyYear || null;
+const photoYear = configurables.outfields.photoYear || null;
+const photoRevisionYear = configurables.outfields.photoRevisionYear;
+const fieldCheckYear = configurables.outfields.fieldCheckYear;
+const projection = configurables.outfields.projection;
+const datum = configurables.outfields.datum;
+const citation = configurables.outfields.citation;
 
 //This isn't exactly pretty, but it's a first step in moving this information
 const getMinYear = findMinYear(`${url}/query`);
@@ -78,8 +74,8 @@ const queryController = {
 	mapView: null,
 	where: whereStatement,
 	geometry: '',
-	spatialRelation: 'esriSpatialRelIntersects',
-	inSR: 4326,
+	spatialRelation: configurables.spatialRelation,
+	inSR: configurables.inSR,
 	queryOutfields: [
 		objectId,
 		mapName,
@@ -88,8 +84,6 @@ const queryController = {
 		dateOnMap,
 		dateCurrent,
 		mapScale,
-		mapCenterX,
-		mapCenterY,
 		mapDownloadLink,
 		surveyYear,
 		photoYear,
@@ -98,9 +92,11 @@ const queryController = {
 		projection,
 		datum,
 		citation,
-	].join(','),
+	]
+		.filter((outfield) => outfield)
+		.join(','),
 	// sortChoice: sortOptions.onlyYear,
-	resultOffset: 0,
+	// resultOffset: 0,
 	//the result record count was 25.
 	resultRecordCount: '',
 	totalMaps: 0,
@@ -108,7 +104,7 @@ const queryController = {
 		return new URLSearchParams({
 			where: this.where,
 			geometry: this.geometry,
-			geometryType: 'esriGeometryPoint',
+			geometryType: configurables.geometryPointType,
 			spatialRel: this.spatialRelation,
 			inSR: this.inSR,
 			returnCountOnly: true,
@@ -120,7 +116,7 @@ const queryController = {
 		return new URLSearchParams({
 			where: this.where,
 			geometry: this.geometry,
-			geometryType: 'esriGeometryPoint',
+			geometryType: configurables.geometryPointType,
 			spatialRel: this.spatialRelation,
 			inSR: this.inSR,
 			returnExtentOnly: true,
@@ -131,15 +127,15 @@ const queryController = {
 		return new URLSearchParams({
 			where: this.where,
 			geometry: this.geometry,
-			geometryType: 'esriGeometryPoint',
+			geometryType: configurables.geometryPointType,
 			spatialRel: this.spatialRelation,
 			returnGeometry: true,
 			inSR: this.inSR,
 			outFields: this.queryOutfields,
-			resultOffset: this.resultOffset,
+			// resultOffset: this.resultOffset,
 			// resultRecordCount: this.resultRecordCount,
 			// orderByFields: this.sortChoice,
-			f: 'json',
+			f: configurables.queryReturnFormat,
 		});
 	},
 	//this function initializes the query for up to 25 topo maps and processes their returned data.
@@ -194,12 +190,18 @@ const queryController = {
 
 		return topos.map((topo) => ({
 			topo,
-			OBJECTID: topo.attributes.OBJECTID,
-			date: topo.attributes[dateOnMap],
-			mapName: topo.attributes.Map_Name,
-			mapScale: `1:${topo.attributes.Map_Scale.toLocaleString()}`,
-			location: `${topo.attributes.Map_Name}, ${topo.attributes.State}`,
-			thumbnail: `${url}/${topo.attributes.OBJECTID}/info/thumbnail`,
+			OBJECTID: topo.attributes.OBJECTID || unavailableInfo,
+			date: topo.attributes[dateOnMap] || unavailableInfo,
+			revisionYear: topo.attributes.Imprint_Year
+				? `${topo.attributes.Imprint_Year} rev`
+				: unavailableInfo,
+			mapName: topo.attributes.Map_Name || unavailableInfo,
+			mapScale:
+				`1:${topo.attributes.Map_Scale.toLocaleString()}` || unavailableInfo,
+			location:
+				`${topo.attributes.Map_Name}, ${topo.attributes.State}` ||
+				unavailableInfo,
+			thumbnail: `${url}/${topo.attributes.OBJECTID}${configurables.imageThumbnailEndpoint}`,
 			downloadLink: topo.attributes.DownloadG,
 			mapBoundry: topo.geometry,
 			previousPinnedMap:
@@ -226,7 +228,7 @@ const setHashedTopoQueryParams = (oid) => {
 		where: `${objectId} IN (${oid})`,
 		returnGeometry: true,
 		outFields: queryController.queryOutfields,
-		f: 'json',
+		f: configurables.queryReturnFormat,
 	});
 
 	return params;

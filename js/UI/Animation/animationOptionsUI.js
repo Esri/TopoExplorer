@@ -44,14 +44,10 @@ const downloadOptionsHTML = formats
 	})
 	.join(' ');
 
-const closeAnimationBtnHTML = ` 
-<div style='display: flex; position: absolute; left:25px; top: 25px; z-index: 2;'>                             
-                                    <div class='closeAnimationBtn' style='text-align: right;'>
-                                      <svg width="64" height="64" viewBox="0 0 32 32" >
-                                        <path d="M23.985 8.722L16.707 16l7.278 7.278-.707.707L16 16.707l-7.278 7.278-.707-.707L15.293 16 8.015 8.722l.707-.707L16 15.293l7.278-7.278z"></path>
-                                      </svg>
-                                    </div>
-                                    <div class='downloadAnimationBtn' style='text-align: right;'>
+const downloadAnimationElement = () => {
+	if (window.location.host === 'livingatlas.arcgis.com') {
+		return `
+    <div class='downloadAnimationBtn' style='text-align: right;'>
                                       <svg width="64" height="64" viewBox="0 0 32 32" >
                                       <path d="M25 27H8v-1h17zm-3.646-9.646l-.707-.707L17 20.293V5h-1v15.293l-3.646-3.646-.707.707 4.853 4.853z"></path>
                                       </svg>
@@ -66,6 +62,20 @@ const closeAnimationBtnHTML = `
                                     </div>
                                   </div>
                                 </div>
+                                `;
+	}
+	return ``;
+};
+
+const closeAnimationBtnHTML = ` 
+<div style='display: flex; position: absolute; left:25px; top: 25px; z-index: 2;'>                             
+                                    <div class='closeAnimationBtn' style='text-align: right;'>
+                                      <svg width="64" height="64" viewBox="0 0 32 32" >
+                                        <path d="M23.985 8.722L16.707 16l7.278 7.278-.707.707L16 16.707l-7.278 7.278-.707-.707L15.293 16 8.015 8.722l.707-.707L16 15.293l7.278-7.278z"></path>
+                                      </svg>
+                                    </div>                                   
+${downloadAnimationElement()}
+
                               `;
 
 const animationDownloadAspectRatioPreviewElement = `

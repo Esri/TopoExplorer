@@ -1,5 +1,6 @@
 //NOTE: Rename this module to AnimationControl.
 import { queryController } from '../../support/queryController.js?v=0.03';
+import { configurables } from '../../../app-config.js?v=0.03';
 import {
 	removeAnimationLoadingDiv,
 	addAnimationCloseBtn,
@@ -64,7 +65,8 @@ const animationDimensions = {
 let animationInterval;
 let duration;
 let pinListCurrentOrder;
-const speeds = [3000, 2000, 1000, 800, 700, 500, 400, 300, 200];
+const speeds = configurables.animationSpeeds;
+// [3000, 2000, 1000, 800, 700, 500, 400, 300, 200];
 
 const setAnimationDimensions = (width, height) => {
 	animationDimensions.width = width;

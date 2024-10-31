@@ -1,4 +1,4 @@
-import { config } from '../../../app-config.js?v=0.03';
+import { configurables } from '../../../app-config.js?v=0.03';
 
 let mapView;
 let terrainLayer;
@@ -6,14 +6,18 @@ let imageryLayer;
 let outdoorBasemapLabels;
 
 const setLayers = async (view) => {
+	console.log('config', configurables.webMapLayers);
 	mapView = view;
 
 	return new Promise((resolve, reject) => {
+		console.log(view.map);
+
 		terrainLayer = view.map.layers.items.find((layer) => {
+			console.log(layer);
 			if (layer.portalItem) {
 				if (
 					layer.portalItem.id ===
-					config.environment.webMap.webMapLayers.worldHillshade
+					configurables.webMapLayers.terrainLayer.mapItemId
 				)
 					return layer;
 			}
@@ -23,7 +27,7 @@ const setLayers = async (view) => {
 			if (layer.portalItem) {
 				if (
 					layer.portalItem.id ===
-					config.environment.webMap.webMapLayers.worldImagery
+					configurables.webMapLayers.satelliteLayer.mapItemId
 				)
 					return layer;
 			}
@@ -34,7 +38,7 @@ const setLayers = async (view) => {
 			if (layer.portalItem) {
 				if (
 					layer.portalItem.id ===
-					config.environment.webMap.webMapLayers.outdoorLabels
+					configurables.webMapLayers.labelLayer.mapItemId
 				)
 					return layer;
 			}
@@ -47,34 +51,42 @@ const setLayers = async (view) => {
 const addLayerToggleToMap = () => {
 	const layerToggleHTML = `
     <div id='layerToggle' class='flex'>
-      <div class='mapLayer flex satellite'>
+      <div class='mapLayer flex ${
+				configurables.webMapLayers.satelliteLayer.labelName
+			}'>
         <div class="checkbox">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="1 0 20 20" height="20" width="20">
             <path class="hidden" d="M5.5 12L2 8.689l.637-.636L5.5 10.727l8.022-7.87.637.637z"></path>
           </svg>
         </div>
         <span>
-          Satellite
+          ${capitalizeString(
+						configurables.webMapLayers.satelliteLayer.labelName
+					)}
         </span>
       </div>
-      <div class='mapLayer flex terrain'>
+      <div class='mapLayer flex ${
+				configurables.webMapLayers.terrainLayer.labelName
+			}'>
         <div class="checkbox">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="1 0 20 20" height="20" width="20">
             <path class="hidden" d="M5.5 12L2 8.689l.637-.636L5.5 10.727l8.022-7.87.637.637z"></path>
           </svg>
         </div>
         <span>
-          Terrain
+        ${capitalizeString(configurables.webMapLayers.terrainLayer.labelName)}
         </span>
       </div>
-      <div class='mapLayer flex labels'>
+      <div class='mapLayer flex ${
+				configurables.webMapLayers.labelLayer.labelName
+			}'>
         <div class="checkbox">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="1 0 20 20" height="20" width="20">
             <path class="" d="M5.5 12L2 8.689l.637-.636L5.5 10.727l8.022-7.87.637.637z"></path>
           </svg>
         </div>
         <span>
-          Labels
+        ${capitalizeString(configurables.webMapLayers.labelLayer.labelName)}
         </span>
       </div>
     </div>
@@ -95,30 +107,44 @@ const toggleMapLayerCheckbox = (eventTarget) => {
 
 const toggleMapLayer = (checkmark) => {
 	if (checkmark.classList.contains('hidden')) {
-		if (checkmark.closest('.satellite')) {
+		if (
+			checkmark.closest(
+				`.${configurables.webMapLayers.satelliteLayer.labelName}`
+			)
+		) {
 			imageryLayer.visible = false;
 		}
 
-		if (checkmark.closest('.terrain')) {
+		if (
+			checkmark.closest(`.${configurables.webMapLayers.terrainLayer.labelName}`)
+		) {
 			terrainLayer.visible = false;
 		}
 
-		if (checkmark.closest('.labels')) {
+		if (
+			checkmark.closest(`.${configurables.webMapLayers.labelLayer.labelName}`)
+		) {
 			outdoorBasemapLabels.visible = false;
 		}
 
 		return;
 	}
 
-	if (checkmark.closest('.satellite')) {
+	if (
+		checkmark.closest(`.${configurables.webMapLayers.satelliteLayer.labelName}`)
+	) {
 		imageryLayer.visible = true;
 	}
 
-	if (checkmark.closest('.terrain')) {
+	if (
+		checkmark.closest(`.${configurables.webMapLayers.terrainLayer.labelName}`)
+	) {
 		terrainLayer.visible = true;
 	}
 
-	if (checkmark.closest('.labels')) {
+	if (
+		checkmark.closest(`.${configurables.webMapLayers.labelLayer.labelName}`)
+	) {
 		outdoorBasemapLabels.visible = true;
 	}
 };
@@ -142,6 +168,10 @@ const initLayerToggle = async (view) => {
 				});
 			});
 		});
+};
+
+const capitalizeString = (string) => {
+	return string[0].toUpperCase() + string.slice(1);
 };
 
 export { initLayerToggle, terrainLayer, imageryLayer, outdoorBasemapLabels };

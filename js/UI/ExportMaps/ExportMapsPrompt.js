@@ -1,8 +1,8 @@
-import {
-	terrainLayer,
-	imageryLayer,
-	outdoorBasemapLabels,
-} from '../Basemaps/basemaps.js?v=0.03';
+// import {
+// 	terrainLayer,
+// 	imageryLayer,
+// 	outdoorBasemapLabels,
+// } from '../Basemaps/basemaps.js?v=0.03';
 import { activeExport } from '../../support/HashParams.js?v=0.03';
 import { url } from '../../support/queryController.js?v=0.03';
 
@@ -114,20 +114,20 @@ const mapExportProcess = (mapDetails) => {
 	exportTitleQC();
 };
 
-const addAdditionalOperationalLayers = () => {
-	const outdoorBasemapLabelsData = {
-		id: '18a89a9fd19-layer-52',
-		title: 'Outdoor Labels',
-		visibility: true,
-		itemId: '65605d0db3bd4067ad4805a81a4689b8',
-		layerType: 'VectorTileLayer',
-		effect: null,
-		styleUrl: '',
-	};
-	topoLayerInfo.unshift(outdoorBasemapLabels);
-	topoLayerInfo.unshift(imageryLayer);
-	topoLayerInfo.push(terrainLayer);
-};
+// const addAdditionalOperationalLayers = () => {
+// 	const outdoorBasemapLabelsData = {
+// 		id: '18a89a9fd19-layer-52',
+// 		title: 'Outdoor Labels',
+// 		visibility: true,
+// 		itemId: '65605d0db3bd4067ad4805a81a4689b8',
+// 		layerType: 'VectorTileLayer',
+// 		effect: null,
+// 		styleUrl: '',
+// 	};
+// 	topoLayerInfo.unshift(outdoorBasemapLabels);
+// 	topoLayerInfo.unshift(imageryLayer);
+// 	topoLayerInfo.push(terrainLayer);
+// };
 
 const createWebMapExportDefinition = () => {
 	topoLayerInfo.reverse();

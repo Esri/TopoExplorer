@@ -11,6 +11,7 @@
 			@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 		</style>
     <link href='http://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css' />
+    <script type="module" src="js/header.js?v=0.03"></script> 
 		<link
 			rel="stylesheet"
 			href="https://js.arcgis.com/4.28/esri/themes/light/main.css"
@@ -29,6 +30,7 @@
 		<link rel="stylesheet" type="text/css" href="css/app.css?v=0.03" />
 		<link rel="stylesheet" type="text/css" href="js/UI/DualSlider/slider.css?v=0.03" />
 		<link rel="stylesheet" type="text/css" href="js/UI/MapCards/MapCards.css?v=0.03" />
+    <!-- <link rel="stylesheet" type="text/css" href="css/customize.css?v=0.03" /> -->
 	</head>
 	<body>
 		<main>
@@ -67,7 +69,7 @@
 			<aside id="sideBarWrapper" class="flex">    
 				<img class="shadow" style="position: absolute; z-index: 4; left: 400px;"src="./public/images/Shadow.png">
         <div id="sideBar" class="flex">
-					<div id="header">
+					<div id="header" class="hidden">
 						<div class="app heading">
 							HISTORICAL TOPO
 							<br />
@@ -75,16 +77,16 @@
 						</div>
 						<div style="border-left: 1px solid white"></div>
 						<div class="heading logo-container">
-							<img
+							<!-- <img
 								src="./public/images/usgs_logo.png"
 								alt="United States Geological Survey Logo"
-								class="logo"
+								class="logo supplementalImg"
 							/>
 							<img
 								src="./public/images/Esri_logo.svg"
 								alt="esri Logo"
 								class="logo invert"
-							/>
+							/> -->
 						</div>
             <span class="infoModalIcon">
               <svg viewBox="-4 -5 21 21" style= "fill:#ffffff; stroke: #ffffff;
@@ -280,6 +282,7 @@
 		<script src="./Libraries/axios1.13.min.js"></script>
 		<script type="text/javascript" src="https://js.arcgis.com/4.28/"></script>
 		<script type="module" src="js/main.js?v=0.03"></script> 
+    <link rel="stylesheet" type="text/css" href="css/customize.css?v=0.03" />
     <!-- update to version 0.03 on 6/5/2024 -->
     <script src="//mtags.arcgis.com/tags-min.js"></script>
    

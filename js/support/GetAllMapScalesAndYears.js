@@ -1,51 +1,30 @@
+import { configurables } from '../../app-config.js?v=0.03';
+
 const minYearOutStats = JSON.stringify([
 	{
 		statisticType: 'min',
-		onStatisticField: 'DateCurrent',
+		onStatisticField: configurables.outfields.dateCurrent,
 		outStatisticFieldName: 'MinMapYear',
 	},
 ]);
 const maxYearOutStats = JSON.stringify([
 	{
 		statisticType: 'max',
-		onStatisticField: 'DateCurrent',
+		onStatisticField: configurables.outfields.dateCurrent,
 		outStatisticFieldName: 'MaxMapYear',
 	},
 ]);
 const minScaleOutStats = JSON.stringify([
 	{
 		statisticType: 'min',
-		onStatisticField: 'Map_Scale',
+		onStatisticField: configurables.outfields.mapScale,
 		outStatisticFieldName: 'MinMapScale',
 	},
 ]);
 const maxScaleOutStats = JSON.stringify([
 	{
 		statisticType: 'max',
-		onStatisticField: 'Map_Scale',
-		outStatisticFieldName: 'MaxMapScale',
-	},
-]);
-
-const allScaleAndYears = JSON.stringify([
-	{
-		statisticType: 'min',
-		onStatisticField: 'DateCurrent',
-		outStatisticFieldName: 'MinMapYear',
-	},
-	{
-		statisticType: 'max',
-		onStatisticField: 'DateCurrent',
-		outStatisticFieldName: 'MaxMapYear',
-	},
-	{
-		statisticType: 'min',
-		onStatisticField: 'Map_Scale',
-		outStatisticFieldName: 'MinMapScale',
-	},
-	{
-		statisticType: 'max',
-		onStatisticField: 'Map_Scale',
+		onStatisticField: configurables.outfields.mapScale,
 		outStatisticFieldName: 'MaxMapScale',
 	},
 ]);

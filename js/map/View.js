@@ -1,6 +1,6 @@
 import { hashCoordinates, hashLoD } from '../support/HashParams.js?v=0.03';
 // import { CenterCrosshair } from '../../public/image/CenterCrosshair.png';
-import { config } from '../../app-config.js?v=0.03';
+import { configurables } from '../../app-config.js?v=0.03';
 
 const initView = () => {
 	return new Promise((resolve, reject) => {
@@ -17,7 +17,7 @@ const initView = () => {
 				graphics: [],
 				effect: 'drop-shadow(0px, 0px, 8px, black)',
 				blendMode: 'hard-light',
-				spatialReference: new SpatialReference(config.spatialReference),
+				spatialReference: new SpatialReference(configurables.spatialReference),
 			});
 
 			const haloLayer = new GraphicsLayer({
@@ -26,7 +26,7 @@ const initView = () => {
 				graphics: [],
 				effect: 'drop-shadow(0px, 0px, 8px, black) contrast(2)',
 				blendMode: 'hard-light',
-				spatialReference: new SpatialReference(config.spatialReference),
+				spatialReference: new SpatialReference(configurables.spatialReference),
 			});
 
 			const crosshairLayer = new GraphicsLayer({
@@ -37,7 +37,7 @@ const initView = () => {
 
 			const map = new WebMap({
 				portalItem: {
-					id: config.environment.webMap.webMapItemId,
+					id: configurables.webMapID,
 					//for bug testing during app init, '3582b744bba84668b52a16b0b6942544'
 				},
 			});
@@ -46,11 +46,11 @@ const initView = () => {
 				container: 'viewDiv',
 				map: map,
 				// layerView: [],
-				center: hashCoordinates() || config.defaultMapSettings.center,
-				zoom: hashLoD() || config.defaultMapSettings.zoom,
+				center: hashCoordinates() || configurables.defaultMapSettings.center,
+				zoom: hashLoD() || configurables.defaultMapSettings.zoom,
 				constraints: {
 					snapToZoom: false,
-					minZoom: config.defaultMapSettings.constraints.minZoom,
+					minZoom: configurables.defaultMapSettings.constraints.minZoom,
 				},
 				popup: {
 					popup: null,
