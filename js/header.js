@@ -1,30 +1,28 @@
-import { configurables } from '../app-config.js?v=0.03';
+import { appConfig } from '../app-config.js?v=0.03';
 
-if (configurables.appHeaderColor) {
+if (appConfig.appHeaderColor) {
 	document.getElementById('header').style.backgroundColor =
-		configurables.appHeaderColor;
+		appConfig.appHeaderColor;
 }
 
-//what about the spacing in the header section? this could be an issue?
-document.title = configurables.appTitleName;
+document.title = appConfig.appTitleName;
 
-if (configurables.appHeaderName) {
-	document.querySelector('.app.heading').innerHTML =
-		configurables.appHeaderName;
+if (appConfig.appHeaderName) {
+	document.querySelector('.app.heading').innerHTML = appConfig.appHeaderName;
 	document.querySelector('.app.heading').style =
 		'text-align: center; align-content: center';
 }
 
-if (configurables.enableInfoModal === false) {
+if (appConfig.enableInfoModal === false) {
 	document.querySelector('.infoModalIcon').remove();
 }
 
-if (configurables.headerLogoImgs) {
-	configurables.headerLogoImgs.forEach((img) => {
+if (appConfig.headerLogoImgs) {
+	appConfig.headerLogoImgs.forEach((img) => {
 		if (!img.imageSrc) {
 			return;
 		}
-		console.log(img);
+
 		const imageElement = document.createElement('img');
 		imageElement.src = img.imageSrc;
 		imageElement.classList.add('logo');

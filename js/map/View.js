@@ -1,6 +1,5 @@
 import { hashCoordinates, hashLoD } from '../support/HashParams.js?v=0.03';
-// import { CenterCrosshair } from '../../public/image/CenterCrosshair.png';
-import { configurables } from '../../app-config.js?v=0.03';
+import { appConfig } from '../../app-config.js?v=0.03';
 
 const initView = () => {
 	return new Promise((resolve, reject) => {
@@ -11,13 +10,34 @@ const initView = () => {
 			'esri/geometry/SpatialReference',
 			'esri/widgets/Search',
 		], (WebMap, MapView, GraphicsLayer, SpatialReference, Search) => {
+			const map = new WebMap({
+				portalItem: {
+					id: appConfig.webMapID,
+				},
+			});
+
+			const view = new MapView({
+				container: 'viewDiv',
+				map: map,
+				center: hashCoordinates() || appConfig.defaultMapSettings.center,
+				zoom: hashLoD() || appConfig.defaultMapSettings.zoom,
+				constraints: {
+					snapToZoom: false,
+					minZoom: appConfig.defaultMapSettings.constraints.minZoom,
+				},
+				popup: {
+					popup: null,
+					autoOpenEnabled: false,
+				},
+			});
+
 			const footprintLayer = new GraphicsLayer({
 				id: 'mapFootprint',
 				title: 'mapFootprint',
 				graphics: [],
 				effect: 'drop-shadow(0px, 0px, 8px, black)',
 				blendMode: 'hard-light',
-				spatialReference: new SpatialReference(configurables.spatialReference),
+				spatialReference: new SpatialReference(view.spatialReference),
 			});
 
 			const haloLayer = new GraphicsLayer({
@@ -26,7 +46,7 @@ const initView = () => {
 				graphics: [],
 				effect: 'drop-shadow(0px, 0px, 8px, black) contrast(2)',
 				blendMode: 'hard-light',
-				spatialReference: new SpatialReference(configurables.spatialReference),
+				spatialReference: new SpatialReference(view.spatialReference),
 			});
 
 			const crosshairLayer = new GraphicsLayer({
@@ -35,28 +55,7 @@ const initView = () => {
 				graphics: [],
 			});
 
-			const map = new WebMap({
-				portalItem: {
-					id: configurables.webMapID,
-					//for bug testing during app init, '3582b744bba84668b52a16b0b6942544'
-				},
-			});
-
-			const view = new MapView({
-				container: 'viewDiv',
-				map: map,
-				// layerView: [],
-				center: hashCoordinates() || configurables.defaultMapSettings.center,
-				zoom: hashLoD() || configurables.defaultMapSettings.zoom,
-				constraints: {
-					snapToZoom: false,
-					minZoom: configurables.defaultMapSettings.constraints.minZoom,
-				},
-				popup: {
-					popup: null,
-					autoOpenEnabled: false,
-				},
-			});
+			console.log(map);
 
 			map.layers.add(haloLayer);
 			map.layers.add(footprintLayer);
@@ -75,7 +74,7 @@ const initView = () => {
 						outFields: ['Addr_type'],
 						name: 'ArcGIS World Geocoding Service',
 						placeholder: 'Find address or place',
-						countryCode: 'US',
+						countryCode: appConfig.countryCode,
 					},
 				],
 			});

@@ -7,6 +7,7 @@ import { initView, newMapCrossHair } from './map/View.js?v=0.03';
 import {
 	queryController,
 	isHashedToposForQuery,
+	dataServiceType,
 } from './support/queryController.js?v=0.03';
 
 import { updateHashParams } from './support/HashParams.js?v=0.03';
@@ -22,15 +23,34 @@ import { initLayerToggle } from './UI/Basemaps/basemaps.js?v=0.03';
 import { setAccountData } from './support/AddItemRequest.js?v=0.03';
 import { animatingStatus } from './support/HashParams.js?v=0.03';
 import { resetMobileHeaderInfo } from './UI/MobileMapHeader/mobileMapHeader.js?v=0.03';
+import { appConfig } from '../app-config.js?v=0.03';
 
 const initApp = async () => {
 	try {
+		if (!dataServiceType.includes('ImageService')) {
+			console.error(
+				`This application built to interact with an esri image service. Not a '${dataServiceType}' type.`
+			);
+			return;
+		}
+		if (
+			dataServiceType.includes('ImageService') &&
+			dataServiceType !== 'esriImageServiceDataTypeRGB'
+		) {
+			console.warn(
+				`While this application is built to be used with an image service, it was developed specifically for esriImageServiceDataTypeRGB, not a '${dataServiceType}'.`
+			);
+		}
 		const oauthResponse = await authorization();
 		const view = await initView();
-		const sliderValues = await getYearsAndScales(view);
+
+		const sliderValues = appConfig.enableSliders
+			? await getYearsAndScales(view, appConfig)
+			: null;
 
 		const searchWidget = view.ui.find('searchWidget');
 		const initialMapQuery = () => {
+			queryController.setSpatialRelation(view.setSpatialReference);
 			queryController.setGeometry(view.extent.center);
 			queryController.mapView = view;
 
@@ -46,6 +66,7 @@ const initApp = async () => {
 						setAccountData(oauthResponse);
 					}
 					sliderValues;
+					initLayerToggle(view);
 
 					reactiveUtils.when(
 						() => view?.updating === false,
@@ -73,7 +94,6 @@ const initApp = async () => {
 				});
 			})
 			.then(() => {
-				initLayerToggle(view);
 				setBaseMapInfo(view);
 				setViewInfo(view);
 			})
@@ -98,32 +118,8 @@ const initApp = async () => {
 					queryController.extentQueryCall();
 					newMapCrossHair(view, searchResultPoint);
 				});
-
-				// reactiveUtils.when(
-				// 	() => view?.updating === false,
-				// 	() => {
-				// 		// initialMapQuery();
-				// 		animatingStatus();
-				// 	},
-				// 	{
-				// 		once: true,
-				// 	}
-				// );
-
-				// reactiveUtils.when(
-				// 	() => view?.stationary === true,
-				// 	async () => {
-				// 		queryController.mapView = view;
-
-				// 		updateHashParams(view.extent.center, view.zoom);
-				// 	}
-				// );
-				//
-				// });
-				//
 			});
 	} catch (error) {
-		//error handeling for any intialization issues
 		console.error('problem initalizing app', error);
 	}
 };

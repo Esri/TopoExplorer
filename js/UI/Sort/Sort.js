@@ -2,7 +2,9 @@ const sortBtn = document.querySelector('.sortOrder');
 const sortOptions = sortBtn.querySelector('.sortOptions');
 const sortChoices = sortOptions.querySelectorAll('a');
 
-const initSortChoice = (setSortChoice, filterList) => {
+const initSortChoice = (setSortChoice, filterList, appConfig) => {
+	establishSortOptions(appConfig);
+
 	sortBtn.addEventListener('click', (event) => {
 		document.querySelectorAll('.sliderElement').forEach((filterSlider) => {
 			!filterSlider.classList.contains('invisible')
@@ -15,8 +17,8 @@ const initSortChoice = (setSortChoice, filterList) => {
 			: sortOptions.classList.add('invisible');
 	});
 
-	//this forEach calls and sets the default sort order for the list of map cards.
-	const defaultChoice = sortChoices.forEach((choice) => {
+	// this forEach calls and sets the default sort order for the list of map cards.
+	sortChoices.forEach((choice) => {
 		if (choice.classList.contains('bold')) {
 			const choiceValue = choice.attributes.value.value;
 			setSortChoice(choiceValue);
@@ -38,6 +40,30 @@ const initSortChoice = (setSortChoice, filterList) => {
 			filterList();
 		});
 	});
+};
+
+const establishSortOptions = (appConfig) => {
+	if (!appConfig.outfields.mapName) {
+		const options = sortOptions.getElementsByClassName('nameSortOption');
+
+		const choiceArray = Array.from(options);
+
+		choiceArray.forEach((choice) => choice.remove());
+	}
+	if (!appConfig.outfields.dateCurrent) {
+		const options = sortOptions.getElementsByClassName('yearSortOption');
+
+		const choiceArray = Array.from(options);
+
+		choiceArray.forEach((choice) => choice.remove());
+	}
+	if (!appConfig.outfields.mapScale) {
+		const options = sortOptions.getElementsByClassName('scaleSortOption');
+
+		const choiceArray = Array.from(options);
+
+		choiceArray.forEach((choice) => choice.remove());
+	}
 };
 
 // if the user clicks anywhere outside of the sort-choice element, close the sort-choice element

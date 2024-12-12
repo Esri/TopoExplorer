@@ -74,7 +74,7 @@ const initDualSlider = (
 
 	const sliderComponents = container.querySelector('.inputs');
 
-	//creating the slider sections on the track. Highlighting the change of selection whn the handles move
+	//creating the slider sections on the track. Highlighting the change of selection when the handles move
 	const sliderBar = values
 		.map((sections) => {
 			return `
@@ -175,23 +175,6 @@ const initDualSlider = (
 		});
 	};
 
-	// const debounce = (func, wait) => {
-	// 	let timer;
-
-	// 	return (...args) => {
-	// 		clearTimeout(timer);
-
-	// 		return new Promise((resolve) => {
-	// 			timer = setTimeout(() => resolve(func(...args)), wait);
-	// 		});
-	// 	};
-	// };
-
-	// const debounceInput = debounce(
-	// 	(index, value) => onChangeHandler(index, value),
-	// 	1000
-	// );
-
 	//ADDING EVENT LISTENERS
 	const minRangeHandle = sliderComponents.querySelector('.minSlider');
 	const maxRangeHandle = sliderComponents.querySelector('.maxSlider');
@@ -213,7 +196,7 @@ const initDualSlider = (
 	});
 
 	sliderComponents.querySelectorAll('input').forEach((input) => {
-		//updating the color of the selected range AND controlling the interaction between the min & max slider handles
+		//updating the color of the selected range and controlling the interaction between the min & max slider handles
 
 		input.addEventListener('input', (e) => {
 			adjustSliderTrackSelection();
@@ -246,7 +229,6 @@ const initDualSlider = (
 					const maxValue = getMaxValue();
 					adjustSliderTrackSelection();
 
-					// debounceInput(0, minRangeHandle.value);
 					updateSliderHeading(minValue, maxValue);
 					return;
 				}
@@ -257,7 +239,6 @@ const initDualSlider = (
 					const maxValue = getMaxValue();
 					adjustSliderTrackSelection();
 
-					// debounceInput(0, minRangeHandle.value);
 					updateSliderHeading(minValue, maxValue);
 					return;
 				}

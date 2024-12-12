@@ -1,6 +1,6 @@
-import { configurables } from '../../app-config.js?v=0.03';
+import { appConfig } from '../../app-config.js?v=0.03';
 
-const appId = configurables.appId;
+const appId = appConfig.appId;
 
 let userCredentials;
 let esriAccountId;
@@ -39,7 +39,7 @@ const authorization = async () => {
 		], function (Portal, OAuthInfo, esriId) {
 			esriAccountId = esriId;
 
-			if (configurables.enablePortalAuthentication === false) {
+			if (appConfig.enablePortalAuthentication === false) {
 				document.getElementById('user-icon').remove();
 				document
 					.querySelector('.icon.save-all')

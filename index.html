@@ -30,7 +30,6 @@
 		<link rel="stylesheet" type="text/css" href="css/app.css?v=0.03" />
 		<link rel="stylesheet" type="text/css" href="js/UI/DualSlider/slider.css?v=0.03" />
 		<link rel="stylesheet" type="text/css" href="js/UI/MapCards/MapCards.css?v=0.03" />
-    <!-- <link rel="stylesheet" type="text/css" href="css/customize.css?v=0.03" /> -->
 	</head>
 	<body>
 		<main>
@@ -77,16 +76,7 @@
 						</div>
 						<div style="border-left: 1px solid white"></div>
 						<div class="heading logo-container">
-							<!-- <img
-								src="./public/images/usgs_logo.png"
-								alt="United States Geological Survey Logo"
-								class="logo supplementalImg"
-							/>
-							<img
-								src="./public/images/Esri_logo.svg"
-								alt="esri Logo"
-								class="logo invert"
-							/> -->
+					
 						</div>
             <span class="infoModalIcon">
               <svg viewBox="-4 -5 21 21" style= "fill:#ffffff; stroke: #ffffff;
@@ -122,7 +112,6 @@
 								</div>
 							</div>
               <div class="for-desktop display-content ">
-                <!-- <div class="divider"></div> -->
                 <div class="mode pin-mode-btn transparency">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -161,16 +150,16 @@
 									</button>
 								</div>
 								<div class="sortOptions invisible">
-									<a class="bold" value="yearAsc">Oldest to Newest</a>
-									<a value="yearDesc">Newest to Oldest</a>
-									<a value="scaleAsc"
+									<a class="bold yearSortOption" value="yearAsc">Oldest to Newest</a>
+									<a class="yearSortOption" value="yearDesc">Newest to Oldest</a>
+									<a class="scaleSortOption" value="scaleAsc"
 										>Small Scale to Large Scale</a
 									>
-									<a value="scaleDesc"
+									<a class="scaleSortOption" value="scaleDesc"
 										>Large Scale to Small Scale</a
 									>
-									<a value="AtoZ">A–Z</a>
-									<a value="ZtoA">Z–A</a>
+									<a class='nameSortOption' value="AtoZ">A–Z</a>
+									<a class='nameSortOption' value="ZtoA">Z–A</a>
 								</div>
 							</div>
 						</div>
@@ -235,11 +224,6 @@
                     <div class="animation-speed increase">+</div>
                 </div>
                 </div>
-                <!-- <div class="icon" style="display:none">
-                  <a class='download' href="${}" download="">
-                    <svg class="download" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 3v12.294l2.647-2.647.707.707-3.853 3.854-3.854-3.854.707-.707L12 15.292V3zM6 21h13v-1H6z"/><path fill="none" d="M0 0h24v24H0z"/></svg>
-                  </a>
-              </div> -->
 							</div>
 						</div>
             <div class="unpin-action-warning invisible">
@@ -282,8 +266,7 @@
 		<script src="./Libraries/axios1.13.min.js"></script>
 		<script type="text/javascript" src="https://js.arcgis.com/4.28/"></script>
 		<script type="module" src="js/main.js?v=0.03"></script> 
-    <link rel="stylesheet" type="text/css" href="css/customize.css?v=0.03" />
-    <!-- update to version 0.03 on 6/5/2024 -->
+    <!-- updated to version 0.03 on 6/5/2024 -->
     <script src="//mtags.arcgis.com/tags-min.js"></script>
    
 	</body>

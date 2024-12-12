@@ -1,3 +1,5 @@
+//NOTE: these functions in this file are used to encode the images used in the animation into an mp4.
+//this encoding will only work for 'esri' related project.
 import {
 	addDownloadCancel,
 	removeDownloadIndicator,
@@ -5,7 +7,7 @@ import {
 	addDownloadErrorMessage,
 } from '../UI/Animation/animation.js?v=0.03';
 
-import { revokeBasemapBlobURL } from '../UI/Animation/AnimatingLayers.js?v=0.03';
+import { revokeBasemapBlobURL } from '../UI/Animation/AnimationControl.js?v=0.03';
 
 const images2VideoClient =
 	window['@vannizhang/images-to-video-converter-client'];

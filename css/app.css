@@ -2,7 +2,6 @@
   box-sizing: border-box;
   padding: 0;
   margin: 0;
-  /* font-family: "Roboto Condensed"; */
 }
 
 @font-face {
@@ -37,7 +36,6 @@ main {
 .modalBox {
   width: 50%;
   max-height: 60%;
-  /* display:flex; */
   background: linear-gradient(0deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
   border-radius: 0.75rem;
   padding: 2.5rem;
@@ -55,7 +53,6 @@ main {
   margin: 0 1rem;
   overflow: auto;
   scrollbar-width: thin;
-  /* scrollbar-color: var(--thumbBG) transparent; */
 }
 
 .modalText div{
@@ -361,7 +358,6 @@ padding: 0 0 3rem 0
 #viewDiv .esri-search__container .esri-search__input, .esri-search__container .esri-widget--button:last-child {
   background-color: #F1F4F5;
   border-radius: 12px 0 0 12px;
-  /* font-family: 'Roboto Condensed'; */
 }
 
 .esri-search__container .esri-search__input, .esri-search__container .esri-widget--button{
@@ -459,7 +455,6 @@ main .map-list-item.mobile{
 }
 
 .map-mode-container .action-area {
-/* padding: 0 10px; */
 box-shadow: none;
 background: none;
 }
@@ -480,8 +475,6 @@ background: none;
 
 .map-mode-container  .action-area .mode.selected {
   background: #F1F4F5;
-  /* border-radius: 12px 12px 0 0;
-  box-shadow: 0px -8px 8px 4px rgba(219,227,233,1); */
   box-shadow: inset 6px 6px 6px #EAEEF1, -4px -4px 8px #FFFFFF, 4px 4px 8px #637287;
 }
 
@@ -544,7 +537,6 @@ background: none;
   margin: auto -10px;
   padding: 10px 15px;
   height:60px;
-  /* background-color: #ABB4C2; */
   color: #ffffff;
 }
 
@@ -926,7 +918,6 @@ svg{
   width: 100%;
   position: absolute;
   z-index: 2;
-  /* background: black; */
   height: 100%;
   opacity: 50%;
   display: flex;

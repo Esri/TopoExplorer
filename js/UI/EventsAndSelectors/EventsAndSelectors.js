@@ -16,7 +16,7 @@ import {
 	setCancelledStatus,
 	checkToposIncludedForDownload,
 	setVideoExportName,
-} from '../Animation/AnimatingLayers.js?v=0.03';
+} from '../Animation/AnimationControl.js?v=0.03';
 import { findAspectRatio } from '../Animation/animationOptionsUI.js?v=0.03';
 import {
 	displayInfoModal,

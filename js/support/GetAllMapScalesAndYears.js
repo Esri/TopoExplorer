@@ -1,35 +1,38 @@
-import { configurables } from '../../app-config.js?v=0.03';
+import { appConfig } from '../../app-config.js?v=0.03';
 
 const minYearOutStats = JSON.stringify([
 	{
 		statisticType: 'min',
-		onStatisticField: configurables.outfields.dateCurrent,
-		outStatisticFieldName: 'MinMapYear',
+		onStatisticField: appConfig.outfields.dateCurrent,
+		outStatisticFieldName: 'MapYear',
 	},
 ]);
 const maxYearOutStats = JSON.stringify([
 	{
 		statisticType: 'max',
-		onStatisticField: configurables.outfields.dateCurrent,
-		outStatisticFieldName: 'MaxMapYear',
+		onStatisticField: appConfig.outfields.dateCurrent,
+		outStatisticFieldName: 'MapYear',
 	},
 ]);
 const minScaleOutStats = JSON.stringify([
 	{
 		statisticType: 'min',
-		onStatisticField: configurables.outfields.mapScale,
-		outStatisticFieldName: 'MinMapScale',
+		onStatisticField: appConfig.outfields.mapScale,
+		outStatisticFieldName: 'MapScale',
 	},
 ]);
 const maxScaleOutStats = JSON.stringify([
 	{
 		statisticType: 'max',
-		onStatisticField: configurables.outfields.mapScale,
-		outStatisticFieldName: 'MaxMapScale',
+		onStatisticField: appConfig.outfields.mapScale,
+		outStatisticFieldName: 'MapScale',
 	},
 ]);
 
 const findMinYear = (url) => {
+	if (!appConfig.enableTimeFilterSlider) {
+		return;
+	}
 	return new Promise((resolve, reject) => {
 		const params = new URLSearchParams({
 			where: '',
@@ -48,13 +51,16 @@ const findMinYear = (url) => {
 				params,
 			})
 			.then((response) => {
-				const minYear = response.data.features[0].attributes.MinMapYear;
+				const minYear = response.data;
 				resolve(minYear);
 			});
 	});
 };
 
 const findMaxYear = (url) => {
+	if (!appConfig.enableTimeFilterSlider) {
+		return;
+	}
 	return new Promise((resolve, reject) => {
 		const params = new URLSearchParams({
 			where: '',
@@ -74,13 +80,17 @@ const findMaxYear = (url) => {
 				params,
 			})
 			.then((response) => {
-				const maxYear = response.data.features[0].attributes.MaxMapYear;
+				const maxYear = response.data;
 				resolve(maxYear);
 			});
 	});
 };
 
 const findMinScale = (url) => {
+	if (!appConfig.enableScaleFilterSlider) {
+		return;
+	}
+
 	return new Promise((resolve, reject) => {
 		const params = new URLSearchParams({
 			where: '',
@@ -100,13 +110,23 @@ const findMinScale = (url) => {
 				params,
 			})
 			.then((response) => {
-				const minScale = response.data.features[0].attributes.MinMapScale;
+				const minScale = response.data;
 				resolve(minScale);
+			})
+			.catch((error) => {
+				console.error(
+					"issue trying to obtain the image service's minimum map-scale attribute.",
+					error
+				);
 			});
 	});
 };
 
 const findMaxScale = (url) => {
+	if (!appConfig.enableScaleFilterSlider) {
+		return;
+	}
+
 	return new Promise((resolve, reject) => {
 		const params = new URLSearchParams({
 			where: '',
@@ -125,8 +145,14 @@ const findMaxScale = (url) => {
 				params,
 			})
 			.then((response) => {
-				const maxScale = response.data.features[0].attributes.MaxMapScale;
+				const maxScale = response.data;
 				resolve(maxScale);
+			})
+			.catch((error) => {
+				console.error(
+					"issue trying to obtain the image service's maximum map-scale attribute.",
+					error
+				);
 			});
 	});
 };

@@ -1,26 +1,19 @@
-import { configurables } from '../../app-config.js?v=0.03';
+import { appConfig } from '../../app-config.js?v=0.03';
 import {
 	findMinYear,
 	findMaxYear,
 	findMinScale,
 	findMaxScale,
 } from './GetAllMapScalesAndYears.js?v=0.03';
-import {
-	numberOfMapsinView,
-	extentQuery,
-	queryForHashedTopos,
-} from './Query.js?v=0.03';
+import { extentQuery, queryForHashedTopos } from './Query.js?v=0.03';
 import {
 	hideMapCount,
-	// updateMapcount,
 	showSpinnerIcon,
 	hideSpinnerIcon,
 } from './MapCount.js?v=0.03';
 import {
 	clearMapsList,
-	// setMapListData,
 	createMapSlotItems,
-	makeCards,
 	setNumberOfPreviousTopos,
 	removeUnpinnedTopo,
 } from '../UI/MapCards/ListOfMaps.js?v=0.03';
@@ -32,41 +25,54 @@ import { resumeExportPrompt } from '../UI/ExportMaps/ExportMapsPrompt.js?v=0.03'
 import { isMobileFormat } from '../UI/EventsAndSelectors/EventsAndSelectors.js?v=0.03';
 
 const setURL = () => {
-	return configurables.imageServerURL;
+	return appConfig.imageServerURL;
 };
 
-//NOTE: this needs a better variable name. This is the imageServiceURL. There are a lot of 'URLs' in this application.
 const url = setURL();
-// let isQueryInProcess = false;
 
-const unavailableInfo = configurables.unavailableInformationString;
+const serviceFetch = await fetch(`${appConfig.imageServerURL}?f=pjson`);
+const serviceJSON = await serviceFetch.json();
 
-let whereStatement = configurables.whereStatement;
-//'IsDefault = 1';
-//'Date_On_Map <= 1879';
-const objectId = configurables.outfields.objectId;
-const mapName = configurables.outfields.mapName;
-const dateOnMap = configurables.outfields.dateOnMap;
-const dateCurrent = configurables.outfields.dateCurrent;
-const mapState = configurables.outfields.mapState;
-const mapYear = configurables.outfields.mapYear;
-const mapScale = configurables.outfields.mapScale;
-const mapDownloadLink = configurables.outfields.mapDownloadLink || null;
-const surveyYear = configurables.outfields.surveyYear || null;
-const photoYear = configurables.outfields.photoYear || null;
-const photoRevisionYear = configurables.outfields.photoRevisionYear;
-const fieldCheckYear = configurables.outfields.fieldCheckYear;
-const projection = configurables.outfields.projection;
-const datum = configurables.outfields.datum;
-const citation = configurables.outfields.citation;
+const dataServiceType = serviceJSON.serviceDataType;
 
-//This isn't exactly pretty, but it's a first step in moving this information
+const userDeterminedOutfields = Object.values(appConfig.outfields);
+
+const areOutfieldsFoundInServiceAttributes = userDeterminedOutfields.map(
+	(outfieldName) => {
+		if (
+			!serviceJSON.fields.find(
+				(serviceFieldName) => serviceFieldName.name === outfieldName
+			)
+		) {
+			console.warn(
+				`'${outfieldName}' is not an available field in this service.`
+			);
+		}
+	}
+);
+
+const unavailableInfo = appConfig.unavailableInformationString;
+
+const whereStatement = appConfig.whereStatement;
+const objectId = appConfig.outfields.objectId;
+const mapName = appConfig.outfields.mapName;
+const dateCurrent = appConfig.outfields.dateCurrent;
+const publicationYear = appConfig.outfields.publicationYear;
+const mapState = appConfig.outfields.mapLocation;
+const mapScale = appConfig.outfields.mapScale;
+const mapDownloadLink = appConfig.outfields.mapDownloadLink;
+const surveyYear = appConfig.outfields.surveyYear;
+const photoYear = appConfig.outfields.photoYear;
+const photoRevisionYear = appConfig.outfields.photoRevisionYear;
+const fieldCheckYear = appConfig.outfields.fieldCheckYear;
+const projection = appConfig.outfields.projection;
+const datum = appConfig.outfields.datum;
+const citation = appConfig.outfields.citation;
+
 const getMinYear = findMinYear(`${url}/query`);
 const getMaxYear = findMaxYear(`${url}/query`);
 const getMinScale = findMinScale(`${url}/query`);
 const getMaxScale = findMaxScale(`${url}/query`);
-// let minScaleRangeHandle;
-// let maxScaleRangeHandle;
 
 const queryController = {
 	url: `${url}/query`,
@@ -74,15 +80,15 @@ const queryController = {
 	mapView: null,
 	where: whereStatement,
 	geometry: '',
-	spatialRelation: configurables.spatialRelation,
-	inSR: configurables.inSR,
+	spatialRelation: appConfig.spatialRelation,
+	imageSR: serviceJSON.spatialReference,
+	outSR: appConfig.outSR,
 	queryOutfields: [
 		objectId,
 		mapName,
 		mapState,
-		mapYear,
-		dateOnMap,
 		dateCurrent,
+		publicationYear,
 		mapScale,
 		mapDownloadLink,
 		surveyYear,
@@ -95,70 +101,52 @@ const queryController = {
 	]
 		.filter((outfield) => outfield)
 		.join(','),
-	// sortChoice: sortOptions.onlyYear,
-	// resultOffset: 0,
-	//the result record count was 25.
 	resultRecordCount: '',
 	totalMaps: 0,
 	totalMapsInExtentParams: function () {
 		return new URLSearchParams({
 			where: this.where,
 			geometry: this.geometry,
-			geometryType: configurables.geometryPointType,
+			geometryType: appConfig.geometryPointType,
 			spatialRel: this.spatialRelation,
-			inSR: this.inSR,
 			returnCountOnly: true,
 			returnExtentOnly: true,
-			f: 'json',
+			f: appConfig.queryReturnFormat,
 		});
 	},
 	totalMapExtents: function () {
 		return new URLSearchParams({
 			where: this.where,
 			geometry: this.geometry,
-			geometryType: configurables.geometryPointType,
+			geometryType: appConfig.geometryPointType,
 			spatialRel: this.spatialRelation,
-			inSR: this.inSR,
 			returnExtentOnly: true,
-			f: 'json',
+			f: appConfig.queryReturnFormat,
 		});
 	},
 	mapDataParams: function () {
 		return new URLSearchParams({
 			where: this.where,
 			geometry: this.geometry,
-			geometryType: configurables.geometryPointType,
+			geometryType: appConfig.geometryPointType,
 			spatialRel: this.spatialRelation,
 			returnGeometry: true,
-			inSR: this.inSR,
+			outSR: this.outSR,
 			outFields: this.queryOutfields,
-			// resultOffset: this.resultOffset,
-			// resultRecordCount: this.resultRecordCount,
-			// orderByFields: this.sortChoice,
-			f: configurables.queryReturnFormat,
+			f: appConfig.queryReturnFormat,
 		});
 	},
-	//this function initializes the query for up to 25 topo maps and processes their returned data.
 	queryMapData: function () {
-		// if (isQueryInProcess) {
-		// 	return;
-		// }
-		// isQueryInProcess = true;
-
 		extentQuery(this.url, this.mapDataParams())
 			.then((response) => {
-				// checkForMapsVisibleWithinExtent()
 				this.topoMapsInExtent = response.data.features;
 
 				return this.topoMapsInExtent;
 			})
 			.then((listOfTopos) => {
-				// this.resultOffset = this.resultOffset + this.resultRecordCount;
-				// updateMapcount(listOfTopos.length);
 				return this.processMapData(listOfTopos);
 			})
 			.then((mapsList) => {
-				// setMapListData(mapsList);
 				const isTopoHashed = false;
 				createMapSlotItems(mapsList, this.mapView, isTopoHashed);
 				hideSpinnerIcon();
@@ -166,7 +154,6 @@ const queryController = {
 			});
 	},
 	getNewMaps: function () {
-		// isQueryInProcess = true;
 		removeUnpinnedTopo(),
 			clearMapsList(),
 			showSpinnerIcon(),
@@ -188,28 +175,38 @@ const queryController = {
 				.indexOf(objectId);
 		};
 
-		return topos.map((topo) => ({
-			topo,
-			OBJECTID: topo.attributes.OBJECTID || unavailableInfo,
-			date: topo.attributes[dateOnMap] || unavailableInfo,
-			revisionYear: topo.attributes.Imprint_Year
-				? `${topo.attributes.Imprint_Year} rev`
-				: unavailableInfo,
-			mapName: topo.attributes.Map_Name || unavailableInfo,
-			mapScale:
-				`1:${topo.attributes.Map_Scale.toLocaleString()}` || unavailableInfo,
-			location:
-				`${topo.attributes.Map_Name}, ${topo.attributes.State}` ||
-				unavailableInfo,
-			thumbnail: `${url}/${topo.attributes.OBJECTID}${configurables.imageThumbnailEndpoint}`,
-			downloadLink: topo.attributes.DownloadG,
-			mapBoundry: topo.geometry,
-			previousPinnedMap:
-				isMapPinned(`${topo.attributes.OBJECTID}`) !== -1 ? true : false,
-		}));
+		// console.log(topos);
+		return topos.map(
+			(topo) => (
+				console.log(topo.attributes[publicationYear]),
+				{
+					topo,
+					OBJECTID: topo.attributes[objectId] || unavailableInfo,
+					date: topo.attributes[dateCurrent] || unavailableInfo,
+					revisionYear: topo.attributes[publicationYear]
+						? `${topo.attributes[publicationYear]} rev`
+						: unavailableInfo,
+					mapName: topo.attributes[mapName] || unavailableInfo,
+					mapScale: topo.attributes.Map_Scale
+						? `1:${topo.attributes.Map_Scale.toLocaleString()}`
+						: unavailableInfo,
+					location:
+						`${topo.attributes[mapName]}, ${topo.attributes[mapState]}` ||
+						unavailableInfo,
+					thumbnail: `${url}/${topo.attributes[objectId]}${appConfig.imageThumbnailEndpoint}`,
+					downloadLink: topo.attributes.DownloadG,
+					mapBoundary: topo.geometry,
+					previousPinnedMap:
+						isMapPinned(`${topo.attributes.OBJECTID}`) !== -1 ? true : false,
+				}
+			)
+		);
+	},
+	setSpatialRelation: function (spatialReference) {
+		return (this.spatialRelation = spatialReference);
 	},
 	setGeometry: function (locationData) {
-		return (this.geometry = `${locationData.longitude}, ${locationData.latitude}`);
+		return (this.geometry = `${JSON.stringify(locationData)}`);
 	},
 	setSortChoice: function (choiceValue) {
 		return (this.sortChoice = sortOptions[choiceValue]);
@@ -227,8 +224,9 @@ const setHashedTopoQueryParams = (oid) => {
 	const params = new URLSearchParams({
 		where: `${objectId} IN (${oid})`,
 		returnGeometry: true,
+		outSR: queryController.outSR,
 		outFields: queryController.queryOutfields,
-		f: configurables.queryReturnFormat,
+		f: appConfig.queryReturnFormat,
 	});
 
 	return params;
@@ -295,8 +293,6 @@ const getDataForHashedTopos = async (view) => {
 			originalOrderHashedTopos.map((singleMap) => {
 				const isTopoHashed = true;
 				singleMap.previousPinnedMap = true;
-				//I should really call 'makeCards()' here, but there's an existing race condition I'll need to deal with
-				//the ListOfMaps File is still declaring some variables that makeCards() needs.
 				createMapSlotItems([singleMap], view, isTopoHashed);
 			});
 			return originalOrderHashedTopos;
@@ -314,12 +310,12 @@ const setView = (view) => {
 export {
 	url,
 	queryController,
-	// yearsAndMapScales,
 	getMinYear,
 	getMaxYear,
 	getMinScale,
 	getMaxScale,
 	isHashedToposForQuery,
+	dataServiceType,
 	getView,
 	setView,
 };

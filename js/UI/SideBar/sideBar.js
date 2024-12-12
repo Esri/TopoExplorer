@@ -24,7 +24,6 @@ const initSideBar = () => {
 	sideBar.previousElementSibling.classList.add('invisible');
 	sideBar.querySelector('.for-desktop').classList.remove('display-content');
 	sideBar.querySelector('.for-desktop').classList.add('invisible');
-	//move this 100% value to a media query in the app.css
 	sideBar.style.width = '100%';
 	document.querySelector('aside').classList.add('fixed-position');
 
@@ -74,7 +73,6 @@ const initSideBar = () => {
 		},
 		false
 	);
-	// }
 };
 
 export { initSideBar, toggleSideBar };

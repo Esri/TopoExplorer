@@ -27,6 +27,7 @@ const createMediaLayer = async () => {
 };
 
 const createArrayOfImageElements = (array) => {
+	console.log(array);
 	for (const topoImage of mediaLayer.source.elements.items) {
 		array.push(topoImage);
 	}
@@ -39,6 +40,7 @@ const removeMediaLayer = () => {
 };
 
 const createImageElementForMediaLayer = async (imageData) => {
+	console.log(imageData);
 	if (!imageData) {
 		return;
 	}
@@ -53,7 +55,6 @@ const createImageElementForMediaLayer = async (imageData) => {
 				id: imageData.id,
 				image: imageData.url,
 				opacity: 0,
-				// effect: 'drop-shadow(0px, 0px, 8px, black)',
 				georeference: new ExtentAndRotationGeoreference({
 					extent: imageData.containingExtent,
 				}),

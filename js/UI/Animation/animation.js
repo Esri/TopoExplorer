@@ -1,8 +1,7 @@
 import {
 	animationStart,
 	animationEnd,
-	// setInitialDuration,
-} from '../Animation/AnimatingLayers.js?v=0.03';
+} from '../Animation/AnimationControl.js?v=0.03';
 import { preventingMapInteractions } from '../EventsAndSelectors/EventsAndSelectors.js?v=0.03';
 import {
 	animationLoadingHTML,
@@ -27,19 +26,15 @@ const beginAnimation = () => {
 	setLoadingStatus();
 	togglePlayPause();
 	adjustUIForAnimation();
-	// toggleAnimateCheckboxVisibility();
-	// showAnimateCheckboxVisibility()
 	preventingMapInteractions();
 	addDownloadAspectRatioPreviewLayer();
 	addMapAnimationOverlay();
 	addAnimationLoading();
 	disableOpacitySlider();
-	//this last function, it's not a good name. Write something clearer.
 	addAnimateStatusHashParam();
 	animationStart();
 };
 
-//this is also a terrible function name
 const endAnimation = () => {
 	isAnimating = false;
 	removeMapAnimationOverlay();
@@ -47,11 +42,9 @@ const endAnimation = () => {
 	togglePlayPause();
 	removeMapCardUnavailableStatus();
 	resetUIAfterAnimation();
-	// toggleAnimateCheckboxVisibility();
 	hideAnimateCheckboxVisibility();
 	enableOpacitySlider();
 	resetAnimateCheckbox();
-	//this last function, it's not a good name. Write something clearer.
 	removeAnimationStatusHashParam();
 	animationEnd();
 };
@@ -182,7 +175,6 @@ const removeMapAnimationOverlay = () => {
 	document.querySelector('.mapAnimationOverlay').remove();
 };
 
-//this needs a better name it's highlighting the topo's card while the corresponding topo is visible during animation.
 const removeHighlight = () => {
 	if (document.querySelector('.animating')) {
 		document.querySelector('.animating').classList.remove('animating');
@@ -200,12 +192,6 @@ const disableOpacitySlider = () => {
 		slider.disabled = true;
 	});
 };
-
-// const toggleAnimateCheckboxVisibility = () => {
-// 	document.querySelectorAll('#pinnedList .animate.checkbox').forEach((box) => {
-// 		box.classList.toggle('hidden');
-// 	});
-// };
 
 const showAnimateCheckboxVisibility = () => {
 	document

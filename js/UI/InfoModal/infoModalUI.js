@@ -1,6 +1,5 @@
-import { configurables } from '../../../app-config.js?v=0.03';
+import { appConfig } from '../../../app-config.js?v=0.03';
 
-console.log(configurables.informationParagraph);
 const USGSTopoMapCollection =
 	'https://www.arcgis.com/home/item.html?id=ee19794feeed4e068ba99b2ddcb6c2db';
 const topMapExplorerItemPage =
@@ -65,7 +64,7 @@ const information = `<div class='modalBox'>
   </div>
 </div>
                       <div class='modalText'>
-                        ${configurables.informationParagraph || modalInfoText}
+                        ${appConfig.informationParagraph || modalInfoText}
                       </div>
                       
                     </div> `;
