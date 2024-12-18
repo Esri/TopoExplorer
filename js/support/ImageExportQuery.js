@@ -43,7 +43,6 @@ const imageExport = async (oid, opacity, extent) => {
 		imageSR: queryController.imageSR,
 		mosaicRule: exportMosaicRule,
 		format: 'jpgpng',
-
 		f: 'image',
 	});
 

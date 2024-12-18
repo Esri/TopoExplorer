@@ -39,6 +39,9 @@ const userDeterminedOutfields = Object.values(appConfig.outfields);
 
 const areOutfieldsFoundInServiceAttributes = userDeterminedOutfields.map(
 	(outfieldName) => {
+		if (!outfieldName) {
+			return;
+		}
 		if (
 			!serviceJSON.fields.find(
 				(serviceFieldName) => serviceFieldName.name === outfieldName
@@ -176,34 +179,30 @@ const queryController = {
 		};
 
 		// console.log(topos);
-		return topos.map(
-			(topo) => (
-				console.log(topo.attributes[publicationYear]),
-				{
-					topo,
-					OBJECTID: topo.attributes[objectId] || unavailableInfo,
-					date: topo.attributes[dateCurrent] || unavailableInfo,
-					revisionYear: topo.attributes[publicationYear]
-						? `${topo.attributes[publicationYear]} rev`
-						: unavailableInfo,
-					mapName: topo.attributes[mapName] || unavailableInfo,
-					mapScale: topo.attributes.Map_Scale
-						? `1:${topo.attributes.Map_Scale.toLocaleString()}`
-						: unavailableInfo,
-					location:
-						`${topo.attributes[mapName]}, ${topo.attributes[mapState]}` ||
-						unavailableInfo,
-					thumbnail: `${url}/${topo.attributes[objectId]}${appConfig.imageThumbnailEndpoint}`,
-					downloadLink: topo.attributes.DownloadG,
-					mapBoundary: topo.geometry,
-					previousPinnedMap:
-						isMapPinned(`${topo.attributes.OBJECTID}`) !== -1 ? true : false,
-				}
-			)
-		);
+		return topos.map((topo) => ({
+			topo,
+			OBJECTID: topo.attributes[objectId] || unavailableInfo,
+			date: topo.attributes[dateCurrent] || unavailableInfo,
+			revisionYear: topo.attributes[publicationYear]
+				? `${topo.attributes[publicationYear]} rev`
+				: unavailableInfo,
+			mapName: topo.attributes[mapName] || unavailableInfo,
+			mapScale: topo.attributes.Map_Scale
+				? `1:${topo.attributes.Map_Scale.toLocaleString()}`
+				: unavailableInfo,
+			location:
+				`${topo.attributes[mapName]}, ${topo.attributes[mapState]}` ||
+				unavailableInfo,
+			thumbnail: `${url}/${topo.attributes[objectId]}${appConfig.imageThumbnailEndpoint}`,
+			downloadLink: topo.attributes.DownloadG,
+			mapBoundary: topo.geometry,
+			previousPinnedMap:
+				isMapPinned(`${topo.attributes.OBJECTID}`) !== -1 ? true : false,
+		}));
 	},
 	setSpatialRelation: function (spatialReference) {
-		return (this.spatialRelation = spatialReference);
+		this.spatialRelation = spatialReference;
+		this.outSR = spatialReference;
 	},
 	setGeometry: function (locationData) {
 		return (this.geometry = `${JSON.stringify(locationData)}`);

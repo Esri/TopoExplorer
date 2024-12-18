@@ -76,10 +76,7 @@ const mapFootprint = (mapCardID, geometry) => {
 
 const mapHalo = (mapCardID, geometry) => {
 	return new Promise((resolve, reject) => {
-		require(['esri/layers/GraphicsLayer', 'esri/Graphic'], function (
-			GraphicsLayer,
-			Graphic
-		) {
+		require(['esri/Graphic'], function (Graphic) {
 			const mapOutline = JSON.parse(geometry);
 
 			const haloPolygon = {

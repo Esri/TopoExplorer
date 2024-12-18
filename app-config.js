@@ -27,16 +27,14 @@ const appConfig = {
 	enableBasemapToggleElement: true,
 	//================================================================================
 	imageServerURL:
-		'https://utility.arcgis.com/usrsvcs/servers/88d12190e2494ce89374311800af4c4a/rest/services/USGS_Historical_Topographic_Maps/ImageServer',
-	// 'https://www.ocgis.com/arcpub/rest/services/Historic_Imagery/Historic_Imagery/ImageServer/',
+		// 'https://utility.arcgis.com/usrsvcs/servers/88d12190e2494ce89374311800af4c4a/rest/services/USGS_Historical_Topographic_Maps/ImageServer',
+		'https://www.ocgis.com/arcpub/rest/services/Historic_Imagery/Historic_Imagery/ImageServer/',
 
 	//================================================================================
 	//Query parameters for the image service
 	whereStatement: '1=1',
 	spatialRelation: 'esriSpatialRelIntersects',
 	geometryPointType: 'esriGeometryPoint',
-	//the format of the geometry information provided by the service. This should be the same value as the spatial reference as the webmap.
-	outSR: 3857,
 	queryReturnFormat: 'json',
 	imageThumbnailEndpoint: '/info/thumbnail',
 	//message to use as placeholder on the mapCard for unavailable information from the service.
@@ -52,26 +50,27 @@ const appConfig = {
 		mapName: 'Map_Name',
 		// mapName: 'Name',
 		//General area where the map is located, this will be paired with the maps, name and presented as a subtitle for the mapCard.
-		mapLocation: 'State',
+		// mapLocation: 'State',
 		//Year of the map's printing. Appears on the map card as the 'revision' or 'Rev' year. The expected value type of this field is a Number.
-		publicationYear: 'Imprint_Year',
+		// publicationYear: 'Imprint_Year',
 		//the dateCurrent value is tied to the years slider filter. The years slider expects an integer value when instantiating.
 		//this value is also rendered on the mapCard
 		dateCurrent: 'DateCurrent',
 		//scales of the maps in the service. This value is rendered on the map cards.
 		//The mapScale value is tied to the 'scales' slider filter. The scales slider expects an integer value when instantiating.
-		mapScale: 'Map_Scale',
+		mapScale: false,
+		// mapScale: 'Map_Scale',
 		//download for the map....this comment is false
-		mapDownloadLink: 'DownloadG',
+		// mapDownloadLink: 'DownloadG',
 		//the following outfield  are related to hover/tooltip information for the maps
 		//the tooltip can be turned off. If so, these fields should be commented out or set to false.
-		surveyYear: 'Survey_Year',
-		photoYear: 'Aerial_Photo_Year',
-		photoRevisionYear: 'Photo_Revision',
-		fieldCheckYear: 'Field_Check_Year',
-		projection: 'Projection',
-		datum: 'Datum',
-		citation: 'Citation',
+		// surveyYear: 'Survey_Year',
+		// photoYear: 'Aerial_Photo_Year',
+		// photoRevisionYear: 'Photo_Revision',
+		// fieldCheckYear: 'Field_Check_Year',
+		// projection: 'Projection',
+		// datum: 'Datum',
+		// citation: 'Citation',
 	},
 	//================================================================================
 	//if your service provides a download link for an image, keep this true (make sure the mapDownloadLink outfield is correct, too). If you want to remove the download icon, set this to 'false'
@@ -80,7 +79,7 @@ const appConfig = {
 	//date and scale sliders
 	enableSliders: true,
 	enableTimeFilterSlider: true,
-	enableScaleFilterSlider: true,
+	enableScaleFilterSlider: false,
 	//================================================================================
 	//range of the animation speeds, in milliseconds.
 	animationSpeeds: [3000, 2000, 1000, 800, 700, 500, 400, 300, 200],

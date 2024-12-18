@@ -38,7 +38,7 @@ const initApp = async () => {
 			dataServiceType !== 'esriImageServiceDataTypeRGB'
 		) {
 			console.warn(
-				`While this application is built to be used with an image service, it was developed specifically for esriImageServiceDataTypeRGB, not a '${dataServiceType}'.`
+				`While this application is built to be used with an image service, it was developed specifically for esriImageServiceDataTypeRGB, not a '${dataServiceType}'. Cannot guarantee all features will behave as intended.`
 			);
 		}
 		const oauthResponse = await authorization();
@@ -50,7 +50,7 @@ const initApp = async () => {
 
 		const searchWidget = view.ui.find('searchWidget');
 		const initialMapQuery = () => {
-			queryController.setSpatialRelation(view.setSpatialReference);
+			queryController.setSpatialRelation(view.spatialReference.wkid);
 			queryController.setGeometry(view.extent.center);
 			queryController.mapView = view;
 

@@ -29,6 +29,7 @@ const getCredentials = () => {
 };
 
 const authorization = async () => {
+	console.log(window.location);
 	const portalUrl = 'https://www.arcgis.com';
 
 	return new Promise((resolve, reject) => {
@@ -58,7 +59,7 @@ const authorization = async () => {
 				appId,
 				preserveUrlHash: true,
 				popup: false,
-				popupCallbackUrl: 'http://localhost/topoExplorer/',
+				popupCallbackUrl: 'https://livingatlas.arcgis.com/topomapexplorer/',
 			});
 
 			esriAccountId.registerOAuthInfos([info]);

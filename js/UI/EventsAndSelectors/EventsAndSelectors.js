@@ -327,13 +327,11 @@ document.querySelector('#viewDiv').addEventListener('click', (event) => {
 	}
 
 	if (isAnimating && event.target.closest('.cancelAnimationBtn')) {
-		// endAnimation();
 		event.stopImmediatePropagation();
 
 		removeCloseAnimationBtn(event);
 		addCancelTextToAnimationLoading();
 		setCancelledStatus(true);
-		// endAnimation();
 	}
 
 	if (isAnimating && event.target.closest('.downloadAnimationBtn')) {
@@ -365,7 +363,6 @@ document.querySelector('#viewDiv').addEventListener('click', (event) => {
 	}
 });
 
-//TODO: Clean-up this event listener. It's not clear what's going on.
 document.querySelector('#viewDiv').addEventListener('mouseover', (event) => {
 	if (event.target.closest('.choice')) {
 		const orientation =
@@ -375,7 +372,6 @@ document.querySelector('#viewDiv').addEventListener('mouseover', (event) => {
 			.closest('.choice')
 			.querySelector('a').innerText;
 
-		// findAspectRatio(window.innerWidth - 400, window.innerHeight, orientation);
 		findAspectRatio(dimension, orientation);
 		document
 			.querySelector('.downloadPreview div')
