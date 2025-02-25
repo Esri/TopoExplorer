@@ -28,6 +28,7 @@ const allYearChoices = (minMaxYears) => {
 };
 
 const allScaleChoices = (minMaxScales) => {
+	//scale configurations anticipates the United States Standard scales.
 	return new Promise((resolve, reject) => {
 		let startScale = minMaxScales[1];
 		const scalesArr = [];
@@ -81,10 +82,14 @@ const getYearsAndScales = async (view, appConfig) => {
 	}
 	await getMinMaxYears.then((minMaxYearsResponse) => {
 		if (minMaxYearsResponse[0].error) {
-			console.error(
-				`error occurred during years-slider filter instantiation: attempting to retrieve the image service's ${appConfig.outfields.dateCurrent} attributes. The attribute, '${appConfig.outfields.dateCurrent}' is either not associated with this service or returns data not compatible to the generation the scales filter.`
-			);
-			return;
+			const minMaxYearsErrorMessage = `error occurred during years-slider filter instantiation: attempting to retrieve the image service's ${appConfig.outfields.requiredFields.dateCurrent} attributes. The attribute, '${appConfig.outfields.requiredFields.dateCurrent}' is not found or contains data not compatible to the generation the scales filter. ${minMaxYearsResponse[0].error}`;
+			console.error(minMaxYearsErrorMessage);
+			throw new Error(minMaxYearsErrorMessage);
+		}
+		if (!minMaxYearsResponse[0].features[0].attributes) {
+			const dataResponseErrorMessage = `Cannot find the '${appConfig.outfields.requiredFields.dateCurrent}' attribute or any attribute data for the service. There may be an error in the service's URL endpoint`;
+			console.error(dataResponseErrorMessage);
+			throw new Error(dataResponseErrorMessage);
 		}
 
 		const minMaxYears = minMaxYearsResponse.map((yearAttributeResponse) => {
@@ -110,10 +115,18 @@ const getYearsAndScales = async (view, appConfig) => {
 	}
 	await getMinMaxScales.then((minMaxScalesServiceResponse) => {
 		if (minMaxScalesServiceResponse[0].error) {
-			console.error(
-				`error occurred during scales-slider filter instantiation: attempting to retrieve the image service's '${appConfig.outfields.mapScale}' attributes. The attribute, '${appConfig.outfields.mapScale}' is either not associated with this service or returns data not compatible to the generation the scales filter.`
+			const minMaxScalesErrorMessage = new Error(
+				minMaxScalesServiceResponse[0].error
 			);
-			return;
+			console.error(
+				`error occurred during scales-slider filter instantiation: attempting to retrieve the image service's '${appConfig.outfields.requiredFields.mapScale}' attributes. The attribute, '${appConfig.outfields.requiredFields.mapScale}' is either not associated with this service or returns data not compatible to the generation the scales filter.`
+			);
+			throw new Error(minMaxScalesErrorMessage);
+		}
+		if (!minMaxScalesServiceResponse[0].features[0].attributes) {
+			const dataResponseErrorMessage = `Cannot find the '${appConfig.outfields.requiredFields.mapScale}' attribute or any attribute data for the service. There may be an error in the service's URL endpoint`;
+			console.error(dataResponseErrorMessage);
+			throw new Error(dataResponseErrorMessage);
 		}
 
 		const minMaxScales = minMaxScalesServiceResponse.map(

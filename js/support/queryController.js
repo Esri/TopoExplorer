@@ -5,7 +5,11 @@ import {
 	findMinScale,
 	findMaxScale,
 } from './GetAllMapScalesAndYears.js?v=0.03';
-import { extentQuery, queryForHashedTopos } from './Query.js?v=0.03';
+import {
+	extentQuery,
+	queryForHashedTopos,
+	defaultServiceURL,
+} from './Query.js?v=0.03';
 import {
 	hideMapCount,
 	showSpinnerIcon,
@@ -25,20 +29,45 @@ import { resumeExportPrompt } from '../UI/ExportMaps/ExportMapsPrompt.js?v=0.03'
 import { isMobileFormat } from '../UI/EventsAndSelectors/EventsAndSelectors.js?v=0.03';
 
 const setURL = () => {
-	return appConfig.imageServerURL;
+	if (appConfig.imageServerURL) {
+		return appConfig.imageServerURL;
+	}
+	return defaultServiceURL;
 };
 
 const url = setURL();
 
-const serviceFetch = await fetch(`${appConfig.imageServerURL}?f=pjson`);
-const serviceJSON = await serviceFetch.json();
+const serviceFetch = fetch(`${url}?f=pjson`);
+let serviceJSON;
 
-const dataServiceType = serviceJSON.serviceDataType;
+const isServiceAnImageService = async (serviceInfo) => {
+	try {
+		serviceJSON = await serviceInfo.json();
+		const dataServiceType = serviceJSON.serviceDataType;
 
-const userDeterminedOutfields = Object.values(appConfig.outfields);
+		if (!dataServiceType) {
+			throw new TypeError(
+				`could not verify the type of service. Please review the service URL.`
+			);
+		}
+		if (!dataServiceType.includes('ImageService')) {
+			throw new Error(
+				`This application is built to interact with esri image services. Not a '${dataServiceType}' service. For optimal experience please use an image service`
+			);
+		}
+		return dataServiceType;
+	} catch (error) {
+		console.log(error);
+		throw error;
+	}
+};
 
-const areOutfieldsFoundInServiceAttributes = userDeterminedOutfields.map(
-	(outfieldName) => {
+const userDeterminedOutfields = Object.values(
+	appConfig.outfields.requiredFields
+);
+
+const areOutfieldsFoundInServiceAttributes = async () => {
+	userDeterminedOutfields.map((outfieldName) => {
 		if (!outfieldName) {
 			return;
 		}
@@ -47,30 +76,29 @@ const areOutfieldsFoundInServiceAttributes = userDeterminedOutfields.map(
 				(serviceFieldName) => serviceFieldName.name === outfieldName
 			)
 		) {
-			console.warn(
-				`'${outfieldName}' is not an available field in this service.`
+			throw new Error(
+				`'${outfieldName}' is not an available field in this service. Please double check your outfields with the fields in the requested service.`
 			);
 		}
-	}
-);
-
+	});
+};
 const unavailableInfo = appConfig.unavailableInformationString;
 
 const whereStatement = appConfig.whereStatement;
-const objectId = appConfig.outfields.objectId;
-const mapName = appConfig.outfields.mapName;
-const dateCurrent = appConfig.outfields.dateCurrent;
-const publicationYear = appConfig.outfields.publicationYear;
-const mapState = appConfig.outfields.mapLocation;
-const mapScale = appConfig.outfields.mapScale;
-const mapDownloadLink = appConfig.outfields.mapDownloadLink;
-const surveyYear = appConfig.outfields.surveyYear;
-const photoYear = appConfig.outfields.photoYear;
-const photoRevisionYear = appConfig.outfields.photoRevisionYear;
-const fieldCheckYear = appConfig.outfields.fieldCheckYear;
-const projection = appConfig.outfields.projection;
-const datum = appConfig.outfields.datum;
-const citation = appConfig.outfields.citation;
+const objectId = appConfig.outfields.requiredFields.objectId;
+const mapName = appConfig.outfields.requiredFields.mapName;
+const dateCurrent = appConfig.outfields.requiredFields.dateCurrent;
+const publicationYear = appConfig.outfields.optionalFields.publicationYear;
+const mapState = appConfig.outfields.requiredFields.mapLocation;
+const mapScale = appConfig.outfields.requiredFields.mapScale;
+const mapDownloadLink = appConfig.outfields.requiredFields.mapDownloadLink;
+const surveyYear = appConfig.outfields.optionalFields.surveyYear;
+const photoYear = appConfig.outfields.optionalFields.photoYear;
+const photoRevisionYear = appConfig.outfields.optionalFields.photoRevisionYear;
+const fieldCheckYear = appConfig.outfields.optionalFields.fieldCheckYear;
+const projection = appConfig.outfields.optionalFields.projection;
+const datum = appConfig.outfields.optionalFields.datum;
+const citation = appConfig.outfields.optionalFields.citation;
 
 const getMinYear = findMinYear(`${url}/query`);
 const getMaxYear = findMaxYear(`${url}/query`);
@@ -83,9 +111,11 @@ const queryController = {
 	mapView: null,
 	where: whereStatement,
 	geometry: '',
-	spatialRelation: appConfig.spatialRelation,
-	imageSR: serviceJSON.spatialReference,
+	geometryType: 'esriGeometryPoint',
+	spatialRelation: 'esriSpatialRelIntersects',
+	imageSR: 3264,
 	outSR: appConfig.outSR,
+	returnedFormat: 'json',
 	queryOutfields: [
 		objectId,
 		mapName,
@@ -110,33 +140,33 @@ const queryController = {
 		return new URLSearchParams({
 			where: this.where,
 			geometry: this.geometry,
-			geometryType: appConfig.geometryPointType,
+			geometryType: this.geometryType,
 			spatialRel: this.spatialRelation,
 			returnCountOnly: true,
 			returnExtentOnly: true,
-			f: appConfig.queryReturnFormat,
+			f: this.returnedFormat,
 		});
 	},
 	totalMapExtents: function () {
 		return new URLSearchParams({
 			where: this.where,
 			geometry: this.geometry,
-			geometryType: appConfig.geometryPointType,
+			geometryType: this.geometryType,
 			spatialRel: this.spatialRelation,
 			returnExtentOnly: true,
-			f: appConfig.queryReturnFormat,
+			f: this.returnedFormat,
 		});
 	},
 	mapDataParams: function () {
 		return new URLSearchParams({
 			where: this.where,
 			geometry: this.geometry,
-			geometryType: appConfig.geometryPointType,
+			geometryType: this.geometryType,
 			spatialRel: this.spatialRelation,
 			returnGeometry: true,
 			outSR: this.outSR,
 			outFields: this.queryOutfields,
-			f: appConfig.queryReturnFormat,
+			f: this.returnedFormat,
 		});
 	},
 	queryMapData: function () {
@@ -178,13 +208,12 @@ const queryController = {
 				.indexOf(objectId);
 		};
 
-		// console.log(topos);
 		return topos.map((topo) => ({
 			topo,
 			OBJECTID: topo.attributes[objectId] || unavailableInfo,
 			date: topo.attributes[dateCurrent] || unavailableInfo,
 			revisionYear: topo.attributes[publicationYear]
-				? `${topo.attributes[publicationYear]} rev`
+				? `${topo.attributes[publicationYear]} pub.`
 				: unavailableInfo,
 			mapName: topo.attributes[mapName] || unavailableInfo,
 			mapScale: topo.attributes.Map_Scale
@@ -225,7 +254,7 @@ const setHashedTopoQueryParams = (oid) => {
 		returnGeometry: true,
 		outSR: queryController.outSR,
 		outFields: queryController.queryOutfields,
-		f: appConfig.queryReturnFormat,
+		f: queryController.returnedFormat,
 	});
 
 	return params;
@@ -314,7 +343,10 @@ export {
 	getMinScale,
 	getMaxScale,
 	isHashedToposForQuery,
-	dataServiceType,
+	serviceFetch,
+	isServiceAnImageService,
+	areOutfieldsFoundInServiceAttributes,
+	// dataServiceType,
 	getView,
 	setView,
 };

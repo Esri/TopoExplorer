@@ -117,6 +117,7 @@ const drawTopoMap = async (topo, compositeCanvas, topoImageDrawOffset) => {
 
 //this function is intended to only be used for troubleshooting and reviewing the generated composites
 const downloadCompositeImages = (url) => {
+	// ('composite', url);
 	//Create an 'a' element that facilitates the image download using the blob URL. Once the download has been initiated, remove the 'a' element and remove the blob URL from memory.
 	const anchor = document.createElement('a');
 

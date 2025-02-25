@@ -46,7 +46,6 @@ const setBaseMapInfo = (view) => {
 };
 
 const setViewInfo = (view) => {
-	console.log(view);
 	userView = view;
 	userExtent = view.extent;
 };
@@ -64,7 +63,7 @@ const mapExportProcess = (mapDetails) => {
 			const mapYear =
 				mapDetail.date || mapDetail.querySelector('.year').innerHTML || '';
 			const mapScale =
-				mapDetail.mapScale || mapDetail.querySelector('.scale').innerHTML | '';
+				mapDetail.mapScale || mapDetail.querySelector('.scale').innerHTML || '';
 
 			const mapInfo = `${
 				mapYear === appConfig.unavailableInformationString ? '' : mapYear

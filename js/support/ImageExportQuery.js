@@ -1,4 +1,4 @@
-import { queryController } from './queryController.js?v=0.03';
+import { url, queryController } from './queryController.js?v=0.03';
 
 let controller = new AbortController();
 
@@ -7,7 +7,7 @@ const cancelImageRequest = () => {
 	controller = new AbortController();
 };
 
-const getTopoMap = (oid, url, objectIdOutfield) => {
+const getTopoMap = (oid, objectIdOutfield) => {
 	return new Promise((resolve, reject) => {
 		require(['esri/layers/ImageryLayer'], (ImageryLayer) => {
 			const topoMapLayer = new ImageryLayer({

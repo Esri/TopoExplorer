@@ -47,7 +47,6 @@ to find topo maps.
 </div>
 `;
 
-const serviceURL = appConfig.imageServerURL;
 const unavailableInfo = appConfig.unavailableInformationString;
 
 let currentView;
@@ -209,15 +208,15 @@ const makeCards = (list, isTopoHashed) => {
                 <div style="display:flex">
                     
                     <p class="mapSlotHeader"> ${
-											appConfig.outfields.dateCurrent
+											appConfig.outfields.requiredFields.dateCurrent
 												? `<span class="year">${topoMap.date}</span>`
 												: `<span class="year"></span>`
 										} ${
-				appConfig.outfields.publicationYear
+				appConfig.outfields.optionalFields.publicationYear
 					? `| <span class="revisionYear">${topoMap.revisionYear} </span>`
 					: `<span class="revisionYear"></span>`
 			} ${
-				appConfig.outfields.mapName
+				appConfig.outfields.requiredFields.mapName
 					? `| <span class="name">${topoMap.mapName}</span>`
 					: `<span class="name"></span>`
 			}
@@ -266,11 +265,11 @@ const makeCards = (list, isTopoHashed) => {
               </div>
                 <p class ="mapSlotSub-title"> 
                 ${
-									appConfig.outfields.mapScale
+									appConfig.outfields.requiredFields.mapScale
 										? `<span class="scale">${topoMap.mapScale}</span> `
 										: `<span class="scale"></span>`
 								} ${
-				appConfig.outfields.mapLocation
+				appConfig.outfields.requiredFields.mapLocation
 					? `| <span class="location">${topoMap.location}</span>`
 					: `<span class="location"></span>`
 			}
@@ -359,7 +358,7 @@ const makeCards = (list, isTopoHashed) => {
 								}
                 ${
 									appConfig.enableImageDownloads &&
-									appConfig.outfields.mapDownloadLink
+									appConfig.outfields.requiredFields.mapDownloadLink
 										? `<div class='iconWrapper'>
                   <span class='tooltipText hidden' style='top:-60px;'>Download this topo map as a GeoTIFF</span>
                   <a class='icon download' href="${topoMap.downloadLink}" download="${topoMap.location}, ${topoMap.date}, ${topoMap.mapScale}">
@@ -405,7 +404,7 @@ const makeCards = (list, isTopoHashed) => {
 			JSON.stringify(list[0].mapBoundary),
 			addToPinnedArray
 		);
-		addPreviouslyPinnedTopoToMap(list[0].OBJECTID, serviceURL);
+		addPreviouslyPinnedTopoToMap(list[0].OBJECTID);
 
 		return;
 	}
@@ -450,7 +449,7 @@ const toggleListVisibility = () => {
 			getPinnedTopoIndex(`${currentlySelectedMapId}`) === -1 &&
 			currentlySelectedMapId
 		) {
-			addTopoToMap(currentlySelectedMapId, serviceURL);
+			addTopoToMap(currentlySelectedMapId);
 			const openTopoCard = document.querySelector(
 				`.map-list-item[oid="${currentlySelectedMapId}"]`
 			);
@@ -512,7 +511,6 @@ const setTopoMapPlaceholder = (oid, isMapCardOpen) => {
 };
 
 const isTargetPolygonWithinExtent = (currentlySelectedMapGeometry) => {
-	console.log(currentlySelectedMapGeometry);
 	//determines wether a specific polygon is within the visible extent of the mapView.
 	//This function deconstructs the rings of a polygon to create a simple extent object containing the xMax,Ymax,xMin,yMin of the polygon.
 	// it then evaluates whether any of those points are withing the extent.
@@ -529,7 +527,7 @@ const isTargetPolygonWithinExtent = (currentlySelectedMapGeometry) => {
 		//If the International Date Line is present in the view, the array will have two extents: one for each side of the date line.
 		//It has the additional use of resetting the extent coordinates if the user spins around the world.
 		const extent = currentView.extent.clone().normalize();
-		console.log(extent);
+
 		const topoExtent = {
 			xmax: null,
 			ymax: null,
@@ -788,10 +786,10 @@ const findTopoLayer = (oid) => {
 	});
 };
 
-const addTopoToMap = (target, url) => {
+const addTopoToMap = (target) => {
 	gettingTopoID = parseInt(target);
 
-	getTopoMap(target, url, appConfig.outfields.objectId).then(
+	getTopoMap(target, appConfig.outfields.requiredFields.objectId).then(
 		(topoImageLayer) => {
 			if (gettingTopoID != topoImageLayer.id) {
 				topoImageLayer.cancelLoad();
@@ -817,8 +815,8 @@ const addTopoToMap = (target, url) => {
 	);
 };
 
-const addPreviouslyPinnedTopoToMap = (target, serviceURL) => {
-	getTopoMap(target, serviceURL, appConfig.outfields.objectId).then(
+const addPreviouslyPinnedTopoToMap = (target) => {
+	getTopoMap(target, appConfig.outfields.requiredFields.objectId).then(
 		(topoImageLayer) => {
 			currentView.map.add(topoImageLayer);
 
@@ -1069,7 +1067,7 @@ const isMapCardOpen = (target, targetOID) => {
 	getTopoGeometry(targetOID).then((targetGeometry) => {
 		if (targetInvisability) {
 			checkAnyOpenMapCards(targetOID);
-			addTopoToMap(targetOID, serviceURL);
+			addTopoToMap(targetOID);
 			addHalo(targetOID, targetGeometry);
 			openMapCard(target);
 			setTopoMapPlaceholder(targetOID, false);

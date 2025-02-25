@@ -1,13 +1,18 @@
 import './UI/Basemaps/basemaps.js?v=0.03';
 import { isMobileFormat } from './UI/EventsAndSelectors/EventsAndSelectors.js?v=0.03';
-import { initSideBar } from './UI/SideBar/sideBar.js?v=0.03';
+import {
+	initSideBar,
+	renderErrorMessage,
+} from './UI/SideBar/sideBar.js?v=0.03';
 import { initMobileHeader } from './UI/MobileMapHeader/mobileMapHeader.js?v=0.03';
 import './UI/MobileMapHeader/mobileMapHeader.js?v=0.03';
-import { initView, newMapCrossHair } from './map/View.js?v=0.03';
+import { initView, newMapCrossHair, isWebMapValid } from './map/View.js?v=0.03';
 import {
 	queryController,
 	isHashedToposForQuery,
-	dataServiceType,
+	serviceFetch,
+	isServiceAnImageService,
+	areOutfieldsFoundInServiceAttributes,
 } from './support/queryController.js?v=0.03';
 
 import { updateHashParams } from './support/HashParams.js?v=0.03';
@@ -27,28 +32,18 @@ import { appConfig } from '../app-config.js?v=0.03';
 
 const initApp = async () => {
 	try {
-		if (!dataServiceType.includes('ImageService')) {
-			console.error(
-				`This application built to interact with an esri image service. Not a '${dataServiceType}' type.`
-			);
-			return;
-		}
-		if (
-			dataServiceType.includes('ImageService') &&
-			dataServiceType !== 'esriImageServiceDataTypeRGB'
-		) {
-			console.warn(
-				`While this application is built to be used with an image service, it was developed specifically for esriImageServiceDataTypeRGB, not a '${dataServiceType}'. Cannot guarantee all features will behave as intended.`
-			);
-		}
-		const oauthResponse = await authorization();
+		await isWebMapValid();
 		const view = await initView();
+		const service = await serviceFetch;
+		await isServiceAnImageService(service);
+		await areOutfieldsFoundInServiceAttributes(service);
+
+		const oauthResponse = await authorization();
 
 		const sliderValues = appConfig.enableSliders
 			? await getYearsAndScales(view, appConfig)
 			: null;
 
-		const searchWidget = view.ui.find('searchWidget');
 		const initialMapQuery = () => {
 			queryController.setSpatialRelation(view.spatialReference.wkid);
 			queryController.setGeometry(view.extent.center);
@@ -58,7 +53,7 @@ const initApp = async () => {
 			newMapCrossHair(view, view.center);
 		};
 
-		view
+		await view
 			.when(() => {
 				require(['esri/core/reactiveUtils'], (reactiveUtils) => {
 					if (oauthResponse) {
@@ -106,12 +101,14 @@ const initApp = async () => {
 						resetMobileHeaderInfo();
 					}
 					const zoomLevel = view.zoom;
-					newMapCrossHair(view, event.mapPoint);
-					queryController.setGeometry(event.mapPoint);
+					const normalizePoint = event.mapPoint.clone().normalize();
+					newMapCrossHair(view, normalizePoint);
+					queryController.setGeometry(normalizePoint);
 					queryController.extentQueryCall();
-					updateHashParams(event.mapPoint, zoomLevel);
+					updateHashParams(normalizePoint, zoomLevel);
 				});
 
+				const searchWidget = view.ui.find('searchWidget');
 				searchWidget.on('select-result', (event) => {
 					const searchResultPoint = event.result.extent.center;
 					queryController.setGeometry(event.result.extent.center);
@@ -120,7 +117,8 @@ const initApp = async () => {
 				});
 			});
 	} catch (error) {
-		console.error('problem initalizing app', error);
+		console.error('problem initializing app', error);
+		renderErrorMessage(error);
 	}
 };
 

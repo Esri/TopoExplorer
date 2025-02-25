@@ -6,6 +6,9 @@ import {
 import {
 	addCancelTextToAnimationLoading,
 	addDownloadingNotification,
+	addDownloadErrorMessage,
+	addDownloadCancelMessage,
+	addDownloadAbortMessage,
 	removeCloseAnimationBtn,
 	beginAnimation,
 	endAnimation,
@@ -359,8 +362,14 @@ document.querySelector('#viewDiv').addEventListener('click', (event) => {
 
 	if (event.target.closest('.mapAnimationOverlay a')) {
 		event.stopImmediatePropagation();
+		addDownloadCancelMessage();
 		cancelAnimationVideo();
 	}
+
+	window.onresize = () => {
+		addDownloadAbortMessage();
+		cancelAnimationVideo();
+	};
 });
 
 document.querySelector('#viewDiv').addEventListener('mouseover', (event) => {

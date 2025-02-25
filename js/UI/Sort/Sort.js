@@ -43,21 +43,21 @@ const initSortChoice = (setSortChoice, filterList, appConfig) => {
 };
 
 const establishSortOptions = (appConfig) => {
-	if (!appConfig.outfields.mapName) {
+	if (!appConfig.outfields.requiredFields.mapName) {
 		const options = sortOptions.getElementsByClassName('nameSortOption');
 
 		const choiceArray = Array.from(options);
 
 		choiceArray.forEach((choice) => choice.remove());
 	}
-	if (!appConfig.outfields.dateCurrent) {
+	if (!appConfig.outfields.requiredFields.dateCurrent) {
 		const options = sortOptions.getElementsByClassName('yearSortOption');
 
 		const choiceArray = Array.from(options);
 
 		choiceArray.forEach((choice) => choice.remove());
 	}
-	if (!appConfig.outfields.mapScale) {
+	if (!appConfig.outfields.requiredFields.mapScale) {
 		const options = sortOptions.getElementsByClassName('scaleSortOption');
 
 		const choiceArray = Array.from(options);

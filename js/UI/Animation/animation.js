@@ -8,7 +8,8 @@ import {
 	closeAnimationBtnHTML,
 	animationDownloadAspectRatioPreviewElement,
 	creatingDownloadHTML,
-	downloadErrorMessageHTML,
+	downloadCancelMessageHTML,
+	downloadAbortMessage,
 } from './animationOptionsUI.js?v=0.03';
 import {
 	addAnimateStatusHashParam,
@@ -166,9 +167,19 @@ const addDownloadCancel = () => {
 		.classList.remove('invisible');
 };
 
-const addDownloadErrorMessage = () => {
+const addDownloadCancelMessage = () => {
 	document.querySelector('.mapAnimationOverlay .downloadIndicator').innerHTML =
-		downloadErrorMessageHTML;
+		downloadCancelMessageHTML;
+};
+
+const addDownloadAbortMessage = () => {
+	document.querySelector('.mapAnimationOverlay .downloadIndicator').innerHTML =
+		downloadAbortMessage;
+};
+
+const addDownloadErrorMessage = (errorMessage) => {
+	document.querySelector('.mapAnimationOverlay .downloadIndicator').innerHTML =
+		errorMessage;
 };
 
 const removeMapAnimationOverlay = () => {
@@ -307,6 +318,8 @@ export {
 	addDownloadingNotification,
 	addDownloadCancel,
 	addDownloadErrorMessage,
+	addDownloadCancelMessage,
+	addDownloadAbortMessage,
 	removeDownloadIndicator,
 	resetUIAfterAnimation,
 	removeHighlight,

@@ -75,4 +75,12 @@ const initSideBar = () => {
 	);
 };
 
-export { initSideBar, toggleSideBar };
+const renderErrorMessage = (errorNotification) => {
+	if (!errorNotification.message) {
+		return (exploreList.innerHTML = `<div class='helpText'> ${errorNotification}. </div>`);
+	}
+
+	exploreList.innerHTML = `<div class='helpText'> ${errorNotification.message}. </div>`;
+};
+
+export { initSideBar, toggleSideBar, renderErrorMessage };

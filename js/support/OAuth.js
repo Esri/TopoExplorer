@@ -29,8 +29,7 @@ const getCredentials = () => {
 };
 
 const authorization = async () => {
-	console.log(window.location);
-	const portalUrl = 'https://www.arcgis.com';
+	const portalUrl = appConfig.portalURL;
 
 	return new Promise((resolve, reject) => {
 		require([
@@ -59,7 +58,6 @@ const authorization = async () => {
 				appId,
 				preserveUrlHash: true,
 				popup: false,
-				popupCallbackUrl: 'https://livingatlas.arcgis.com/topomapexplorer/',
 			});
 
 			esriAccountId.registerOAuthInfos([info]);
@@ -97,8 +95,9 @@ const authorization = async () => {
 						resolve(results);
 					})
 					.catch(() => {
-						console.log('error in authorization', error);
-						reject(error);
+						const authorizationErrorMessage = `error in authorization, ${error}`;
+						console.error(authorizationErrorMessage);
+						reject(authorizationErrorMessage);
 					});
 			};
 		});

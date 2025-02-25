@@ -378,7 +378,6 @@ border-radius: 0;
 #viewDiv .esri-ui-bottom-right.esri-ui-corner #layerToggle {
   cursor: default;
   height: 2.5rem;
-  width: 20rem;
   justify-content: space-evenly;
   transform: translate(15px, 14px);
   background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%);
@@ -392,6 +391,10 @@ border-radius: 0;
 #layerToggle span {
   font-size: 1.25rem;
   font-weight: 700;
+  text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 10rem;
 }
 
 #layerToggle .checkbox {

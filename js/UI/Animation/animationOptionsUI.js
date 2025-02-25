@@ -45,7 +45,10 @@ const downloadOptionsHTML = formats
 	.join(' ');
 
 const downloadAnimationElement = () => {
-	if (window.location.host === 'livingatlas.arcgis.com') {
+	if (
+		window.location.host.includes('arcgis.com') ||
+		window.location.host.includes('esri.com')
+	) {
 		return `
     <div class='downloadAnimationBtn' style='text-align: right;'>
                                       <svg width="64" height="64" viewBox="0 0 32 32" >
@@ -98,9 +101,13 @@ const creatingDownloadHTML = `
                               </div>
                              `;
 
-const downloadErrorMessageHTML = `
-                                  <span>Creation of MP4 file failed. Sorry for the inconvenience.</span>
+const downloadCancelMessageHTML = `
+                                  <span>Creation of MP4 file Cancelled.</span>
                               `;
+
+const downloadAbortMessage = `
+                            <span> MP4 export aborted due to window resize. </span>
+                            `;
 
 const findAspectRatio = (dimension) => {
 	let newWidth;
@@ -138,6 +145,7 @@ export {
 	closeAnimationBtnHTML,
 	animationDownloadAspectRatioPreviewElement,
 	creatingDownloadHTML,
-	downloadErrorMessageHTML,
+	downloadCancelMessageHTML,
+	downloadAbortMessage,
 	findAspectRatio,
 };

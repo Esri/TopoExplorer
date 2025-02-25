@@ -1,3 +1,5 @@
+import { appConfig } from '../../../app-config.js?v=0.03';
+
 const mapFootprintOutline = 2;
 
 const mapFootprint = (mapCardID, geometry) => {
@@ -29,7 +31,7 @@ const mapFootprint = (mapCardID, geometry) => {
 								lineStyle3D: 'Strip',
 								miterLimit: 10,
 								width: 2.65,
-								color: [255, 255, 255, 255],
+								color: appConfig.hoverHighlightBorderColor,
 							},
 							{
 								type: 'CIMHatchFill',
@@ -45,7 +47,7 @@ const mapFootprint = (mapCardID, geometry) => {
 											lineStyle3D: 'Strip',
 											miterLimit: 10,
 											width: 1,
-											color: [255, 255, 255, 160],
+											color: appConfig.hoverHighlightFillColor,
 										},
 									],
 								},
@@ -87,9 +89,9 @@ const mapHalo = (mapCardID, geometry) => {
 
 			const haloFill = {
 				type: 'simple-fill',
-				color: '#7f7f7f',
+				color: appConfig.mapImageFillColor,
 				outline: {
-					color: '#FFFFFF',
+					color: appConfig.mapImageBorderColor,
 					width: mapFootprintOutline,
 				},
 			};

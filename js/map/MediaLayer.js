@@ -27,7 +27,6 @@ const createMediaLayer = async () => {
 };
 
 const createArrayOfImageElements = (array) => {
-	console.log(array);
 	for (const topoImage of mediaLayer.source.elements.items) {
 		array.push(topoImage);
 	}
@@ -40,7 +39,6 @@ const removeMediaLayer = () => {
 };
 
 const createImageElementForMediaLayer = async (imageData) => {
-	console.log(imageData);
 	if (!imageData) {
 		return;
 	}
