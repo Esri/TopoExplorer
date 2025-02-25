@@ -2,7 +2,7 @@
 
 A collection of topographic maps throughout the United States and territories provided by the [USGS]. The app contains over 180,000 maps dating from 1882 to 2006. Users can explore these maps in their geographical context and discover all the relevant maps in that area.
 
-<img src='./topoexplorer.png'>
+<img src='./TopoExplorer.png'>
 
 ## Features
 
