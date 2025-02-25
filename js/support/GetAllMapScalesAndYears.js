@@ -1,56 +1,38 @@
+import { appConfig } from '../../app-config.js?v=0.03';
+
 const minYearOutStats = JSON.stringify([
 	{
 		statisticType: 'min',
-		onStatisticField: 'DateCurrent',
-		outStatisticFieldName: 'MinMapYear',
+		onStatisticField: appConfig.outfields.requiredFields.dateCurrent,
+		outStatisticFieldName: 'MapYear',
 	},
 ]);
 const maxYearOutStats = JSON.stringify([
 	{
 		statisticType: 'max',
-		onStatisticField: 'DateCurrent',
-		outStatisticFieldName: 'MaxMapYear',
+		onStatisticField: appConfig.outfields.requiredFields.dateCurrent,
+		outStatisticFieldName: 'MapYear',
 	},
 ]);
 const minScaleOutStats = JSON.stringify([
 	{
 		statisticType: 'min',
-		onStatisticField: 'Map_Scale',
-		outStatisticFieldName: 'MinMapScale',
+		onStatisticField: appConfig.outfields.requiredFields.mapScale,
+		outStatisticFieldName: 'MapScale',
 	},
 ]);
 const maxScaleOutStats = JSON.stringify([
 	{
 		statisticType: 'max',
-		onStatisticField: 'Map_Scale',
-		outStatisticFieldName: 'MaxMapScale',
-	},
-]);
-
-const allScaleAndYears = JSON.stringify([
-	{
-		statisticType: 'min',
-		onStatisticField: 'DateCurrent',
-		outStatisticFieldName: 'MinMapYear',
-	},
-	{
-		statisticType: 'max',
-		onStatisticField: 'DateCurrent',
-		outStatisticFieldName: 'MaxMapYear',
-	},
-	{
-		statisticType: 'min',
-		onStatisticField: 'Map_Scale',
-		outStatisticFieldName: 'MinMapScale',
-	},
-	{
-		statisticType: 'max',
-		onStatisticField: 'Map_Scale',
-		outStatisticFieldName: 'MaxMapScale',
+		onStatisticField: appConfig.outfields.requiredFields.mapScale,
+		outStatisticFieldName: 'MapScale',
 	},
 ]);
 
 const findMinYear = (url) => {
+	if (!appConfig.enableTimeFilterSlider) {
+		return;
+	}
 	return new Promise((resolve, reject) => {
 		const params = new URLSearchParams({
 			where: '',
@@ -69,13 +51,22 @@ const findMinYear = (url) => {
 				params,
 			})
 			.then((response) => {
-				const minYear = response.data.features[0].attributes.MinMapYear;
+				const minYear = response.data;
 				resolve(minYear);
+			})
+			.catch((error) => {
+				const errorMessage = `Issue trying to obtain the image service's minimum year attribute,
+						${error.message}`;
+				console.log(errorMessage);
+				reject(errorMessage);
 			});
 	});
 };
 
 const findMaxYear = (url) => {
+	if (!appConfig.enableTimeFilterSlider) {
+		return;
+	}
 	return new Promise((resolve, reject) => {
 		const params = new URLSearchParams({
 			where: '',
@@ -95,13 +86,23 @@ const findMaxYear = (url) => {
 				params,
 			})
 			.then((response) => {
-				const maxYear = response.data.features[0].attributes.MaxMapYear;
+				const maxYear = response.data;
 				resolve(maxYear);
+			})
+			.catch((error) => {
+				const errorMessage = `Issue trying to obtain the image service's maximum year attribute,
+						${error.message}`;
+				console.log(errorMessage);
+				reject(errorMessage);
 			});
 	});
 };
 
-const findMinScale = (url) => {
+const findMinScale = async (url) => {
+	if (!appConfig.enableScaleFilterSlider) {
+		return;
+	}
+
 	return new Promise((resolve, reject) => {
 		const params = new URLSearchParams({
 			where: '',
@@ -111,7 +112,6 @@ const findMinScale = (url) => {
 			returnCountOnly: false,
 			returnextentOnly: false,
 			returnDistinctValues: false,
-
 			outStatistics: minScaleOutStats,
 			f: 'pjson',
 		});
@@ -121,13 +121,23 @@ const findMinScale = (url) => {
 				params,
 			})
 			.then((response) => {
-				const minScale = response.data.features[0].attributes.MinMapScale;
+				const minScale = response.data;
 				resolve(minScale);
+			})
+			.catch((error) => {
+				const errorMessage = `Issue trying to obtain the image service's minimum map-scale attribute,
+						${error.message}`;
+				console.error(errorMessage);
+				reject(errorMessage);
 			});
 	});
 };
 
 const findMaxScale = (url) => {
+	if (!appConfig.enableScaleFilterSlider) {
+		return;
+	}
+
 	return new Promise((resolve, reject) => {
 		const params = new URLSearchParams({
 			where: '',
@@ -146,8 +156,14 @@ const findMaxScale = (url) => {
 				params,
 			})
 			.then((response) => {
-				const maxScale = response.data.features[0].attributes.MaxMapScale;
+				const maxScale = response.data;
 				resolve(maxScale);
+			})
+			.catch((error) => {
+				const errorMessage = `Issue trying to obtain the image service's maximum map-scale attribute,
+        ${error.message}`;
+				console.log(errorMessage);
+				reject(errorMessage);
 			});
 	});
 };

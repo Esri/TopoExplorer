@@ -1,7 +1,5 @@
 import { queryController } from './queryController.js?v=0.03';
 
-// const arrayOfCompositeImages = [];
-
 const makeCompositeForAnimationDownload = async (basemap, topo) => {
 	try {
 		//will create an image that combines the basemap image and each of the topoMap images present in the imagesForDownload obj.
@@ -29,9 +27,8 @@ const makeCompositeForAnimationDownload = async (basemap, topo) => {
 			canvasBlob.then((blob) => {
 				const url = URL.createObjectURL(blob, 'image/png');
 
-				//this is for testing only. Checks the quality of the recently made composite image
+				//this function is for testing only. Checks the quality of the recently made composite image.
 				// downloadCompositeImages(basemap.url);
-
 				createAnimationImageElement(url, topo).then((animationImageElement) => {
 					resolve(animationImageElement);
 				});
@@ -44,7 +41,6 @@ const makeCompositeForAnimationDownload = async (basemap, topo) => {
 
 const createLinkForCompositeImage = (canvas, array) => {
 	//convert the canvas's current image into a URL.
-	//canvas.toBlob is an asynchronous method
 	return new Promise((resolve) => {
 		canvas.toBlob((blob) => {
 			resolve(blob);
@@ -121,6 +117,7 @@ const drawTopoMap = async (topo, compositeCanvas, topoImageDrawOffset) => {
 
 //this function is intended to only be used for troubleshooting and reviewing the generated composites
 const downloadCompositeImages = (url) => {
+	// ('composite', url);
 	//Create an 'a' element that facilitates the image download using the blob URL. Once the download has been initiated, remove the 'a' element and remove the blob URL from memory.
 	const anchor = document.createElement('a');
 
@@ -130,14 +127,5 @@ const downloadCompositeImages = (url) => {
 	anchor.click();
 	anchor.remove();
 };
-
-// const deleteCanvasElement = (canvas) => {
-// 	canvas.remove();
-// };
-
-// const revokeBlobDownloadURL = (downloadURL) => {
-// 	URL.revokeObjectURL(downloadURL);
-
-// };
 
 export { makeCompositeForAnimationDownload };

@@ -1,11 +1,16 @@
+//NOTE: these functions in this file are used to encode the images used in the animation into an mp4.
+//this encoding will only work for 'esri' related project.
 import {
 	addDownloadCancel,
 	removeDownloadIndicator,
 	addAnimationCloseBtn,
 	addDownloadErrorMessage,
+	addDownloadAbortMessage,
+	addDownloadCancelMessage,
+	endAnimation,
 } from '../UI/Animation/animation.js?v=0.03';
 
-import { revokeBasemapBlobURL } from '../UI/Animation/AnimatingLayers.js?v=0.03';
+import { revokeBasemapBlobURL } from '../UI/Animation/AnimationControl.js?v=0.03';
 
 const images2VideoClient =
 	window['@vannizhang/images-to-video-converter-client'];
@@ -14,7 +19,6 @@ let controller = null;
 
 const cancelAnimationVideo = () => {
 	controller.abort();
-	revertAnimationUIToPreview();
 };
 
 const createAnimationVideo = (params) => {
@@ -34,16 +38,16 @@ const createAnimationVideo = (params) => {
 			// }
 		})
 		.catch((error) => {
-			if (error.message.includes('canceled')) {
-				return;
+			if (!error.message.includes('aborted')) {
+				const errorMessage = error.message;
+				addDownloadErrorMessage(errorMessage);
 			}
-			addDownloadErrorMessage();
+
 			setTimeout(() => {
 				revokeBasemapBlobURL();
 				revokeCompositeBlobURLs(params.data);
-				revertAnimationUIToPreview();
-			}, 2000);
-			console.log(error);
+				endAnimation();
+			}, 4000);
 		});
 };
 

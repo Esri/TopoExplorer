@@ -1,12 +1,18 @@
 import './UI/Basemaps/basemaps.js?v=0.03';
 import { isMobileFormat } from './UI/EventsAndSelectors/EventsAndSelectors.js?v=0.03';
-import { initSideBar } from './UI/SideBar/sideBar.js?v=0.03';
+import {
+	initSideBar,
+	renderErrorMessage,
+} from './UI/SideBar/sideBar.js?v=0.03';
 import { initMobileHeader } from './UI/MobileMapHeader/mobileMapHeader.js?v=0.03';
 import './UI/MobileMapHeader/mobileMapHeader.js?v=0.03';
-import { initView, newMapCrossHair } from './map/View.js?v=0.03';
+import { initView, newMapCrossHair, isWebMapValid } from './map/View.js?v=0.03';
 import {
 	queryController,
 	isHashedToposForQuery,
+	serviceFetch,
+	isServiceAnImageService,
+	areOutfieldsFoundInServiceAttributes,
 } from './support/queryController.js?v=0.03';
 
 import { updateHashParams } from './support/HashParams.js?v=0.03';
@@ -22,15 +28,24 @@ import { initLayerToggle } from './UI/Basemaps/basemaps.js?v=0.03';
 import { setAccountData } from './support/AddItemRequest.js?v=0.03';
 import { animatingStatus } from './support/HashParams.js?v=0.03';
 import { resetMobileHeaderInfo } from './UI/MobileMapHeader/mobileMapHeader.js?v=0.03';
+import { appConfig } from '../app-config.js?v=0.03';
 
 const initApp = async () => {
 	try {
-		const oauthResponse = await authorization();
+		await isWebMapValid();
 		const view = await initView();
-		const sliderValues = await getYearsAndScales(view);
+		const service = await serviceFetch;
+		await isServiceAnImageService(service);
+		await areOutfieldsFoundInServiceAttributes(service);
 
-		const searchWidget = view.ui.find('searchWidget');
+		const oauthResponse = await authorization();
+
+		const sliderValues = appConfig.enableSliders
+			? await getYearsAndScales(view, appConfig)
+			: null;
+
 		const initialMapQuery = () => {
+			queryController.setSpatialRelation(view.spatialReference.wkid);
 			queryController.setGeometry(view.extent.center);
 			queryController.mapView = view;
 
@@ -38,7 +53,7 @@ const initApp = async () => {
 			newMapCrossHair(view, view.center);
 		};
 
-		view
+		await view
 			.when(() => {
 				require(['esri/core/reactiveUtils'], (reactiveUtils) => {
 					if (oauthResponse) {
@@ -46,6 +61,7 @@ const initApp = async () => {
 						setAccountData(oauthResponse);
 					}
 					sliderValues;
+					initLayerToggle(view);
 
 					reactiveUtils.when(
 						() => view?.updating === false,
@@ -73,7 +89,6 @@ const initApp = async () => {
 				});
 			})
 			.then(() => {
-				initLayerToggle(view);
 				setBaseMapInfo(view);
 				setViewInfo(view);
 			})
@@ -86,45 +101,24 @@ const initApp = async () => {
 						resetMobileHeaderInfo();
 					}
 					const zoomLevel = view.zoom;
-					newMapCrossHair(view, event.mapPoint);
-					queryController.setGeometry(event.mapPoint);
+					const normalizePoint = event.mapPoint.clone().normalize();
+					newMapCrossHair(view, normalizePoint);
+					queryController.setGeometry(normalizePoint);
 					queryController.extentQueryCall();
-					updateHashParams(event.mapPoint, zoomLevel);
+					updateHashParams(normalizePoint, zoomLevel);
 				});
 
+				const searchWidget = view.ui.find('searchWidget');
 				searchWidget.on('select-result', (event) => {
 					const searchResultPoint = event.result.extent.center;
 					queryController.setGeometry(event.result.extent.center);
 					queryController.extentQueryCall();
 					newMapCrossHair(view, searchResultPoint);
 				});
-
-				// reactiveUtils.when(
-				// 	() => view?.updating === false,
-				// 	() => {
-				// 		// initialMapQuery();
-				// 		animatingStatus();
-				// 	},
-				// 	{
-				// 		once: true,
-				// 	}
-				// );
-
-				// reactiveUtils.when(
-				// 	() => view?.stationary === true,
-				// 	async () => {
-				// 		queryController.mapView = view;
-
-				// 		updateHashParams(view.extent.center, view.zoom);
-				// 	}
-				// );
-				//
-				// });
-				//
 			});
 	} catch (error) {
-		//error handeling for any intialization issues
-		console.error('problem initalizing app', error);
+		console.error('problem initializing app', error);
+		renderErrorMessage(error);
 	}
 };
 

@@ -1,3 +1,6 @@
+const defaultServiceURL =
+	'https://utility.arcgis.com/usrsvcs/servers/88d12190e2494ce89374311800af4c4a/rest/services/USGS_Historical_Topographic_Maps/ImageServer';
+
 let isQuerying;
 
 let controller = new AbortController();
@@ -70,4 +73,10 @@ const queryForHashedTopos = (url, params) => {
 	});
 };
 
-export { extentQuery, numberOfMapsinView, queryForHashedTopos };
+export {
+	defaultServiceURL,
+	extentQuery,
+	numberOfMapsinView,
+	queryForHashedTopos,
+	cancelQuery,
+};

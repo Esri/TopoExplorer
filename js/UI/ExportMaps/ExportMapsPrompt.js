@@ -1,15 +1,10 @@
-import {
-	terrainLayer,
-	imageryLayer,
-	outdoorBasemapLabels,
-} from '../Basemaps/basemaps.js?v=0.03';
 import { activeExport } from '../../support/HashParams.js?v=0.03';
 import { url } from '../../support/queryController.js?v=0.03';
+import { appConfig } from '../../../app-config.js';
 
 import {
 	successMessagePrompt,
 	failureMessagePrompt,
-	closeExportPrompt,
 	setWebMapURL,
 	exportOver,
 	fillTextFields,
@@ -26,7 +21,7 @@ import { getCredentials } from '../../support/OAuth.js?v=0.03';
 
 const promptBox = document.querySelector('.prompt-box');
 
-const tags = 'Living Atlas, USGS, Topographic, Topo, Quad';
+const tags = appConfig.tags.join(', ');
 let summaryText;
 
 let viewOperationalLayers;
@@ -64,13 +59,17 @@ const mapExportProcess = (mapDetails) => {
 	const mapDetailSummary = mapDetails
 		.map((mapDetail) => {
 			const mapName =
-				mapDetail.mapName || mapDetail.querySelector('.name').innerHTML;
+				mapDetail.mapName || mapDetail.querySelector('.name').innerHTML || '';
 			const mapYear =
-				mapDetail.date || mapDetail.querySelector('.year').innerHTML;
+				mapDetail.date || mapDetail.querySelector('.year').innerHTML || '';
 			const mapScale =
-				mapDetail.mapScale || mapDetail.querySelector('.scale').innerHTML;
+				mapDetail.mapScale || mapDetail.querySelector('.scale').innerHTML || '';
 
-			const mapInfo = `${mapYear} ${mapName} ${mapScale}`;
+			const mapInfo = `${
+				mapYear === appConfig.unavailableInformationString ? '' : mapYear
+			} ${mapName === appConfig.unavailableInformationString ? '' : mapName} ${
+				mapScale === appConfig.unavailableInformationString ? '' : mapScale
+			}`;
 
 			const oid = mapDetail.OBJECTID || mapDetail.attributes.oid.value;
 
@@ -83,14 +82,14 @@ const mapExportProcess = (mapDetails) => {
 				visibility: true,
 				opacity: 1,
 				layerDefinition: {
-					definitionExpression: `OBJECTID = ${oid}`,
+					definitionExpression: `${appConfig.outfields.objectId} = ${oid}`,
 				},
 				mosaicRule: {
 					mosaicMethod: 'esriMosaicLockRaster',
 					lockRasterIds: [oid],
 				},
 
-				timeAnimation: false,
+				timeAnimation: appConfig.timeEnableExport,
 			};
 
 			topoLayerInfo.push(layerData);
@@ -99,12 +98,14 @@ const mapExportProcess = (mapDetails) => {
 		})
 		.join(';');
 
-	summaryText = `An extract of ${mapDetails.length} USGS topographic map${
+	summaryText = `An extract of ${mapDetails.length} map${
 		mapDetails.length > 1 ? `s` : ``
-	}, accessed via the Living Atlas Historical Topo Map Explorer. ${mapDetailSummary}`;
+	}, accessed via the ${
+		appConfig.appId === 'TopoExplorer' ? 'Living Atlas' : ''
+	} ${appConfig.appTitleName}. ${mapDetailSummary}`;
 
-	exportText.title = 'Historical Topo Map Explorer export';
-	exportText.tags = 'Living Atlas, USGS, Topographic, Topo, Quad';
+	exportText.title = `${appConfig.appTitleName} export`;
+	exportText.tags = appConfig.tags.join(', ');
 	exportText.summary = summaryText;
 
 	fillTextFields(exportText);
@@ -112,21 +113,6 @@ const mapExportProcess = (mapDetails) => {
 	openExportPrompt();
 	addExportBtn();
 	exportTitleQC();
-};
-
-const addAdditionalOperationalLayers = () => {
-	const outdoorBasemapLabelsData = {
-		id: '18a89a9fd19-layer-52',
-		title: 'Outdoor Labels',
-		visibility: true,
-		itemId: '65605d0db3bd4067ad4805a81a4689b8',
-		layerType: 'VectorTileLayer',
-		effect: null,
-		styleUrl: '',
-	};
-	topoLayerInfo.unshift(outdoorBasemapLabels);
-	topoLayerInfo.unshift(imageryLayer);
-	topoLayerInfo.push(terrainLayer);
 };
 
 const createWebMapExportDefinition = () => {
@@ -143,29 +129,17 @@ const createWebMapExportDefinition = () => {
 			operationalLayers: topoLayerInfo,
 			baseMap: {
 				baseMapLayers: baseMapInfo,
-				title: 'Outdoor',
+				title: baseMapInfo.title,
 			},
 			initialState: {
 				viewpoint: {
 					scale: userView.scale,
-					targetGeometry: {
-						spatialReference: {
-							latestWkid: 3857,
-							wkid: 102100,
-						},
-						xmin: userExtent.xmin,
-						ymin: userExtent.ymin,
-						xmax: userExtent.xmax,
-						ymax: userExtent.ymax,
-					},
+					targetGeometry: userExtent,
 				},
 			},
-			spatialReference: {
-				wkid: 102100,
-				latestWkid: 3857,
-			},
+			spatialReference: userExtent.spatialReference,
 			version: '2.28',
-			authoringApp: 'Historical Topographic Explorer',
+			authoringApp: appConfig.appTitleName,
 			authoringAppVersion: '0.1',
 		}),
 	};

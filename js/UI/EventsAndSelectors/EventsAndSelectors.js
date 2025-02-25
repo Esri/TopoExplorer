@@ -6,6 +6,9 @@ import {
 import {
 	addCancelTextToAnimationLoading,
 	addDownloadingNotification,
+	addDownloadErrorMessage,
+	addDownloadCancelMessage,
+	addDownloadAbortMessage,
 	removeCloseAnimationBtn,
 	beginAnimation,
 	endAnimation,
@@ -16,7 +19,7 @@ import {
 	setCancelledStatus,
 	checkToposIncludedForDownload,
 	setVideoExportName,
-} from '../Animation/AnimatingLayers.js?v=0.03';
+} from '../Animation/AnimationControl.js?v=0.03';
 import { findAspectRatio } from '../Animation/animationOptionsUI.js?v=0.03';
 import {
 	displayInfoModal,
@@ -301,9 +304,11 @@ document.addEventListener('click', (event) => {
 	}
 });
 
-document.querySelector('.infoModalIcon').addEventListener('click', () => {
-	displayInfoModal();
-});
+if (document.querySelector('.infoModalIcon')) {
+	document.querySelector('.infoModalIcon').addEventListener('click', () => {
+		displayInfoModal();
+	});
+}
 
 //event listeners that work with animation process
 document
@@ -325,13 +330,11 @@ document.querySelector('#viewDiv').addEventListener('click', (event) => {
 	}
 
 	if (isAnimating && event.target.closest('.cancelAnimationBtn')) {
-		// endAnimation();
 		event.stopImmediatePropagation();
 
 		removeCloseAnimationBtn(event);
 		addCancelTextToAnimationLoading();
 		setCancelledStatus(true);
-		// endAnimation();
 	}
 
 	if (isAnimating && event.target.closest('.downloadAnimationBtn')) {
@@ -359,11 +362,16 @@ document.querySelector('#viewDiv').addEventListener('click', (event) => {
 
 	if (event.target.closest('.mapAnimationOverlay a')) {
 		event.stopImmediatePropagation();
+		addDownloadCancelMessage();
 		cancelAnimationVideo();
 	}
+
+	window.onresize = () => {
+		addDownloadAbortMessage();
+		cancelAnimationVideo();
+	};
 });
 
-//TODO: Clean-up this event listener. It's not clear what's going on.
 document.querySelector('#viewDiv').addEventListener('mouseover', (event) => {
 	if (event.target.closest('.choice')) {
 		const orientation =
@@ -373,7 +381,6 @@ document.querySelector('#viewDiv').addEventListener('mouseover', (event) => {
 			.closest('.choice')
 			.querySelector('a').innerText;
 
-		// findAspectRatio(window.innerWidth - 400, window.innerHeight, orientation);
 		findAspectRatio(dimension, orientation);
 		document
 			.querySelector('.downloadPreview div')

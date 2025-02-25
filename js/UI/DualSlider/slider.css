@@ -12,7 +12,6 @@
   padding: 2% 2% 0;
   margin: 1%;
   position: absolute;
-  /* top: 15%; */
   left: 3%;
   border-radius: 12px;
   background: #f1f4f5;
@@ -24,17 +23,11 @@
   width: 93%;
   padding: 2% 2% 0;
   margin: 1%;
-  /* position: absolute; */
-  /* top: 15%; */
   left: 3%;
   border-radius: 12px;
-  /* background: #f1f4f5;
-  box-shadow: inset 6px 6px 6px #eaeef1, -2px -2px 3px #d8e0e7, 3px 3px 4px #d8e0e7; */
 }
 
 .tooltipText {
-  /* visibility: hidden; */
-  /* width: 120px; */
   background-color: #555;
   color: #fff;
   text-align: center;
@@ -45,20 +38,9 @@
   top: -50px;
   left: 54px;
   margin-left: -60px;
-  /* opacity: 0; */
   transition: opacity 0.3s;
 } 
 
-/* .tooltipText::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: #555 transparent transparent transparent;
-} */
 
 .headerSpan.transparency:hover ~ .tooltipText {
   visibility: visible;
@@ -93,7 +75,6 @@
 }
 
 .slider-color {
-  /* background: linear-gradient(0deg, rgba(209,216,226,1) 0%, rgba(255, 255, 255, 1) 100%); */
   background: #637287;
   
 }
@@ -116,11 +97,6 @@
   appearance: none;
   pointer-events: none;
 }
-
-/* .slider-group .singleSlider {
-  height: 0;
-  z-index: 2;
-} */
 
 .slider-group .minSlider {
   height: 0;
