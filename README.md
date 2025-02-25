@@ -2,6 +2,8 @@
 
 A collection of topographic maps throughout the United States and territories provided by the [USGS]. The app contains over 180,000 maps dating from 1882 to 2006. Users can explore these maps in their geographical context and discover all the relevant maps in that area.
 
+<img src='./topoexplorer.png'>
+
 ## Features
 
 - Explore the catalog of historic topographic maps available at locations within the United States
@@ -13,7 +15,7 @@ A collection of topographic maps throughout the United States and territories pr
 
 #### Installation
 
-- Clone the repository, or download and unzip the [zip] file, in the root folder of a web server.
+- Clone the repository, or download and unzip the file, in the root folder of a web server.
 
 ## Instructions
 
@@ -64,9 +66,9 @@ An important note, the layer toggle expects that the layers provided (the layers
 The layer list toggle element will contain up to 4 layers at a maximum.
 
 | Layer Information              | Value            | Description                                                                                                                                                                                                                                                                                                                                            |
-| ------------------------------ | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --- |
+| ------------------------------ | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `enableBasemapToggleElement`   | Boolean          | Determines whether or not the 'Layer List Toggle' element will be initialized on the application boot-up. Default value is 'true'                                                                                                                                                                                                                      |
-| `webmapLayersForToggleElement` | Array of objects | An array of objects that contain attributes (`layerId`, `layerTitle`) for the 'layer list toggle element'. The `layerId` attribute determines which layer in the webmap will be used in the toggle element. The `layerTitle` attribute states what name will be given to the layer in the element. The toggle element expects a maximum of four layers |     |
+| `webmapLayersForToggleElement` | Array of objects | An array of objects that contain attributes (`layerId`, `layerTitle`) for the 'layer list toggle element'. The `layerId` attribute determines which layer in the webmap will be used in the toggle element. The `layerTitle` attribute states what name will be given to the layer in the element. The toggle element expects a maximum of four layers |
 
 <img src='./public/images/README_IMGs/IMG_2_Layer Toggle.png' width=80%>
 
@@ -183,6 +185,10 @@ The image service and its associated data used in this application can be found 
 #### Issues
 
 If you find a bug and want to let us know, please submit an issue.
+
+#### Contributing
+
+Esri welcomes contributions from anyone and everyone. Please see our [guidelines for contributing](https://github.com/esri/contributing).
 
 #### License
 
