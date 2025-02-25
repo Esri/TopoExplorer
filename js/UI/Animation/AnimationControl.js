@@ -1,9 +1,8 @@
-//NOTE: Rename this module to AnimationControl.
 import { queryController } from '../../support/queryController.js?v=0.03';
+import { appConfig } from '../../../app-config.js?v=0.03';
 import {
 	removeAnimationLoadingDiv,
 	addAnimationCloseBtn,
-	showAnimateCheckboxVisibility,
 	checkToposAvailableForAnimation,
 	uncheckMapCard,
 	setMapCardUnavailableStatus,
@@ -11,7 +10,6 @@ import {
 	hideUnavailableTopoCheckbox,
 	removeHighlight,
 	cardCheckStatus,
-	endAnimation,
 	isAnimating,
 	setLoadingStatus,
 	enableAnimationSpeedSlider,
@@ -24,10 +22,7 @@ import {
 	isTargetPolygonWithinExtent,
 	getPinnedTopoGeometry,
 } from '../MapCards/ListOfMaps.js?v=0.03';
-import {
-	imageExport,
-	cancelImageRequest,
-} from '../../support/ImageExportQuery.js?v=0.03';
+import { imageExport } from '../../support/ImageExportQuery.js?v=0.03';
 import {
 	createMediaLayer,
 	createArrayOfImageElements,
@@ -64,15 +59,13 @@ const animationDimensions = {
 let animationInterval;
 let duration;
 let pinListCurrentOrder;
-const speeds = [3000, 2000, 1000, 800, 700, 500, 400, 300, 200];
+const speeds = appConfig.animationSpeeds;
 
 const setAnimationDimensions = (width, height) => {
 	animationDimensions.width = width;
 	animationDimensions.height = height;
 };
 
-//This currently doesn't do anything. 'isCancelled' isn't being evaluated for anything. It was, but it's not now...currently
-//this function is being called in the 'eventsAndSelectors' module.
 const setCancelledStatus = (status) => {
 	isCancelled = status;
 };
@@ -122,7 +115,6 @@ const showCrosshairLayer = () => {
 	crosshairLayer.visible = true;
 };
 
-//note:I don't like how this works. there has to be a cleaner method
 const hideTopoLayers = async () => {
 	await pinListCurrentOrder.forEach((card, index) => {
 		findTopoLayer(
@@ -157,12 +149,14 @@ const exportingTopoImageAndCreatingImageElement = async () => {
 		return new Promise((resolve) => {
 			const cardId = card.querySelector('.map-list-item').attributes.oid.value;
 
+			const imageTitle = card.querySelector('.map-list-item .location') || '';
+			const imageDate = card.querySelector('.map-list-item .year') || '';
+			const imageRevisionDate =
+				card.querySelector('.map-list-item .revisionYear') + 'revision' || '';
 			const currentOpacity = card.querySelector('.opacity-slider').value / 100;
-			const imageName = `${
-				card.querySelector('.map-list-item .location').textContent
-			} ${card.querySelector('.map-list-item .year').textContent} | ${
-				card.querySelector('.map-list-item .revisionYear').textContent
-			} revision`;
+			const imageName = `${imageTitle.textContent || ''} ${
+				imageDate.textContent || ''
+			} | ${imageRevisionDate.textContent || ''}`;
 
 			getPinnedTopoGeometry(cardId).then((pinnedTopoMapGeometry) => {
 				isTargetPolygonWithinExtent(pinnedTopoMapGeometry).then((newExtent) => {
@@ -273,7 +267,6 @@ const restartAnimation = () => {
 	startAnimationInterval();
 };
 
-//this should be in another module
 const hideMediaLayer = () => {
 	return new Promise((resolve, reject) => {
 		queryController.mapView.map.remove(mediaLayer);
@@ -286,7 +279,6 @@ const checkToposIncludedForDownload = async () => {
 	hideMediaLayer().then(async () => {
 		takeScreenshotOfView()
 			.then(() => {
-				//this should be in another module (the mediaLayer module) and called something like showMediaLayer
 				queryController.mapView.map.add(
 					mediaLayer,
 					queryController.mapView.map.layers.items.length - 2
@@ -329,8 +321,6 @@ const checkToposIncludedForDownload = async () => {
 	});
 };
 
-//NOTE: this is the hub for all animation related data is called. So how would you manage these functions if the animation is cancelled during the load? What is the risk condition?
-//This section should be refactored, the 'awaits' are unnecessary and confusing. But some of the functions associated with these calls have asynchronous behavior (modules, fetch/server calls)
 const animationStart = async () => {
 	setPinListCurrentOrder();
 	hideCrosshairLayer();
@@ -369,7 +359,6 @@ const checkAnimationLoadStatus = () => {
 	enableAnimationSpeedSlider();
 };
 
-//note: some of these functions have more UI-centric. They could probably be moved into another module (i.e.: the animation.js module.)
 const animationEnd = () => {
 	stopAnimationInterval();
 	removeHighlight();
@@ -414,12 +403,6 @@ animationSpeedSlider.addEventListener('change', (event) => {
 
 const startAnimationInterval = () => {
 	animationInterval = setInterval(animate, duration);
-};
-
-const areAllImagesUnchecked = () => {
-	imagesForDownload.topoImages.every((animationImage) => {
-		animationImage.isCheckedForAnimation === false;
-	});
 };
 
 const animate = () => {

@@ -53,7 +53,6 @@ const createImageElementForMediaLayer = async (imageData) => {
 				id: imageData.id,
 				image: imageData.url,
 				opacity: 0,
-				// effect: 'drop-shadow(0px, 0px, 8px, black)',
 				georeference: new ExtentAndRotationGeoreference({
 					extent: imageData.containingExtent,
 				}),

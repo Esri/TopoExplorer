@@ -1,6 +1,6 @@
-import { config } from '../../app-config.js?v=0.03';
+import { appConfig } from '../../app-config.js?v=0.03';
 
-const appId = config.environment.appId;
+const appId = appConfig.appId;
 
 let userCredentials;
 let esriAccountId;
@@ -29,7 +29,7 @@ const getCredentials = () => {
 };
 
 const authorization = async () => {
-	const portalUrl = 'https://www.arcgis.com';
+	const portalUrl = appConfig.portalURL;
 
 	return new Promise((resolve, reject) => {
 		require([
@@ -39,12 +39,25 @@ const authorization = async () => {
 		], function (Portal, OAuthInfo, esriId) {
 			esriAccountId = esriId;
 
+			if (appConfig.enablePortalAuthentication === false) {
+				document.getElementById('user-icon').remove();
+				document
+					.querySelector('.icon.save-all')
+					.closest('.iconWrapper')
+					.remove();
+
+				document.querySelector(
+					'.pinned-mode-options .pinned-mode-sub-section'
+				).style.justifyContent = 'space-around';
+
+				resolve(false);
+			}
+
 			info = new OAuthInfo({
 				portalUrl: portalUrl,
 				appId,
 				preserveUrlHash: true,
 				popup: false,
-				popupCallbackUrl: 'http://localhost/topoExplorer/',
 			});
 
 			esriAccountId.registerOAuthInfos([info]);
@@ -82,7 +95,9 @@ const authorization = async () => {
 						resolve(results);
 					})
 					.catch(() => {
-						console.log('error in authorization', error);
+						const authorizationErrorMessage = `error in authorization, ${error}`;
+						console.error(authorizationErrorMessage);
+						reject(authorizationErrorMessage);
 					});
 			};
 		});

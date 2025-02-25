@@ -20,11 +20,6 @@ let webMapURL;
 let accountURL;
 
 const setUserContentURL = (urlKey, urlBase, url) => {
-	//NOTE: this conditional is set to determine if the user has logged in, and if a url for an exported webmap needs to be parsed. I think I could come up with a different answer other than using this conditional?
-	// if (!urlBase) {
-	// 	return;
-	// }
-
 	if (!urlKey || !urlBase) {
 		accountURL = `${url}`;
 		return;
@@ -62,9 +57,9 @@ const exportFields = `
 </form>`;
 
 const fillTextFields = () => {
-	const exportTitleField = promptBox.querySelector('.title');
-	const exportTagsField = promptBox.querySelector('.tags');
-	const exportSummaryField = promptBox.querySelector('.summary');
+	const exportTitleField = promptBox.querySelector('.title') || '';
+	const exportTagsField = promptBox.querySelector('.tags') || '';
+	const exportSummaryField = promptBox.querySelector('.summary') || '';
 
 	exportTitleField.value = exportText.title;
 	exportTagsField.value = exportText.tags;
@@ -109,7 +104,6 @@ const closeExportPrompt = () => {
 	document.querySelector('.prompt-box').innerHTML = exportFields;
 };
 
-//NOTE: these two functions should be combined into one?
 const exportOver = () => {
 	indicator.classList.add('invisible');
 	promptBox.classList.remove('transparency');

@@ -1,8 +1,24 @@
 import { hashCoordinates, hashLoD } from '../support/HashParams.js?v=0.03';
-// import { CenterCrosshair } from '../../public/image/CenterCrosshair.png';
-import { config } from '../../app-config.js?v=0.03';
+import { appConfig } from '../../app-config.js?v=0.03';
 
-const initView = () => {
+const fetchWebmapData = fetch(
+	`${appConfig.portalURL}/sharing/rest/content/items/${appConfig.webMapID}?f=json`
+);
+
+const isWebMapValid = async () => {
+	try {
+		const webmapData = await fetchWebmapData;
+		const webmapJSON = await webmapData.json();
+		if (!webmapJSON.error) {
+			return true;
+		}
+	} catch (error) {
+		const errorMessage = `error finding webmap data, ${error}`;
+		throw new Error(errorMessage);
+	}
+};
+
+const initView = async () => {
 	return new Promise((resolve, reject) => {
 		require([
 			'esri/WebMap',
@@ -11,13 +27,34 @@ const initView = () => {
 			'esri/geometry/SpatialReference',
 			'esri/widgets/Search',
 		], (WebMap, MapView, GraphicsLayer, SpatialReference, Search) => {
+			const map = new WebMap({
+				portalItem: {
+					id: appConfig.webMapID,
+				},
+			});
+
+			const view = new MapView({
+				container: 'viewDiv',
+				map: map,
+				center: hashCoordinates() || appConfig.defaultMapSettings.center,
+				zoom: hashLoD() || appConfig.defaultMapSettings.zoom,
+				constraints: {
+					snapToZoom: false,
+					minZoom: appConfig.defaultMapSettings.constraints.minZoom,
+				},
+				popup: {
+					popup: null,
+					autoOpenEnabled: false,
+				},
+			});
+
 			const footprintLayer = new GraphicsLayer({
 				id: 'mapFootprint',
 				title: 'mapFootprint',
 				graphics: [],
 				effect: 'drop-shadow(0px, 0px, 8px, black)',
 				blendMode: 'hard-light',
-				spatialReference: new SpatialReference(config.spatialReference),
+				spatialReference: new SpatialReference(view.spatialReference),
 			});
 
 			const haloLayer = new GraphicsLayer({
@@ -26,36 +63,13 @@ const initView = () => {
 				graphics: [],
 				effect: 'drop-shadow(0px, 0px, 8px, black) contrast(2)',
 				blendMode: 'hard-light',
-				spatialReference: new SpatialReference(config.spatialReference),
+				spatialReference: new SpatialReference(view.spatialReference),
 			});
 
 			const crosshairLayer = new GraphicsLayer({
 				id: 'crosshair',
 				title: 'crosshair',
 				graphics: [],
-			});
-
-			const map = new WebMap({
-				portalItem: {
-					id: config.environment.webMap.webMapItemId,
-					//for bug testing during app init, '3582b744bba84668b52a16b0b6942544'
-				},
-			});
-
-			const view = new MapView({
-				container: 'viewDiv',
-				map: map,
-				// layerView: [],
-				center: hashCoordinates() || config.defaultMapSettings.center,
-				zoom: hashLoD() || config.defaultMapSettings.zoom,
-				constraints: {
-					snapToZoom: false,
-					minZoom: config.defaultMapSettings.constraints.minZoom,
-				},
-				popup: {
-					popup: null,
-					autoOpenEnabled: false,
-				},
 			});
 
 			map.layers.add(haloLayer);
@@ -70,12 +84,12 @@ const initView = () => {
 				includeDefaultSources: false,
 				sources: [
 					{
-						url: 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer',
+						url: appConfig.searchWidget.geocodeSourceURL,
 						singleLineFieldName: 'SingleLine',
 						outFields: ['Addr_type'],
-						name: 'ArcGIS World Geocoding Service',
-						placeholder: 'Find address or place',
-						countryCode: 'US',
+						name: 'World Geocoding Service',
+						placeholder: appConfig.searchWidget.placeholderText,
+						countryCode: appConfig.searchWidget.countryCode,
 					},
 				],
 			});
@@ -91,9 +105,7 @@ const initView = () => {
 				position: 'top-right',
 			});
 
-			view.when(() => {
-				return resolve(view);
-			});
+			resolve(view);
 		});
 	});
 };
@@ -116,6 +128,7 @@ const newMapCrossHair = (view, mapPoint) => {
 			url: './public/images/CrosshairRed.png',
 			width: '44px',
 			height: '44px',
+			color: 'blue',
 		});
 
 		const mapPointGraphic = new Graphic({
@@ -130,4 +143,4 @@ const newMapCrossHair = (view, mapPoint) => {
 	});
 };
 
-export { initView, newMapCrossHair };
+export { initView, newMapCrossHair, isWebMapValid };
